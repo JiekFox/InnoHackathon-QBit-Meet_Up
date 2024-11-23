@@ -1,0 +1,11 @@
+{
+  "hosting": {
+    "site": "qbit-meetup",
+    "public": "/.",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

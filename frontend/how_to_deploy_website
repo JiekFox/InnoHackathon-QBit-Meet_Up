@@ -1,0 +1,16 @@
+Только первый раз. 
+1. Установить:
+npm install firebase
+
+npm install -g firebase-tools
+
+firebase login //входите в общий google акк
+далее нажимаете 'n'
+
+2. открыть deploy.cmd
+
+3. изменить путь на верный конкретно Вам
+
+- - - - - - - - - - - - - - - - - - - - - - - - 
+В общем случае:
+1. запустить deploy.cmd (просто double-click по файлу)
