@@ -2,3 +2,7 @@
 .env
 __pycache__
 *.sqlite3
+.idea
+frontend/my-app/build
+frontend/my-app/node_modules
+frontend/deploy.cmd
