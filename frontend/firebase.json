@@ -1,7 +1,7 @@
 {
   "hosting": {
     "site": "qbit-meetup",
-    "public": "/.",
+    "public": "/my-app/build/.",
     "ignore": [
       "firebase.json",
       "**/.*",
