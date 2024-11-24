@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meet Up!</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="header">
+    <div class="header > container">
+        <h1 class="header > title">Meet Up!</h1>
+        <div class="header > controls">
+            <button id="language-toggle" class="control-button">Change Language</button>
+            <button id="theme-toggle" class="control-button">Change Theme</button>
+            <div class="user-info">
+                <span class="user-name">User Name</span>
+                <img class="user-avatar" src="avatar-placeholder.png" alt="User Avatar">
+                <div class="user-dropdown">
+                    <div class="dropdown-item">
+                        <a href="profile.html" target="_blank" class="dropdown-title">Profile</a>
+                        <span class="dropdown-description">Explore your profile</span>
+                    </div>
+                    <div class="dropdown-item">
+                        <a href="my-meetups.html" target="_blank" class="dropdown-title">My Meet Ups</a>
+                        <span class="dropdown-description">View all the meetings you have subscribed to</span>
+                    </div>
+                    <hr>
+                    <div class="dropdown-item log-out" id="log-out">
+                        Log Out
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+    <section class="main-content > intro">
+        <h2 class="intro > title">Public MeetUps!</h2>
+        <p class="intro > description">
+            Here you can find Meetings available to everyone that you can make an assignment for
+        </p>
+        <button class="create-meeting-button">Create</button>
+    </section>
+
+    <section class="main-content > meetups">
+        <div class="filter-bar">
+            <select id="filter" name="filter" class="filter-bar > select">
+                <option value="value">Value</option>
+            </select>
+            <input type="text" id="search" name="search" placeholder="Search meetups..." class="filter-bar > search-input">
+        </div>
+
+        <div class="meetup-grid">
+            <!-- 7 карточек мероприятия -->
+            <div class="meetup-card">
+                <img class="meetup-card > image" src="placeholder.png" alt="Meetup Image">
+                <h3 class="meetup-card > title">Title</h3>
+                <p class="meetup-card > description">
+                    This is a simple description for the event.
+                </p>
+            </div>
+            <div class="meetup-card">
+                <img class="meetup-card > image" src="placeholder.png" alt="Meetup Image">
+                <h3 class="meetup-card > title">Title</h3>
+                <p class="meetup-card > description">
+                    This is a simple description for the event.
+                </p>
+            </div>
+            <div class="meetup-card">
+                <img class="meetup-card > image" src="placeholder.png" alt="Meetup Image">
+                <h3 class="meetup-card > title">Title</h3>
+                <p class="meetup-card > description">
+                    This is a simple description for the event.
+                </p>
+            </div>
+            <div class="meetup-card">
+                <img class="meetup-card > image" src="placeholder.png" alt="Meetup Image">
+                <h3 class="meetup-card > title">Title</h3>
+                <p class="meetup-card > description">
+                    This is a simple description for the event.
+                </p>
+            </div>
+            <div class="meetup-card">
+                <img class="meetup-card > image" src="placeholder.png" alt="Meetup Image">
+                <h3 class="meetup-card > title">Title</h3>
+                <p class="meetup-card > description">
+                    This is a simple description for the event.
+                </p>
+            </div>
+            <div class="meetup-card">
+                <img class="meetup-card > image" src="placeholder.png" alt="Meetup Image">
+                <h3 class="meetup-card > title">Title</h3>
+                <p class="meetup-card > description">
+                    This is a simple description for the event.
+                </p>
+            </div>
+            <div class="meetup-card">
+                <img class="meetup-card > image" src="placeholder.png" alt="Meetup Image">
+                <h3 class="meetup-card > title">Title</h3>
+                <p class="meetup-card > description">
+                    This is a simple description for the event.
+                </p>
+            </div>
+        </div>
+
+        <nav class="pagination">
+            <a href="#" class="pagination > prev">« Previous</a>
+            <a href="#" class="pagination > page-number">1</a>
+            <a href="#" class="pagination > page-number">2</a>
+            <a href="#" class="pagination > page-number">3</a>
+            <span class="pagination > dots">...</span>
+            <a href="#" class="pagination > page-number">67</a>
+            <a href="#" class="pagination > next">Next »</a>
+        </nav>
+    </section>
+</main>
+
+<footer class="footer">
+    <p class="footer > credits">
+        MeetUp! <br>
+        Made by "Q-bit" team, Gomel, 2024
+    </p>
+</footer>
+
+
+<div id="logout-modal" class="logout-modal">
+    <div class="modal-content">
+        <span class="modal-close" id="close-modal">&times;</span>
+        <h2>Do you want log out?</h2>
+        <p>Body text</p>
+        <div class="modal-buttons">
+            <button class="button-decline" id="decline-logout">Cancel</button>
+            <button class="button-confirm" id="confirm-logout">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<script src="theme-toggle.js"></script>
+<script src="language-toggle.js"></script>
+<script src="scripts.js"></script>
+</body>
+</html>
