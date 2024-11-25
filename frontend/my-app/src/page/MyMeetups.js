@@ -1,5 +1,6 @@
-import Pagination from '../components/home/Pagination';
 import { useState } from 'react';
+import { MY_MEETUPS_OWNER, MY_MEETUPS_SUBSCRIBER } from '../constant/router';
+import { NavLink } from 'react-router-dom';
 
 export default function MyMeetups() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -30,41 +31,17 @@ export default function MyMeetups() {
     return (
         <>
             <h2>Your Meetings</h2>
-            <section className="meetups">
-                <div className="filter-bar">
-                    <select
-                        id="filter"
-                        name="filter"
-                        className="filter-bar > select"
-                        onChange={e => handleFilterChange(e.target.value)}
-                    >
-                        <option value="value">Value</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="past">Past</option>
-                    </select>
+            <div>
+                Would you like to view Meetups you have subscribed to or you own?
+            </div>
 
-                    <input
-                        type="text"
-                        id="search"
-                        name="search"
-                        placeholder="Search meetups..."
-                        className="filter-bar > search-input"
-                        onChange={e => handleSearch(e.target.value)}
-                    />
-                </div>
+            <NavLink to={MY_MEETUPS_SUBSCRIBER}>
+                <h1 className="title">Subscriber</h1>
+            </NavLink>
 
-                <div className="meetup-grid">
-                    {meetings.map((meeting, index) => (
-                        <div className="meetup-card" key={index}>
-                            <h3>{meeting.title}</h3>
-                            <p>{meeting.date}</p>
-                            <p>{meeting.description}</p>
-                        </div>
-                    ))}
-                </div>
-
-                <Pagination />
-            </section>
-        </>
+            <NavLink to={MY_MEETUPS_OWNER}>
+                <h1 className="title">Owner</h1>
+            </NavLink>
+        </main>
     );
 }

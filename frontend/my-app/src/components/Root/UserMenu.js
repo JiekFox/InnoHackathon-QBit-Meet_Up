@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import DropdownItem from './DropdownItem';
 import LogoutModal from '../LogoutModal';
 import icon from '../../assets/img/icon.png';
-import { MY_MEETUPS, PROFILE } from '../../constant/router';
+import {
+    MY_MEETUPS_OWNER,
+    MY_MEETUPS_SUBSCRIBER,
+    PROFILE
+} from '../../constant/router';
 
 export default function UserMenu({ userName }) {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -23,12 +27,17 @@ export default function UserMenu({ userName }) {
                 <DropdownItem
                     to={PROFILE}
                     title="Profile"
-                    description="Explore your profile"
+                    description="Explore your profile!"
                 />
                 <DropdownItem
-                    to={MY_MEETUPS}
-                    title="My Meet Ups"
+                    to={MY_MEETUPS_SUBSCRIBER}
+                    title="My Meetups (subscribed)"
                     description="View all the meetings you have subscribed to"
+                />
+                <DropdownItem
+                    to={MY_MEETUPS_OWNER}
+                    title="My Meetups (owned)"
+                    description="View all the meetings you own"
                 />
                 <hr />
                 <div
