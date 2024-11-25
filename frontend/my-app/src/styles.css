@@ -14,8 +14,10 @@
     --dropdown-shadow: rgba(0, 0, 0, 0.2);
     --user-info-hover-bg-light: #d0d0d0; /* Более темный цвет при наведении на user-info в светлой теме */
     --user-info-hover-bg-dark: #21272e;
-    --button-bg-hover: red; /*изменить*/
-    --button-light-muted-bg: red;
+    --button-bg-hover: #2ab051;
+    --button-light-muted-bg: #2ab051;
+    --primary-link: #1c8139;
+    --modal-overlay: rgba(0, 0, 0, 0.5);
 }
 
 [data-theme='dark'] {
@@ -174,12 +176,24 @@ a {
     text-align: center;
 }
 
-.create-meeting-button {
+.create-meeting-button, .sign-button, .join-meeting-button {
     padding: 12px 80px;
     background-color: var(--button-bg);
     color: var(--button-text);
     border: 2px solid var(--button-border);
     border-radius: 8px;
+    cursor: pointer;
+}
+.sign-button {
+    margin-top: 8px;
+}
+
+.sign-in-link {
+    color: var(--primary-link);
+    font-weight: bold; /* Жирный текст */
+    text-decoration: underline; /* Подчеркивание текста */
+    margin-top: 16px;
+    display: inline-block;
     cursor: pointer;
 }
 
@@ -245,6 +259,11 @@ a {
     width: 100%;
 }
 
+.meetup-info p {
+    text-align: left;
+}
+
+
 .pagination {
     display: flex;
     justify-content: center;
@@ -295,15 +314,15 @@ a {
     margin: 15% auto;
     padding: 20px;
     border-radius: 8px;
-    width: 300px;
+    width: 320px;
     text-align: center;
     position: relative;
 }
 
 .modal-close {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 0;
+    right: 5px;
     font-size: 20px;
     cursor: pointer;
 }
@@ -353,6 +372,35 @@ a {
     flex-direction: column;
     gap: 8px;
 }
+
+/* Стили для input полей в формах */
+.input-group input {
+    flex: 1; /* Чтобы input занимал оставшееся пространство */
+    padding: 8px 8px;
+    border: 2px solid var(--button-border-dark);
+    border-radius: 8px;
+    background-color: var(--background);
+    color: var(--text);
+    font-size: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Стиль при фокусе на input поле */
+.input-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 5px var(--primary);
+    outline: none;
+}
+
+.input-group label {
+    color: var(--text); /* Устанавливаем цвет в соответствии с темой */
+    display: inline-block; /* Чтобы можно было применить ширину */
+    width: 100px; /* Пример: фиксированная ширина, можно настроить под ваш контент */
+    margin-right: 10px;
+    font-weight: bold;
+    text-align: left;
+}
+
 
 .profile-edit-form input,
 textarea {
@@ -428,4 +476,71 @@ textarea {
     border-radius: 8px;
     font-size: 14px;
     text-align: center;
+}
+
+.sign-title {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--text);
+}
+
+.sign-subtitle {
+    font-size: 18px;
+    margin-bottom: 24px;
+    color: var(--text);
+}
+
+.sign-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Высота на весь экран */
+    background-color: var(--background);
+}
+
+.sign-form {
+    width: 320px;
+    margin: 0 auto;
+    background-color: var(--header-footer);
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+
+.sign-button:hover {
+    background-color: var(--button-bg-hover);
+}
+
+.forgot-password-link {
+    display: block;
+    margin-top: 16px;
+    color: var(--primary-link);
+    text-decoration: none;
+    background: none;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.forgot-password-link:hover {
+    text-decoration: underline;
+}
+
+/* Стили для модального окна */
+.logout-modal {
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-overlay);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
