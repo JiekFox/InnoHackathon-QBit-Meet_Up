@@ -1,0 +1,476 @@
+:root {
+    --background-dark: #0d1117;
+    --header-footer-dark: #151b23;
+    --background-light: #f5f5f5;
+    --header-footer-light: #e6e6e6;
+    --text-dark: #ffffff;
+    --text-light: #333333;
+    --primary: #3a6ff7;
+    --button-bg-light: #1c8139; /* Зеленый цвет для основных кнопок в светлой теме */
+    --button-bg-dark: #151b23;
+    --button-border-dark: #10373d;
+    --button-text: #ffffff;
+    --dropdown-bg: #ffffff;
+    --dropdown-shadow: rgba(0, 0, 0, 0.2);
+    --user-info-hover-bg-light: #d0d0d0; /* Более темный цвет при наведении на user-info в светлой теме */
+    --user-info-hover-bg-dark: #21272e;
+    --button-bg-hover: red; /*изменить*/
+    --button-light-muted-bg: red;
+}
+
+[data-theme='dark'] {
+    --background: var(--background-dark);
+    --header-footer: var(--header-footer-dark);
+    --text: var(--text-dark);
+    --button-bg: var(--button-bg-dark);
+    --button-border: var(--button-border-dark);
+    --dropdown-bg: #1c242c;
+    --dropdown-shadow: rgba(255, 255, 255, 0.1);
+    --user-info-hover-bg: var(--user-info-hover-bg-dark);
+    --button-light-bg: var(--button-bg-light);
+}
+
+[data-theme='light'] {
+    --background: var(--background-light);
+    --header-footer: var(--header-footer-light);
+    --text: var(--text-light);
+    --button-bg: var(--button-bg-light);
+    --button-border: #d9d9d9;
+    --user-info-hover-bg: var(--user-info-hover-bg-light);
+    --button-light-bg: #72ed72;
+}
+body {
+    margin: 0;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+}
+
+.header,
+.footer {
+    padding: 16px 48px;
+    background-color: var(--header-footer);
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header .container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.header .controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto;
+    /*position: absolute;*/
+    right: 48px;
+}
+
+.control-button {
+    padding: 8px 16px;
+    background-color: var(--button-light-bg);
+    color: var(--button-text);
+    border: 2px solid var(--button-border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Обновленный цвет для кнопок смены языка и темы */
+.theme-button,
+.language-button {
+    background-color: var(--button-light-muted-bg);
+    color: var(--button-text);
+    border: 2px solid var(--button-border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 12px;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.user-info:hover {
+    background-color: var(--user-info-hover-bg);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 220px;
+    background-color: var(--dropdown-bg);
+    box-shadow: 0 8px 16px var(--dropdown-shadow);
+    border-radius: 8px;
+    padding: 16px;
+    display: none;
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+    transform: translateY(10px);
+    opacity: 0;
+    z-index: 1000;
+}
+
+.user-info:hover .user-dropdown {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    margin: 12px 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--user-info-hover-bg);
+}
+
+.dropdown-item a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: normal;
+    display: block; /* Ссылка занимает всю строку */
+}
+
+.dropdown-description {
+    font-size: 12px;
+    color: gray;
+    display: block; /* Текст на новой строке */
+}
+
+.main-content {
+    padding: 24px 48px;
+    background-color: var(--background);
+    text-align: center;
+    min-height: 77.4vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.create-meeting-button {
+    padding: 12px 80px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: 2px solid var(--button-border);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.filter-bar > .search-input {
+    padding: 8px;
+    /*background-color: var(--header-footer);*/
+    background-color: #ffffff;
+    color: var(--text);
+    border: 1px solid var(--button-border-dark);
+    border-radius: 50px;
+    width: 300px;
+}
+
+.filter-bar > .select {
+    padding: 8px;
+    background-color: var(--header-footer);
+    color: var(--text);
+    border: 1px solid var(--button-border-dark);
+    border-radius: 4px;
+}
+
+.meetups {
+    background-color: var(--header-footer);
+    padding: 20px;
+}
+.meetup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+}
+
+.meetup-card {
+    background-color: var(--background);
+    padding: 16px;
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+}
+
+.meetup-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Убираем анимацию для внутренних элементов карточки */
+.meetup-card > * {
+    transition: none !important;
+}
+
+.meetup-card img,
+.meetup-card h3,
+.meetup-card p {
+    transition: none !important;
+    transform: none !important;
+}
+.meetup-card img {
+    width: 100%;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 32px;
+}
+
+.pagination > a {
+    padding: 8px 12px;
+    color: var(--primary);
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.pagination > a:hover {
+    background-color: var(--button-bg);
+}
+
+.footer {
+    text-align: center;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer > .credits {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text);
+}
+
+/* Styles for Logout Modal */
+.logout-modal {
+    /*display: none;*/
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: var(--dropdown-bg);
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.button-decline,
+.button-confirm {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button-decline {
+    background-color: #c0c0c0;
+}
+
+.button-confirm {
+    background-color: #1c8139;
+    color: #ffffff;
+}
+
+.intro {
+    margin: 100px 0;
+}
+.profile-edit-form {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: flex-start;
+}
+
+.profile-edit-form .profile-form {
+    display: flex;
+    /*flex: 1;*/
+    gap: 32px;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.profile-edit-form .form-fields {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    gap: 16px;
+}
+
+.profile-edit-form .input-row {
+    display: flex;
+    gap: 32px;
+}
+
+.profile-edit-form .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+}
+.profile-edit-form .input-row .input-group {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+}
+
+.profile-edit-form input,
+textarea {
+    padding: 8px;
+    border: 1px solid var(--button-border);
+    border-radius: 8px;
+    background-color: var(--background);
+    color: var(--text);
+    font-size: 14px;
+    width: 100%;
+}
+
+.profile-edit-form textarea {
+    resize: none;
+    height: 80px;
+}
+
+.profile-edit-form .save-button {
+    padding: 10px 16px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: 1px solid var(--button-border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    align-self: flex-start;
+}
+
+.profile-edit-form .save-button:hover {
+    background-color: var(--button-bg-hover);
+}
+
+.profile-edit-form .photo-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 40%;
+}
+
+.profile-edit-form .photo-preview {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background-color: var(--header-footer);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.profile-edit-form .photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-edit-form .placeholder {
+    color: var(--text);
+    font-size: 14px;
+    text-align: center;
+}
+
+.profile-edit-form .photo-input {
+    display: none;
+}
+
+.profile-edit-form .photo-upload-label {
+    cursor: pointer;
+    padding: 8px 16px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+}
+
+@media (max-width: 1200px) {
+    .profile-edit-form .photo-preview {
+        width: 200px;
+        height: 200px;
+    }
+
+    #detail {
+        margin: 80px 8%;
+    }
+}
+
+@media (max-width: 700px) {
+    .profile-edit-form .photo-preview {
+        width: 100px;
+        height: 100px;
+    }
+
+    #detail {
+        margin: 40px 4%;
+    }
+}
