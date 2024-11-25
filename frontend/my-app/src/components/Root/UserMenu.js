@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import DropdownItem from './DropdownItem';
 import LogoutModal from '../LogoutModal';
 import icon from '../../assets/img/icon.png';
-import {MY_MEETUPS, MY_MEETUPS_OWNER, MY_MEETUPS_SUBSCRIBER, PROFILE} from '../../constant/router';
+import {
+    MY_MEETUPS_OWNER,
+    MY_MEETUPS_SUBSCRIBER,
+    PROFILE
+} from '../../constant/router';
 
 export default function UserMenu({ userName }) {
     const [showLogoutModal, setShowLogoutModal] = useState(false);

@@ -1,4 +1,4 @@
-import {createBrowserRouter, Outlet, RouterProvider} from 'react-router-dom';
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { ErrorPage } from '../page/ErrorPage/ErrorPage';
 import Root from './Root/Root';
 import Home from '../page/Home';
@@ -10,14 +10,14 @@ import {
     PROFILE,
     SIGN_IN,
     SIGN_UP
-} from "../constant/router";
+} from '../constant/router';
 import Profile from '../page/Profile';
 import MyMeetups from '../page/MyMeetups';
 import MyMeetupsSubscriber from '../page/MyMeetupsSubscriber';
 import MyMeetupsOwner from '../page/MyMeetupsOwner';
-import MeetupDetails from "../page/MeetupDetails";
-import SignIn from "../page/SignIn";
-import SignUp from "../page/SignUp";
+import MeetupDetails from '../page/MeetupDetails';
+import SignIn from '../page/SignIn';
+import SignUp from '../page/SignUp';
 
 function Router() {
     const router = createBrowserRouter([
@@ -49,12 +49,12 @@ function Router() {
                         },
                         {
                             index: true,
-                            element: <MyMeetups/>
-                        },
+                            element: <MyMeetups />
+                        }
                     ]
                 },
                 {
-                    path: MEETUP_DETAILS +'/:id',
+                    path: MEETUP_DETAILS + '/:id',
                     element: <MeetupDetails />
                 },
                 {
@@ -65,7 +65,6 @@ function Router() {
                     path: SIGN_UP,
                     element: <SignUp />
                 }
-
             ]
         }
     ]);

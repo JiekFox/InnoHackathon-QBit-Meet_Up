@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState } from 'react';
 
 export default function SignIn() {
     const [isModalOpen, setModalOpen] = useState(false);
@@ -20,8 +19,14 @@ export default function SignIn() {
                     <label htmlFor="password">Password</label>
                     <input type="password" id="password" name="password" />
                 </div>
-                <button type="submit" className="sign-button">Sign In</button>
-                <button type="button" className="forgot-password-link" onClick={openModal}>
+                <button type="submit" className="sign-button">
+                    Sign In
+                </button>
+                <button
+                    type="button"
+                    className="forgot-password-link"
+                    onClick={openModal}
+                >
                     Forgot password?
                 </button>
             </form>
@@ -29,15 +34,25 @@ export default function SignIn() {
             {isModalOpen && (
                 <div className="logout-modal">
                     <div className="modal-content">
-                        <span className="modal-close" onClick={closeModal}>&times;</span>
+                        <span className="modal-close" onClick={closeModal}>
+                            &times;
+                        </span>
                         <form>
                             <div className="input-group">
                                 <label htmlFor="reset-email">Email</label>
                                 <input type="email" id="reset-email" name="email" />
                             </div>
                             <div className="modal-buttons">
-                                <button type="button" className="button-decline" onClick={closeModal}>Cancel</button>
-                                <button type="submit" className="button-confirm">Reset Password</button>
+                                <button
+                                    type="button"
+                                    className="button-decline"
+                                    onClick={closeModal}
+                                >
+                                    Cancel
+                                </button>
+                                <button type="submit" className="button-confirm">
+                                    Reset Password
+                                </button>
                             </div>
                         </form>
                     </div>

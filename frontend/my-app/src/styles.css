@@ -176,7 +176,9 @@ a {
     text-align: center;
 }
 
-.create-meeting-button, .sign-button, .join-meeting-button {
+.create-meeting-button,
+.sign-button,
+.join-meeting-button {
     padding: 12px 80px;
     background-color: var(--button-bg);
     color: var(--button-text);
@@ -262,7 +264,6 @@ a {
 .meetup-info p {
     text-align: left;
 }
-
 
 .pagination {
     display: flex;
@@ -382,7 +383,9 @@ a {
     background-color: var(--background);
     color: var(--text);
     font-size: 16px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 /* Стиль при фокусе на input поле */
@@ -400,7 +403,6 @@ a {
     font-weight: bold;
     text-align: left;
 }
-
 
 .profile-edit-form input,
 textarea {
@@ -510,7 +512,6 @@ textarea {
     flex-direction: column;
     gap: 16px;
 }
-
 
 .sign-button:hover {
     background-color: var(--button-bg-hover);
