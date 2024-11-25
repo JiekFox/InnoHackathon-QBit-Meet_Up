@@ -28,7 +28,7 @@ export default function MyMeetups() {
     };
 
     return (
-        <main className="main-content">
+        <>
             <h2>Your Meetings</h2>
             <section className="meetups">
                 <div className="filter-bar">
@@ -65,6 +65,6 @@ export default function MyMeetups() {
 
                 <Pagination />
             </section>
-        </main>
+        </>
     );
 }

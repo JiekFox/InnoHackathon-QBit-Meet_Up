@@ -8,6 +8,7 @@ export default function Profile() {
         about: '',
         photo: null
     });
+
     const onSave = data => {
         console.log(data);
     };
@@ -33,27 +34,29 @@ export default function Profile() {
         <div className="profile-edit-form">
             <form onSubmit={handleSubmit} className="profile-form">
                 <div className="form-fields">
-                    <div className="input-group">
-                        <label htmlFor="name">Name</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            placeholder="Value"
-                        />
-                    </div>
-                    <div className="input-group">
-                        <label htmlFor="surname">Surname</label>
-                        <input
-                            type="text"
-                            id="surname"
-                            name="surname"
-                            value={formData.surname}
-                            onChange={handleChange}
-                            placeholder="Value"
-                        />
+                    <div className="input-row">
+                        <div className="input-group">
+                            <label htmlFor="name">Name</label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                placeholder="Value"
+                            />
+                        </div>
+                        <div className="input-group">
+                            <label htmlFor="surname">Surname</label>
+                            <input
+                                type="text"
+                                id="surname"
+                                name="surname"
+                                value={formData.surname}
+                                onChange={handleChange}
+                                placeholder="Value"
+                            />
+                        </div>
                     </div>
                     <div className="input-group">
                         <label htmlFor="email">Email</label>

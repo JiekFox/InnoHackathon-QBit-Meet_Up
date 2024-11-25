@@ -17,7 +17,7 @@ export default function Root() {
                     userName="User Name"
                 />
             </header>
-            <main id="detail">
+            <main id="detail" className="main-content">
                 <Outlet />
             </main>
             <footer>

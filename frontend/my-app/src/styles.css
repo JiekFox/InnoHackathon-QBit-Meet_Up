@@ -35,7 +35,7 @@
     --header-footer: var(--header-footer-light);
     --text: var(--text-light);
     --button-bg: var(--button-bg-light);
-    --button-border: none;
+    --button-border: #d9d9d9;
     --user-info-hover-bg: var(--user-info-hover-bg-light);
     --button-light-bg: #72ed72;
 }
@@ -334,24 +334,43 @@ a {
 .intro {
     margin: 100px 0;
 }
-
 .profile-edit-form {
     display: flex;
-    gap: 32px;
+    justify-content: space-between;
+    width: 100%;
     align-items: flex-start;
-    font-family: 'Inter', sans-serif;
+}
+
+.profile-edit-form .profile-form {
+    display: flex;
+    /*flex: 1;*/
+    gap: 32px;
+    width: 100%;
+    justify-content: space-around;
 }
 
 .profile-edit-form .form-fields {
     display: flex;
     flex-direction: column;
+    width: 50%;
     gap: 16px;
+}
+
+.profile-edit-form .input-row {
+    display: flex;
+    gap: 32px;
 }
 
 .profile-edit-form .input-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    align-items: flex-start;
+}
+.profile-edit-form .input-row .input-group {
+    display: flex;
+    gap: 16px;
+    width: 100%;
 }
 
 .profile-edit-form input,
@@ -362,6 +381,7 @@ textarea {
     background-color: var(--background);
     color: var(--text);
     font-size: 14px;
+    width: 100%;
 }
 
 .profile-edit-form textarea {
@@ -377,6 +397,7 @@ textarea {
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
+    align-self: flex-start;
 }
 
 .profile-edit-form .save-button:hover {
@@ -387,12 +408,14 @@ textarea {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 16px;
+    width: 40%;
 }
 
 .profile-edit-form .photo-preview {
-    width: 120px;
-    height: 120px;
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
     background-color: var(--header-footer);
     display: flex;
@@ -416,9 +439,6 @@ textarea {
 .profile-edit-form .photo-input {
     display: none;
 }
-.profile-edit-form .profile-form {
-    width: 100%;
-}
 
 .profile-edit-form .photo-upload-label {
     cursor: pointer;
@@ -428,4 +448,26 @@ textarea {
     border-radius: 8px;
     font-size: 14px;
     text-align: center;
+}
+
+@media (max-width: 1200px) {
+    .profile-edit-form .photo-preview {
+        width: 200px;
+        height: 200px;
+    }
+
+    #detail {
+        margin: 80px 8%;
+    }
+}
+
+@media (max-width: 700px) {
+    .profile-edit-form .photo-preview {
+        width: 100px;
+        height: 100px;
+    }
+
+    #detail {
+        margin: 40px 4%;
+    }
 }
