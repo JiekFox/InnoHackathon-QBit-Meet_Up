@@ -172,6 +172,9 @@ a {
     padding: 24px 48px;
     background-color: var(--background);
     text-align: center;
+    min-height: 77.4vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .create-meeting-button {
