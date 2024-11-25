@@ -1,1 +1,1 @@
-innosite: gunicorn innosite.wsgi
+web: cd backend && gunicorn innosite.wsgi
