@@ -25,7 +25,7 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'meetupapp.pythonanywhere.com',
+    'innohackathon-qbit-meet-up.onrender.com',
     '127.0.0.1'
 ]
 
