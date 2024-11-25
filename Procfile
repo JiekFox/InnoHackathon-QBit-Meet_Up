@@ -1,1 +1,1 @@
-web: gunicorn backend.innosite.wsgi
+web: gunicorn innosite.wsgi
