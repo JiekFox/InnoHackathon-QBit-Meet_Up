@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { NavLink } from "react-router-dom";
-import { SIGN_UP } from "../constant/router";
+import { NavLink } from 'react-router-dom';
+import { SIGN_UP } from '../constant/router';
 
 export default function SignIn() {
     const [isModalOpen, setModalOpen] = useState(false);
@@ -39,33 +39,37 @@ export default function SignIn() {
             </form>
 
             {isModalOpen && (
-              <div className='forgot-password'>
-                <div className="logout-modal">
-                    <div className="modal-content">
-                        <span className="modal-close" onClick={closeModal}>
-                            &times;
-                        </span>
-                        <form>
-                            <div className="input-group">
-                                <label htmlFor="reset-email">Email</label>
-                                <input type="email" id="reset-email" name="email" />
-                            </div>
-                            <div className="modal-buttons">
-                                <button
-                                    type="button"
-                                    className="button-decline"
-                                    onClick={closeModal}
-                                >
-                                    Cancel
-                                </button>
-                                <button type="submit" className="button-confirm">
-                                    Reset Password
-                                </button>
-                            </div>
-                        </form>
+                <div className="forgot-password">
+                    <div className="logout-modal">
+                        <div className="modal-content">
+                            <span className="modal-close" onClick={closeModal}>
+                                &times;
+                            </span>
+                            <form>
+                                <div className="input-group">
+                                    <label htmlFor="reset-email">Email</label>
+                                    <input
+                                        type="email"
+                                        id="reset-email"
+                                        name="email"
+                                    />
+                                </div>
+                                <div className="modal-buttons">
+                                    <button
+                                        type="button"
+                                        className="button-decline"
+                                        onClick={closeModal}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button type="submit" className="button-confirm">
+                                        Reset Password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-              </div>
             )}
         </main>
     );

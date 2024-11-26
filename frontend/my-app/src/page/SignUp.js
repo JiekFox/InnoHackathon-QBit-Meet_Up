@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { SIGN_IN } from "../constant/router";
+import { SIGN_IN } from '../constant/router';
 
 export default function SignUp() {
     return (

@@ -28,7 +28,6 @@
     --dropdown-shadow: rgba(255, 255, 255, 0.1);
     --user-info-hover-bg: var(--user-info-hover-bg-dark);
     --button-light-bg: var(--button-bg-light);
-
 }
 
 [data-theme='light'] {
@@ -50,7 +49,6 @@ a {
     color: inherit;
 }
 
-
 .body {
     margin: 0;
     font-family: 'Inter', sans-serif;
@@ -60,7 +58,7 @@ a {
     flex-direction: column;
     min-height: 100vh;
 }
-button{
+button {
     color: var(--button-text);
 }
 
@@ -219,7 +217,7 @@ button{
 .filter-bar > .search-input {
     padding: 8px;
     background-color: var(--header-footer);
-  /*  background-color: #ffffff;*/
+    /*  background-color: #ffffff;*/
     color: var(--text);
     border: 1px solid var(--button-border-dark);
     border-radius: 50px;
@@ -240,7 +238,7 @@ button{
 }
 .meetup-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 600px));
     gap: 24px;
 }
 
@@ -401,10 +399,10 @@ button{
     gap: 16px;
     width: 100%;
 }
-.sign-form p{
+.sign-form p {
     margin: 0;
 }
-.sign-form .input-group{
+.sign-form .input-group {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -673,7 +671,7 @@ textarea {
     height: 400px;
     object-fit: cover;
 }
-.meetup-details-content{
+.meetup-details-content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -688,21 +686,19 @@ textarea {
     margin-bottom: 10px;
 }
 
-.meetup-details
-.meetup-details-date,
+.meetup-details .meetup-details-date,
 .meetup-details-signed {
     font-size: 1rem;
     margin-bottom: 5px;
-
 }
-.meetup-details .meetup-details-author, h3 {
+.meetup-details .meetup-details-author,
+h3 {
     font-size: 24px;
 }
 
 .meetup-details .meetup-details-description {
     margin-top: 15px;
     font-size: 1rem;
-
 }
 
 .meetup-details .meetup-details-button {
@@ -723,6 +719,8 @@ textarea {
 .meetup-details .meetup-details-button:active {
     background-color: #1e7e34;
 }
-.home{
+
+.home {
     background: var(--header-footer);
+    padding: 20px;
 }

@@ -3,6 +3,7 @@ import { ErrorPage } from '../page/ErrorPage/ErrorPage';
 import Root from './Root/Root';
 import Home from '../page/Home';
 import {
+    CREATE_MEETUPS,
     MEETUP_DETAILS,
     MY_MEETUPS,
     MY_MEETUPS_OWNER,
@@ -18,6 +19,7 @@ import MyMeetupsOwner from '../page/MyMeetupsOwner';
 import MeetupDetails from '../page/MeetupDetails';
 import SignIn from '../page/SignIn';
 import SignUp from '../page/SignUp';
+import { CreateMeetup } from '../page/CreateMeetup';
 
 function Router() {
     const router = createBrowserRouter([
@@ -64,6 +66,10 @@ function Router() {
                 {
                     path: SIGN_UP,
                     element: <SignUp />
+                },
+                {
+                    path: CREATE_MEETUPS,
+                    element: <CreateMeetup />
                 }
             ]
         }
