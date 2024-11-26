@@ -1,52 +1,60 @@
-from rest_framework.decorators import api_view
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Meeting
-from .serializer import MeetingSerializer
 from django.http import HttpResponse
 from datetime import datetime
+from .models import Meeting
+from .serializer import MeetingSerializer
 from .utils import send_email
 
-def send_welcome_email(request):
-    subject = "Добро пожаловать!"
-    to_email = "vlisichkin2004@gmail.com"
-    context = {
-        "subject": subject,
-        "message": "Спасибо за регистрацию на нашем сайте. Мы рады вас приветствовать!",
-        "year": datetime.now().year
-    }
-    send_email(subject, to_email, "email/index.html", context)
-    return HttpResponse("Письмо отправлено")
 
-@api_view(['GET'])
-def get_meetings(request):
-    meetings = Meeting.objects.all()
-    serialized_data = MeetingSerializer(meetings, many=True).data
-    return Response(serialized_data)
+class MeetingViewSet(ModelViewSet):
+    """
+    ViewSet для управления встречами.
+    """
+    queryset = Meeting.objects.all()
+    serializer_class = MeetingSerializer
 
-@api_view(['GET', 'POST'])
-def create_meeting(request):
-    data = request.data
-    serializer = MeetingSerializer(data=data)
-    if serializer.is_valid():
-        serializer.save()
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        image = request.FILES.get('image')
+        if image and image.size > 5 * 1024 * 1024:  
+            return Response({"error": "Размер файла не должен превышать 5 MB"}, status=status.HTTP_400_BAD_REQUEST)
+
+        self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['PUT', 'DELETE'])
-def meeting_detail(request, pk):
-    try: 
-        meeting = Meeting.objects.get(pk=pk)
-    except Meeting.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    
-    if request.method == 'DELETE':
+    def destroy(self, request, *args, **kwargs):
+        meeting = self.get_object()
         meeting.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    elif request.method == 'PUT':
-        data = request.data
-        serializer = MeetingSerializer(meeting, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Встреча успешно удалена"}, status=status.HTTP_204_NO_CONTENT)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+class EmailService:
+    @staticmethod
+    def send_welcome_email(email):
+        subject = "Добро пожаловать!"
+        context = {
+            "subject": subject,
+            "message": "Спасибо за регистрацию на нашем сайте. Мы рады вас приветствовать!",
+            "year": datetime.now().year
+        }
+        send_email(subject, email, "email/index.html", context)
+        return "Письмо отправлено"
+
+from rest_framework.views import APIView
+
+class WelcomeEmailView(APIView):
+    def get(self, request):
+        email = request.query_params.get('email', 'example@example.com')
+        message = EmailService.send_welcome_email(email)
+        return Response({"message": message}, status=status.HTTP_200_OK)
