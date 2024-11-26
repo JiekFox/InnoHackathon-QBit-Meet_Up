@@ -141,6 +141,7 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
 CORS_ALLOWED_ORIGINS = [
     "https://qbit-meetup.web.app",
+    "http://localhost:3000"
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
