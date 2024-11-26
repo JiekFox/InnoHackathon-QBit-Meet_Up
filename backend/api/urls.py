@@ -1,11 +1,11 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import MeetingViewSet, WelcomeEmailView, UserRegistrationViewSet, ObtainTokenView
+from .views import MeetingViewSet, WelcomeEmailView, UserViewSet, ObtainTokenView
 from rest_framework_simplejwt import views as jwt_views
 
 router = DefaultRouter()
 router.register(r'meetings', MeetingViewSet, basename='meeting')
-router.register(r'users', UserRegistrationViewSet, basename='user-registration')
+router.register(r'users', UserViewSet, basename='user')
 
 urlpatterns = [
     path('send-email/', WelcomeEmailView.as_view(), name='send-email'),

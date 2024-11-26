@@ -20,7 +20,7 @@ class MeetingSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'email', 'photo', 'user_description']
+        fields = ['id', 'username', 'first_name','last_name','email', 'photo', 'user_description']
 
 class SignedToMeetingSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)  
@@ -63,6 +63,11 @@ class UserTokenSerializer(serializers.ModelSerializer):
 class ObtainTokenSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
+        data['username'] = self.user.username
+        refresh = self.get_token(self.user)
+        refresh['username'] = self.user.username
+        data['access'] = str(refresh.access_token)
+        data['refresh'] = str(refresh)
         user = self.user
         if user and user.id is None:
             raise serializers.ValidationError("Invalid user ID.")
