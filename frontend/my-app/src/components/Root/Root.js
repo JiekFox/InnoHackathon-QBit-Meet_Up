@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { useState } from 'react';
+import { AuthProvider } from '../../utils/AuthContext';
 
 export default function Root() {
     const [theme, setTheme] = useState('dark');
@@ -9,20 +10,20 @@ export default function Root() {
     const toggleLanguage = () => alert('Language toggled!');
 
     return (
-        <div className="body" data-theme={theme}>
-            <header>
+        <AuthProvider>
+            <div className="body" data-theme={theme}>
                 <Navbar
                     onLanguageToggle={toggleLanguage}
                     onThemeToggle={toggleTheme}
-                    userName="User Name"
                 />
-            </header>
-            <main id="detail" className="main-content">
-                <Outlet />
-            </main>
-            <footer>
-                <Footer />
-            </footer>
-        </div>
+
+                <main id="detail" className="main-content">
+                    <Outlet />
+                </main>
+                <footer>
+                    <Footer />
+                </footer>
+            </div>
+        </AuthProvider>
     );
 }

@@ -2,21 +2,30 @@ import React, { useState } from 'react';
 import DropdownItem from './DropdownItem';
 import LogoutModal from '../LogoutModal';
 import icon from '../../assets/img/icon.png';
+import { useAuth } from '../../utils/AuthContext'; // Подключаем AuthContext
 import {
     MY_MEETUPS_OWNER,
     MY_MEETUPS_SUBSCRIBER,
     PROFILE
 } from '../../constant/router';
+import { useNavigate } from 'react-router-dom'; // Для навигации
 
 export default function UserMenu({ userName }) {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const { removeToken } = useAuth(); // Получаем метод для logout
+    const navigate = useNavigate(); // Используем для переадресации
 
     const handleLogoutClick = () => {
-        setShowLogoutModal(true);
+        setShowLogoutModal(true); // Открываем модальное окно
     };
 
     const handleCloseModal = () => {
-        setShowLogoutModal(false);
+        setShowLogoutModal(false); // Закрываем модальное окно
+    };
+
+    const handleConfirmLogout = () => {
+        removeToken(); // Удаляем токен через AuthContext
+        navigate('/'); // Перенаправляем на главную страницу
     };
 
     return (
@@ -51,7 +60,7 @@ export default function UserMenu({ userName }) {
             {showLogoutModal && (
                 <LogoutModal
                     onClose={handleCloseModal}
-                    onConfirm={() => console.log('Logged out')}
+                    onConfirm={handleConfirmLogout} // Вызов функции logout
                 />
             )}
         </div>

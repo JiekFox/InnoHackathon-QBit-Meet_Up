@@ -1,8 +1,10 @@
 import UserMenu from './UserMenu';
 import { NavLink } from 'react-router-dom';
-import { BASE } from '../../constant/router';
+import { BASE, SIGN_IN } from '../../constant/router';
+import { useAuth } from '../../utils/AuthContext';
 
-export default function Navbar({ onLanguageToggle, onThemeToggle, userName }) {
+export default function Navbar({  onThemeToggle }) {
+    const { name } = useAuth();
     return (
         <header className="header">
             <div className="container">
@@ -13,7 +15,16 @@ export default function Navbar({ onLanguageToggle, onThemeToggle, userName }) {
                     <button onClick={onThemeToggle} className="control-button">
                         Change Theme
                     </button>
-                    <UserMenu userName={userName} />
+                    {name ? (
+                        <UserMenu userName={name} />
+                    ) : (
+                        <NavLink
+                            className="navbar-sign-in sign-in-link"
+                            to={SIGN_IN}
+                        >
+                            <p>Sign in.</p>
+                        </NavLink>
+                    )}
                 </div>
             </div>
         </header>

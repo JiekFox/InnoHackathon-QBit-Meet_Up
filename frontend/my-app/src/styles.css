@@ -85,6 +85,12 @@ button {
     width: 100%;
     justify-content: space-between;
 }
+.header .container .navbar-sign-in {
+    display: contents;
+}
+.header .container .navbar-sign-in p {
+    text-decoration: underline;
+}
 
 .header .controls {
     display: flex;
@@ -180,7 +186,7 @@ button {
 
 .dropdown-description {
     font-size: 12px;
-    color: gray;
+    color: grey;
     display: block; /* Текст на новой строке */
 }
 
@@ -370,6 +376,9 @@ button {
 
 .intro {
     margin: 100px 0;
+}
+.intro .description {
+    color: var(--);
 }
 .profile-edit-form {
     display: flex;
