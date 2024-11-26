@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { NavLink } from "react-router-dom";
+import { SIGN_UP } from "../constant/router";
 
 export default function SignIn() {
     const [isModalOpen, setModalOpen] = useState(false);
@@ -9,7 +11,6 @@ export default function SignIn() {
     return (
         <main className="main-content">
             <h1 className="sign-title">Log In</h1>
-            <p className="sign-subtitle">Enter your data</p>
             <form className="sign-form">
                 <div className="input-group">
                     <label htmlFor="email">Email</label>
@@ -29,9 +30,16 @@ export default function SignIn() {
                 >
                     Forgot password?
                 </button>
+                <p>
+                    You’re not with us yet?{'  '}
+                    <NavLink to={SIGN_UP} className="sign-in-link">
+                        Sign up!
+                    </NavLink>
+                </p>
             </form>
 
             {isModalOpen && (
+              <div className='forgot-password'>
                 <div className="logout-modal">
                     <div className="modal-content">
                         <span className="modal-close" onClick={closeModal}>
@@ -57,6 +65,7 @@ export default function SignIn() {
                         </form>
                     </div>
                 </div>
+              </div>
             )}
         </main>
     );

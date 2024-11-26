@@ -42,6 +42,7 @@ export default function MyMeetups() {
             <NavLink to={MY_MEETUPS_OWNER}>
                 <h1 className="title">Owner</h1>
             </NavLink>
-        </main>
+          </>
+
     );
 }

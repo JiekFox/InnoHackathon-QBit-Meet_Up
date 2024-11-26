@@ -28,6 +28,7 @@
     --dropdown-shadow: rgba(255, 255, 255, 0.1);
     --user-info-hover-bg: var(--user-info-hover-bg-dark);
     --button-light-bg: var(--button-bg-light);
+
 }
 
 [data-theme='light'] {
@@ -49,6 +50,7 @@ a {
     color: inherit;
 }
 
+
 .body {
     margin: 0;
     font-family: 'Inter', sans-serif;
@@ -57,6 +59,9 @@ a {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+}
+button{
+    color: var(--button-text);
 }
 
 .header,
@@ -213,8 +218,8 @@ a {
 
 .filter-bar > .search-input {
     padding: 8px;
-    /*background-color: var(--header-footer);*/
-    background-color: #ffffff;
+    background-color: var(--header-footer);
+  /*  background-color: #ffffff;*/
     color: var(--text);
     border: 1px solid var(--button-border-dark);
     border-radius: 50px;
@@ -235,7 +240,7 @@ a {
 }
 .meetup-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 24px;
 }
 
@@ -319,7 +324,7 @@ a {
     margin: 15% auto;
     padding: 20px;
     border-radius: 8px;
-    width: 320px;
+    width: 400px;
     text-align: center;
     position: relative;
 }
@@ -396,10 +401,18 @@ a {
     gap: 16px;
     width: 100%;
 }
-
+.sign-form p{
+    margin: 0;
+}
+.sign-form .input-group{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
 /* Стили для input полей в формах */
-.input-group input {
-    flex: 1; /* Чтобы input занимал оставшееся пространство */
+.sign-form .input-group input {
+    width: 95%;
     padding: 8px 8px;
     border: 2px solid var(--button-border-dark);
     border-radius: 8px;
@@ -412,17 +425,15 @@ a {
 }
 
 /* Стиль при фокусе на input поле */
-.input-group input:focus {
+.sign-form .input-group input:focus {
     border-color: var(--primary);
     box-shadow: 0 0 5px var(--primary);
     outline: none;
 }
 
-.input-group label {
+.sign-form .input-group label {
     color: var(--text); /* Устанавливаем цвет в соответствии с темой */
     display: inline-block; /* Чтобы можно было применить ширину */
-    width: 100px; /* Пример: фиксированная ширина, можно настроить под ваш контент */
-    margin-right: 10px;
     font-weight: bold;
     text-align: left;
 }
@@ -590,4 +601,128 @@ textarea {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 0;
+}
+
+.pagination-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid var(--button-border);
+    border-radius: 4px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.pagination-btn:hover {
+    background-color: var(--button-bg-hover);
+}
+
+.pagination-btn.active {
+    background-color: var(--button-bg-active);
+    color: var(--button-text-active);
+    cursor: default;
+}
+
+.pagination-btn.disabled {
+    background-color: var(--button-disabled-bg);
+    color: var(--button-disabled-text);
+    cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--text);
+}
+.forgot-password .input-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.meetup-details {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.meetup-details .meetup-details-card {
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: var(--header-footer);
+    padding: 20px;
+}
+
+.meetup-details .meetup-details-image img {
+    /*width: 100%;
+    height: auto;*/
+    height: 400px;
+    object-fit: cover;
+}
+.meetup-details-content{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.meetup-details .meetup-details-content {
+    padding: 20px;
+}
+
+.meetup-details .meetup-details-title {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.meetup-details
+.meetup-details-date,
+.meetup-details-signed {
+    font-size: 1rem;
+    margin-bottom: 5px;
+
+}
+.meetup-details .meetup-details-author, h3 {
+    font-size: 24px;
+}
+
+.meetup-details .meetup-details-description {
+    margin-top: 15px;
+    font-size: 1rem;
+
+}
+
+.meetup-details .meetup-details-button {
+    padding: 10px 15px;
+    background-color: var(--button-bg);
+
+    border: 2px solid var(--button-border);
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.meetup-details .meetup-details-button:hover {
+    background-color: #218838;
+}
+
+.meetup-details .meetup-details-button:active {
+    background-color: #1e7e34;
+}
+.home{
+    background: var(--header-footer);
 }

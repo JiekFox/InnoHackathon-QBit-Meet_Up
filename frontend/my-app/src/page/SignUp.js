@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom';
+import { SIGN_IN } from "../constant/router";
 
 export default function SignUp() {
     return (
         <main className="main-content">
             <h1 className="sign-title">Sign Up</h1>
-            <p className="sign-subtitle">Enter your data</p>
+
             <form className="sign-form">
                 <div className="input-group">
                     <label htmlFor="name">Name</label>
@@ -26,9 +27,9 @@ export default function SignUp() {
                     Submit
                 </button>
                 <p>
-                    Or you want to{' '}
-                    <NavLink to="/sign-in" className="sign-in-link">
-                        Sign In?
+                    Already registered?{' '}
+                    <NavLink to={SIGN_IN} className="sign-in-link">
+                        Sign in.
                     </NavLink>
                 </p>
             </form>
