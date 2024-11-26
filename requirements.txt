@@ -28,3 +28,4 @@ typing_extensions==4.3.0
 tzdata==2024.2
 urllib3==1.26.20
 whitenoise==6.8.2
+python-telegram-bot==13.7
