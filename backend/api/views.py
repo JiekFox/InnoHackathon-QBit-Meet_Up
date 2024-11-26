@@ -3,11 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
 from .models import Meeting, SignedToMeeting, UserProfile
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.decorators import action
-from .serializers import MeetingSerializer, UserRegistrationSerializer, ObtainTokenSerializer
-from rest_framework_simplejwt.tokens import AccessToken
+from .serializers import MeetingSerializer, UserRegistrationSerializer, ObtainTokenSerializer, UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .utils import send_email
 
@@ -95,23 +94,97 @@ class WelcomeEmailView(APIView):
         message = EmailService.send_welcome_email(email)
         return Response({"message": message}, status=status.HTTP_200_OK)
 
-class UserRegistrationViewSet(ModelViewSet):
+class UserViewSet(ModelViewSet):
     """
-    ViewSet для регистрации пользователей
+    ViewSet для управления пользователями и регистрации.
     """
     queryset = UserProfile.objects.all()
-    serializer_class = UserRegistrationSerializer
+    serializer_class = UserSerializer
+    #permission_classes = [IsAuthenticated]
 
-    @action(detail=False, methods=['post'], name="Register User")
+    def get_permissions(self):
+        """
+        Переопределение прав доступа для конкретных действий.
+        """
+        if self.action == 'register':
+            return [AllowAny()]
+        return super().get_permissions()
+
+    def get_serializer_class(self):
+        """
+        Возвращает правильный сериализатор для текущего действия.
+        """
+        if self.action == 'register':
+            return UserRegistrationSerializer
+        return super().get_serializer_class()
+
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def register(self, request):
-        serializer = UserRegistrationSerializer(data=request.data)
+        """
+        Регистрация нового пользователя.
+        """
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            return Response(
-                {"message": "User created successfully", "user_id": user.id},
-                status=status.HTTP_201_CREATED
-            )
+
+            token_serializer = ObtainTokenSerializer(data={
+                'username': user.username,
+                'password': request.data.get('password')
+            })
+
+            if token_serializer.is_valid():
+                tokens = token_serializer.validated_data
+                return Response(
+                    {
+                        "message": "User registered successfully",
+                        "user_id": user.id,
+                        "username": user.username,
+                        "access_token": tokens.get('access'),
+                        "refresh_token": tokens.get('refresh'),
+                    },
+                    status=status.HTTP_201_CREATED
+                )
+            else:
+                return Response(
+                    {"error": "Token generation failed", "details": token_serializer.errors},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def list(self, request, *args, **kwargs):
+        """
+        Получение списка пользователей.
+        """
+        if not request.user.is_staff:
+            return Response(
+                {"error": "Only staff can view the list of users."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        """
+        Создание нового пользователя (доступно только админам).
+        """
+        if not request.user.is_staff:
+            return Response(
+                {"error": "Only staff can create new users."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().create(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Удаление пользователя (только для администраторов).
+        """
+        if not request.user.is_staff:
+            return Response(
+                {"error": "Only staff can delete users."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().destroy(request, *args, **kwargs)
     
 
 class ObtainTokenView(TokenObtainPairView):
