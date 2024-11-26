@@ -1,6 +1,7 @@
 from flask import Flask, request
 import telegram
 import os
+
 from dotenv import load_dotenv  # Импортируем load_dotenv
 
 # Загружаем переменные из .env
@@ -16,66 +17,26 @@ if not BOT_TOKEN:
 
 bot = telegram.Bot(token=BOT_TOKEN)
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
 # Маршрут для Telegram Webhook
 @app.route(f"/webhook/{BOT_TOKEN}", methods=["POST"])
 def webhook():
     try:
-        # Получаем обновление от Telegram
+        # Лог входящих данных
+        logging.info("Получен запрос от Telegram.")
         update = telegram.Update.de_json(request.get_json(force=True), bot)
+        logging.info(f"Обновление: {update}")
 
-        # Логика обработки команд
-        if update.message:
-            if update.message.text == "/start":
-                # Отправляем приветствие и клавиатуру
-                keyboard = telegram.ReplyKeyboardMarkup(
-                    [["Все юзеры", "Все митапы"], ["Выбор митапа"]],
-                    resize_keyboard=True
-                )
-                update.message.reply_text("Добро пожаловать! [debug] Выберите действие:", reply_markup=keyboard)
+        # Обработка сообщения
+        if update.message and update.message.text == "/start":
+            update.message.reply_text("Привет! Бот работает.")
 
-            elif update.message.text == "Все юзеры":
-                # Запрос к API пользователей
-                api_url = os.getenv("BACKEND_URL", "") + "/users/"
-                response = requests.get(api_url)
-                if response.ok:
-                    users = response.json()
-                    message = "Пользователи:\n" + "\n".join([f"- {user['name']}" for user in users[:5]])
-                else:
-                    message = f"Ошибка API: {response.status_code}"
-                update.message.reply_text(message)
-
-            elif update.message.text == "Все митапы":
-                # Запрос к API митапов
-                api_url = os.getenv("BACKEND_URL", "") + "/meetings/"
-                response = requests.get(api_url)
-                if response.ok:
-                    meetings = response.json()
-                    message = "Митапы:\n" + "\n".join([f"- {m['title']}" for m in meetings[:5]])
-                else:
-                    message = f"Ошибка API: {response.status_code}"
-                update.message.reply_text(message)
-
-            elif update.message.text == "Выбор митапа":
-                # Запрос на ввод ID митапа
-                update.message.reply_text("Введите ID митапа для получения информации:")
-
-            elif update.message.text.isdigit():
-                # Запрос конкретного митапа по ID
-                api_url = os.getenv("BACKEND_URL", "") + f"/meetings/{update.message.text}"
-                response = requests.get(api_url)
-                if response.ok:
-                    meeting = response.json()
-                    message = f"Митап:\nНазвание: {meeting['title']}\nОписание: {meeting['description']}"
-                else:
-                    message = f"Ошибка API: {response.status_code}"
-                update.message.reply_text(message)
-
-            else:
-                # Обработка неизвестной команды
-                update.message.reply_text("Я не понял команду. Пожалуйста, выберите действие из меню.")
         return "OK", 200
     except Exception as e:
-        print(f"Ошибка: {e}")
+        logging.error(f"Ошибка обработки: {e}")
         return "Internal Server Error", 500
 
 if __name__ == "__main__":
