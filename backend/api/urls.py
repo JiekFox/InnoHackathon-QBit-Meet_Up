@@ -5,7 +5,7 @@ from rest_framework_simplejwt import views as jwt_views
 
 router = DefaultRouter()
 router.register(r'meetings', MeetingViewSet, basename='meeting')
-router.register(r'auth/register', UserRegistrationViewSet, basename='user-registration')
+router.register(r'users', UserRegistrationViewSet, basename='user-registration')
 
 urlpatterns = [
     path('send-email/', WelcomeEmailView.as_view(), name='send-email'),
