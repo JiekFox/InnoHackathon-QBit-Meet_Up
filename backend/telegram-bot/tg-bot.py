@@ -21,23 +21,21 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-# Маршрут для Telegram Webhook
 @app.route(f"/webhook/{BOT_TOKEN}", methods=["POST"])
 def webhook():
     try:
-        # Лог входящих данных
-        logging.info("Получен запрос от Telegram.")
         update = telegram.Update.de_json(request.get_json(force=True), bot)
         logging.info(f"Обновление: {update}")
 
-        # Обработка сообщения
         if update.message and update.message.text == "/start":
-            update.message.reply_text("Привет! Бот работает.")
+            # Используем bot.send_message для синхронной обработки
+            bot.send_message(chat_id=update.message.chat.id, text="Привет! Бот работает.")
 
         return "OK", 200
     except Exception as e:
         logging.error(f"Ошибка обработки: {e}")
         return "Internal Server Error", 500
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
