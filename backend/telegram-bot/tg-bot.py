@@ -1,41 +1,37 @@
-from flask import Flask, request
-import telegram
+from fastapi import FastAPI, Request
+from telegram import Bot, Update
+from dotenv import load_dotenv
 import os
+import logging
 
-from dotenv import load_dotenv  # Импортируем load_dotenv
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
 
-# Загружаем переменные из .env
+# Загрузка переменных окружения
 load_dotenv()
 
-# Инициализация Flask приложения
-app = Flask(__name__)
+# Создание FastAPI приложения
+app = FastAPI()
 
-# Получаем токен бота из переменных окружения
+# Инициализация Telegram Bot
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
     raise ValueError("Не указан токен бота в переменных окружения!")
+bot = Bot(token=BOT_TOKEN)
 
-bot = telegram.Bot(token=BOT_TOKEN)
-
-import logging
-
-logging.basicConfig(level=logging.INFO)
-
-@app.route(f"/webhook/{BOT_TOKEN}", methods=["POST"])
-def webhook():
+@app.post(f"/webhook/{BOT_TOKEN}")
+async def webhook(request: Request):
     try:
-        update = telegram.Update.de_json(request.get_json(force=True), bot)
+        # Получение обновления от Telegram
+        data = await request.json()
+        update = Update.de_json(data, bot)
         logging.info(f"Обновление: {update}")
 
         if update.message and update.message.text == "/start":
-            # Используем bot.send_message для синхронной обработки
-            bot.send_message(chat_id=update.message.chat.id, text="Привет! Бот работает.")
+            # Асинхронная отправка сообщения
+            await bot.send_message(chat_id=update.message.chat.id, text="Привет! Бот работает.")
 
-        return "OK", 200
+        return {"ok": True}
     except Exception as e:
         logging.error(f"Ошибка обработки: {e}")
-        return "Internal Server Error", 500
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+        return {"ok": False, "error": str(e)}
