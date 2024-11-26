@@ -10,9 +10,6 @@ export default function Navbar({ onLanguageToggle, onThemeToggle, userName }) {
                     <h1 className="title">Meet Up!</h1>
                 </NavLink>
                 <div className="controls">
-                    <button onClick={onLanguageToggle} className="control-button">
-                        Change Language
-                    </button>
                     <button onClick={onThemeToggle} className="control-button">
                         Change Theme
                     </button>
