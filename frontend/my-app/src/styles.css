@@ -16,7 +16,7 @@
     --user-info-hover-bg-dark: #21272e;
     --button-bg-hover: green;
     --button-light-muted-bg: green;
-    --description-color-dark: #AFAFAF;
+    --description-color-dark: #afafaf;
     --description-color-light: #757575;
     --primary-link-light: #4a4aff;
     --primary-link-dark: #00ea00;
@@ -410,6 +410,7 @@ button {
 .profile-edit-form .input-row {
     display: flex;
     gap: 32px;
+    align-items: flex-start;
 }
 
 .profile-edit-form .input-group {
@@ -422,6 +423,9 @@ button {
     display: flex;
     gap: 16px;
     width: 100%;
+}
+.profile-edit-form .input-row .input-group label {
+    font-size: 16px;
 }
 .sign-form p {
     margin: 0;
@@ -701,6 +705,7 @@ textarea {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    text-align: start;
 }
 .meetup-details .meetup-details-content {
     padding: 20px;
@@ -838,4 +843,21 @@ h3 {
         font-size: 14px;
         padding: 8px 15px;
     }
+}
+
+.profile-edit-form .form-fields .info-button {
+    background: var(--background);
+    height: 18px;
+}
+.profile-edit-form .form-fields .info-label {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-edit-form .form-fields .info-popup a {
+    text-decoration: underline;
+}
+.profile-edit-form .form-fields .info-popup {
+    height: 90px;
 }
