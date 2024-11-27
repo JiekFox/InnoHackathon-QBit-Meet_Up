@@ -47,8 +47,12 @@ async def webhook(request: Request):
                     response = requests.get(f"{BACKEND_URL}/meetings/")
                     response.raise_for_status()
                     meetings = response.json()
+
+                    if isinstance(meetings, dict):
+                        meetings = meetings.get("meetings", [])  # Предполагается, что данные могут быть в поле 'meetings'
+
                     meeting = next(
-                        (m for m in meetings if str(m["id"]) == query or m["title"].lower() == query.lower()),
+                        (m for m in meetings if str(m.get("id")) == query or m.get("title", "").lower() == query.lower()),
                         None
                     )
                     if not meeting:
@@ -120,13 +124,21 @@ async def webhook(request: Request):
                     response = requests.get(f"{BACKEND_URL}/meetings/")
                     response.raise_for_status()
                     meetings = response.json()
-                    message = "*Список митапов:*\n" + "\n".join(
-                        [
-                            f'• ({meeting["id"]}) *{meeting["title"]}* '
-                            f'(Дата: {datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")})'
-                            for meeting in meetings[:5]
-                        ]
-                    )
+
+                    if isinstance(meetings, dict):
+                        meetings = meetings.get("meetings", [])  # Предполагается, что данные могут быть в поле 'meetings'
+
+                    if isinstance(meetings, list):
+                        message = "*Список митапов:*\n" + "\n".join(
+                            [
+                                f'• ({meeting.get("id")}) *{meeting.get("title")}* '
+                                f'(Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y %H:%M")})'
+                                for meeting in meetings[:5]
+                            ]
+                        )
+                    else:
+                        message = "❌ Ошибка: не удалось получить список митапов."
+
                     await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown")
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
@@ -137,14 +149,14 @@ async def webhook(request: Request):
                     response = requests.get(f"{BACKEND_URL}/my_meetups_owner/tg/{user_id}")
                     response.raise_for_status()
                     meetups = response.json()
-                    if not meetups:
+                    if not isinstance(meetups, list) or not meetups:
                         await bot.send_message(chat_id=update.message.chat.id,
                                                text="\U0001F3AF У вас нет созданных митапов.")
                     else:
                         message = "*Ваши созданные митапы:*\n" + "\n".join(
                             [
-                                f'• ({meetup["id"]}) *{meetup["title"]}* '
-                                f'(Дата: {datetime.fromisoformat(meetup["datetime_beg"]).strftime("%d.%m.%Y %H:%M")})'
+                                f'• ({meetup.get("id")}) *{meetup.get("title")}* '
+                                f'(Дата: {datetime.fromisoformat(meetup.get("datetime_beg")).strftime("%d.%m.%Y %H:%M")})'
                                 for meetup in meetups
                             ]
                         )
@@ -158,14 +170,14 @@ async def webhook(request: Request):
                     response = requests.get(f"{BACKEND_URL}/my_meetups_subscriber/tg/{user_id}")
                     response.raise_for_status()
                     meetups = response.json()
-                    if not meetups:
+                    if not isinstance(meetups, list) or not meetups:
                         await bot.send_message(chat_id=update.message.chat.id,
                                                text="\U0001F4CC Вы пока не подписаны на митапы.")
                     else:
                         message = "*Ваши подписки на митапы:*\n" + "\n".join(
                             [
-                                f'• ({meetup["id"]}) *{meetup["title"]}* '
-                                f'(Дата: {datetime.fromisoformat(meetup["datetime_beg"]).strftime("%d.%m.%Y %H:%M")})'
+                                f'• ({meetup.get("id")}) *{meetup.get("title")}* '
+                                f'(Дата: {datetime.fromisoformat(meetup.get("datetime_beg")).strftime("%d.%m.%Y %H:%M")})'
                                 for meetup in meetups
                             ]
                         )
@@ -188,8 +200,12 @@ async def webhook(request: Request):
                     response = requests.get(f"{BACKEND_URL}/meetings/")
                     response.raise_for_status()
                     meetings = response.json()
+
+                    if isinstance(meetings, dict):
+                        meetings = meetings.get("meetings", [])  # Предполагается, что данные могут быть в поле 'meetings'
+
                     meeting = next(
-                        (m for m in meetings if str(m["id"]) == query or m["title"].lower() == query.lower()),
+                        (m for m in meetings if str(m.get("id")) == query or m.get("title", "").lower() == query.lower()),
                         None
                     )
                     if not meeting:
