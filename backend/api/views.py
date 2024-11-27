@@ -19,6 +19,23 @@ class MeetingViewSet(ModelViewSet):
     serializer_class = MeetingSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_permissions(self):
+        """
+        Возвращает разрешения для текущего действия.
+        """
+        if self.action in ['list', 'retrieve']:  
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+
+    def list(self, request, *args, **kwargs):
+        """
+        Получение списка мероприятий.
+        """
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
