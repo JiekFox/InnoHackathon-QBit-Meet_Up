@@ -20,7 +20,7 @@ class MeetingSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'first_name','last_name','email', 'photo', 'user_description']
+        fields = ['id', 'username', 'first_name','last_name','email', 'photo', 'user_description', 'telegram_tag']
 
 class SignedToMeetingSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)  

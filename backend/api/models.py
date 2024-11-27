@@ -1,11 +1,23 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 
 class UserProfile(AbstractUser):
     
     user_description = models.CharField(max_length=255, null=True, blank=True)
     photo = models.ImageField(upload_to='user_photos/', null=True, blank=True)
-
+    telegram_tag = models.CharField(
+        max_length=30, 
+        null=True,
+        blank=True,
+        validators=[
+            RegexValidator(
+                regex=r'^@\w{5,}$',
+                message="Enter a valid registration number in the format @ExampleTag.",
+                code="invalid_registration",
+            )
+        ]
+    )
 
     def __str__(self):
         return self.username
