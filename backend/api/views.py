@@ -75,7 +75,7 @@ class MeetingViewSet(ModelViewSet):
             return Response({"message": "Unsubscribed successfully"}, status=status.HTTP_204_NO_CONTENT)
         except SignedToMeeting.DoesNotExist:
             return Response({"error": "Subscription not found"}, status=status.HTTP_404_NOT_FOUND)
-
+        
 class EmailService:
     @staticmethod
     def send_welcome_email(email):
@@ -185,6 +185,35 @@ class UserViewSet(ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().destroy(request, *args, **kwargs)
+    
+    @action(detail=True, methods=['get'], permission_classes=[])
+    def meetings_owned(self, request, pk=None):
+        """
+        Возвращает список встреч, созданных пользователем с заданным id.
+        """
+        try:
+            user = UserProfile.objects.get(id=pk)
+        except UserProfile.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        meetings = Meeting.objects.filter(author=user)
+        serializer = MeetingSerializer(meetings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], permission_classes=[])
+    def meetings_signed(self, request, pk=None):
+        """
+        Возвращает список встреч, подписанных пользователем с заданным id.
+        """
+        try:
+            user = UserProfile.objects.get(id=pk)
+        except UserProfile.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        meetings = Meeting.objects.filter(attendees__user=user)
+        serializer = MeetingSerializer(meetings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     
 
 class ObtainTokenView(TokenObtainPairView):

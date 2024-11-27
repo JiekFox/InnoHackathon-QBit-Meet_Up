@@ -14,7 +14,7 @@ class MeetingSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'author', 'author_id', 'datetime_beg', 'link', 'description', 'image']
 
     def create(self, validated_data):
-        validated_data['author'] = self.context['request'].user  # Автор назначается текущим пользователем
+        validated_data['author'] = self.context['request'].user
         return super().create(validated_data)
 
 class UserSerializer(serializers.ModelSerializer):
