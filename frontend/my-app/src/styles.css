@@ -18,7 +18,8 @@
     --button-light-muted-bg: green;
     --description-color-dark: #AFAFAF;
     --description-color-light: #757575;
-    --primary-link: #4a4aff;
+    --primary-link-light: #4a4aff;
+    --primary-link-dark: #00ea00;
     --card-border: black;
     --button-bg-active: green;
     --button-text-active: white;
@@ -35,6 +36,7 @@
     --dropdown-shadow: rgba(255, 255, 255, 0.1);
     --user-info-hover-bg: var(--user-info-hover-bg-dark);
     --button-light-bg: var(--button-bg-light);
+    --primary-link: var(--primary-link-dark);
 }
 
 [data-theme='light'] {
@@ -46,6 +48,7 @@
     --button-border: #d9d9d9;
     --user-info-hover-bg: var(--user-info-hover-bg-light);
     --button-light-bg: #1c8139;
+    --primary-link: var(--primary-link-light);
 }
 * {
     color: inherit;
@@ -377,9 +380,11 @@ button {
 .intro {
     margin: 100px 0;
 }
+
 .intro .description {
-    color: var(--);
+    color: var(--description);
 }
+
 .profile-edit-form {
     display: flex;
     justify-content: space-between;
@@ -587,6 +592,10 @@ textarea {
 }
 
 .sign-button:hover {
+    background-color: var(--button-bg-hover);
+}
+
+.create-meeting-button:hover {
     background-color: var(--button-bg-hover);
 }
 
