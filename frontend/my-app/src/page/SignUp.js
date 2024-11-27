@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { SIGN_IN } from '../constant/router';
-import { REGISTER_API_URL } from '../constant/apiURL'; // Замените на URL вашего API для регистрации
+import { REGISTER_API_URL } from '../constant/apiURL';
 import { useAuth } from '../utils/AuthContext';
 
 export default function SignUp() {
@@ -12,8 +12,8 @@ export default function SignUp() {
         password: ''
     });
     const [errorMessage, setErrorMessage] = useState('');
-    const { saveDate } = useAuth(); // Для сохранения токена через контекст
-    const navigate = useNavigate(); // Для перенаправления
+    const { saveDate } = useAuth();
+    const navigate = useNavigate();
 
     const handleInputChange = e => {
         const { name, value } = e.target;
@@ -27,13 +27,10 @@ export default function SignUp() {
         e.preventDefault();
 
         try {
-            const response = await axios.post(REGISTER_API_URL, formData); // Отправка данных на сервер
+            const response = await axios.post(REGISTER_API_URL, formData);
             console.log('Registration successful:', response.data);
 
-            // Сохраняем токен через контекст
             saveDate(response.data);
-
-            // Перенаправляем на главную страницу
             navigate('/');
         } catch (error) {
             console.error(

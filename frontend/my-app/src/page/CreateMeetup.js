@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../utils/AuthContext';
 import axios from 'axios';
-import { giveConfig, MEETINGS_API_URL } from '../constant/apiURL';
+import { MEETINGS_API_URL } from '../constant/apiURL';
 import { useNavigate } from 'react-router';
 import { SIGN_IN } from '../constant/router';
+import { giveConfig } from '../utils/giveConfig';
 
 export function CreateMeetup() {
     const navigate = useNavigate();
@@ -31,7 +32,6 @@ export function CreateMeetup() {
         }
     };
 
-    // Обработчик отправки формы
     const handleSubmit = async e => {
         e.preventDefault();
 
@@ -59,7 +59,7 @@ export function CreateMeetup() {
                 giveConfig(token)
             );
             console.log('Successfully created meeting:', response.data);
-            navigate(`/meetup/${response.id}`); // Перенаправляем на страницу созданного митинга
+            navigate(`/meetup/${response.id}`);
         } catch (error) {
             console.error(
                 'Error creating meeting:',

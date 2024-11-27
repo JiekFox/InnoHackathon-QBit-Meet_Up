@@ -8,7 +8,7 @@ export default function DebounceInput({ value, onChange, delay = 300, ...props }
             onChange(inputValue);
         }, delay);
 
-        return () => clearTimeout(handler); // Очищаем таймер при каждом изменении
+        return () => clearTimeout(handler);
     }, [inputValue, onChange, delay]);
 
     const handleInputChange = e => {

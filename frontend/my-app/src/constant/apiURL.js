@@ -4,16 +4,3 @@ export const TOKEN_API_URL = BASE_API_URL + 'token/';
 
 export const USER_API_URL = BASE_API_URL + 'users/';
 export const REGISTER_API_URL = USER_API_URL + 'register/';
-
-export const giveConfig = token => {
-    if (!token || !token.access) {
-        console.error('No access token provided.');
-        return null;
-    }
-
-    return {
-        headers: {
-            Authorization: `Bearer ${token.access}`
-        }
-    };
-};
