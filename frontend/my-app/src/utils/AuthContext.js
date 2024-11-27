@@ -1,31 +1,28 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-// Создаем контекст
 const AuthContext = createContext();
 
-// Хук для доступа к AuthContext
 export const useAuth = () => {
     return useContext(AuthContext);
 };
 
-// Провайдер для управления токеном
 export const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState(null); // Токен
-    const [name, setName] = useState(null); // Имя пользователя
-    const [userID, setUserID] = useState(null); // ID пользователя
+    const [token, setToken] = useState(null);
+    const [name, setName] = useState(null);
+    const [userID, setUserID] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    // Сохранение токена в localStorage
     const saveToken = newToken => {
         setToken(newToken);
-        localStorage.setItem('authToken', JSON.stringify(newToken)); // Сохраняем токен в формате JSON
+        localStorage.setItem('authToken', JSON.stringify(newToken));
     };
     const saveName = newName => {
         setName(newName);
-        localStorage.setItem('name', JSON.stringify(newName)); // Сохраняем токен в формате JSON
+        localStorage.setItem('name', JSON.stringify(newName));
     };
     const saveId = newID => {
         setUserID(newID);
-        localStorage.setItem('ID', JSON.stringify(newID)); // Сохраняем токен в формате JSON
+        localStorage.setItem('ID', JSON.stringify(newID));
     };
     const saveDate = newDate => {
         console.log(newDate);
@@ -35,9 +32,9 @@ export const AuthProvider = ({ children }) => {
         });
         saveName(newDate.username);
         saveId(newDate.user_id);
+        setLoading(false);
     };
 
-    // Удаление токена из состояния и localStorage
     const removeToken = () => {
         setToken(null);
         setUserID(null);
@@ -47,12 +44,11 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('ID');
     };
 
-    // Загрузка токена из localStorage при инициализации
     useEffect(() => {
         const savedToken = localStorage.getItem('authToken');
         if (savedToken) {
             try {
-                const parsedToken = JSON.parse(savedToken); // Парсим токен
+                const parsedToken = JSON.parse(savedToken);
                 setToken(parsedToken);
                 //console.log("Token loaded from localStorage:", parsedToken);
             } catch (error) {
@@ -72,21 +68,21 @@ export const AuthProvider = ({ children }) => {
         const savedID = localStorage.getItem('ID');
         if (savedID) {
             try {
-                const parsedID = JSON.parse(savedID); // Парсим токен
+                const parsedID = JSON.parse(savedID);
                 setUserID(parsedID);
                 //console.log("Token loaded from localStorage:", parsedToken);
             } catch (error) {
                 console.error('Failed to parse ID from localStorage:', error);
             }
         }
+        setLoading(false);
     }, []);
     console.log(name, userID, token);
     /*
-  // Обработка токена (например, извлечение ID пользователя)
   useEffect(() => {
     if (token && token.access) {
       try {
-        const extractedUserID = getUserIdFromToken(token.access); // Извлекаем ID из токена
+        const extractedUserID = getUserIdFromToken(token.access);
         setUserID(extractedUserID);
         console.log("User ID from token:", extractedUserID);
       } catch (error) {
@@ -97,7 +93,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);*/
     /*
-  // Получение данных о пользователе по ID
+
   useEffect(() => {
     if (userID) {
       const { data: meetup, loading, error } = useFetchMeetings(
@@ -119,15 +115,19 @@ export const AuthProvider = ({ children }) => {
     }
   }, [userID]);*/
 
-    // Контекстное значение
     const value = {
         token,
         userID,
         name,
         saveToken,
         removeToken,
-        saveDate
+        saveDate,
+        loading
     };
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return loading ? (
+        <div>Loading...</div>
+    ) : (
+        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+    );
 };

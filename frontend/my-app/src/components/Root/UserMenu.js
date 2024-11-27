@@ -12,20 +12,20 @@ import { useNavigate } from 'react-router-dom'; // Для навигации
 
 export default function UserMenu({ userName }) {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
-    const { removeToken } = useAuth(); // Получаем метод для logout
-    const navigate = useNavigate(); // Используем для переадресации
+    const { removeToken } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogoutClick = () => {
-        setShowLogoutModal(true); // Открываем модальное окно
+        setShowLogoutModal(true);
     };
 
     const handleCloseModal = () => {
-        setShowLogoutModal(false); // Закрываем модальное окно
+        setShowLogoutModal(false);
     };
 
     const handleConfirmLogout = () => {
-        removeToken(); // Удаляем токен через AuthContext
-        navigate('/'); // Перенаправляем на главную страницу
+        removeToken();
+        navigate('/');
     };
 
     return (
@@ -60,7 +60,7 @@ export default function UserMenu({ userName }) {
             {showLogoutModal && (
                 <LogoutModal
                     onClose={handleCloseModal}
-                    onConfirm={handleConfirmLogout} // Вызов функции logout
+                    onConfirm={handleConfirmLogout}
                 />
             )}
         </div>

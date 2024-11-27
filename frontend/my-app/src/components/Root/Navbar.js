@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { BASE, SIGN_IN } from '../../constant/router';
 import { useAuth } from '../../utils/AuthContext';
 
-export default function Navbar({  onThemeToggle }) {
+export default function Navbar({ onThemeToggle }) {
     const { name } = useAuth();
     return (
         <header className="header">

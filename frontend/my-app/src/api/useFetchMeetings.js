@@ -8,21 +8,21 @@ const useFetchMeetings = url => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true); // Начало загрузки
-            setError(null); // Сбрасываем ошибки
+            setLoading(true);
+            setError(null);
 
             try {
                 const response = await axios.get(url);
-                setData(response.data); // Успешный результат
+                setData(response.data);
             } catch (err) {
-                setError(err.message || 'Something went wrong'); // Сохраняем ошибку
+                setError(err.message || 'Something went wrong');
             } finally {
-                setLoading(false); // Завершаем загрузку
+                setLoading(false);
             }
         };
 
         fetchData();
-    }, [url]); // Зависимость от URL для динамических запросов
+    }, [url]);
 
     return { data, loading, error };
 };

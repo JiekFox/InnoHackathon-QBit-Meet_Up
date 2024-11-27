@@ -7,9 +7,9 @@ const getUserIdFromToken = accessToken => {
     }
 
     try {
-        const decodedToken = jwtDecode(accessToken); // Декодируем токен
+        const decodedToken = jwtDecode(accessToken);
         //console.log("Decoded token:", decodedToken); // Логируем для проверки
-        return decodedToken.user_id; // Предположим, что ID пользователя хранится под ключом `user_id`
+        return decodedToken.user_id;
     } catch (error) {
         console.error('Error decoding token:', error);
         return null;

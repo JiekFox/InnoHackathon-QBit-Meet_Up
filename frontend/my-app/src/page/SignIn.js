@@ -6,8 +6,8 @@ import { SIGN_UP } from '../constant/router';
 import { TOKEN_API_URL } from '../constant/apiURL';
 
 export default function SignIn() {
-    const { saveDate } = useAuth(); // Достаем функцию сохранения токена из контекста
-    const navigate = useNavigate(); // Для переадресации
+    const { saveDate } = useAuth();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
         password: ''
@@ -36,9 +36,9 @@ export default function SignIn() {
             /*saveToken({
                 refresh: response.refresh_token,
                 access: response.access_token
-            }); // Сохраняем токен через контекст*/
+            }); */
 
-            navigate('/'); // Перенаправляем на главную страницу
+            navigate('/');
         } catch (error) {
             console.error('Login failed:', error.response?.data || error.message);
             setErrorMessage('Invalid username or password. Please try again.');

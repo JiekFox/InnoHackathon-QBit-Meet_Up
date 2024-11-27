@@ -6,13 +6,13 @@
     --text-dark: #ffffff;
     --text-light: #333333;
     --primary: #3a6ff7;
-    --button-bg-light: #1c8139; /* Зеленый цвет для основных кнопок в светлой теме */
+    --button-bg-light: #1c8139;
     --button-bg-dark: #151b23;
     --button-border-dark: #10373d;
     --button-text: #ffffff;
     --dropdown-bg: #ffffff;
     --dropdown-shadow: rgba(0, 0, 0, 0.2);
-    --user-info-hover-bg-light: #d0d0d0; /* Более темный цвет при наведении на user-info в светлой теме */
+    --user-info-hover-bg-light: #d0d0d0;
     --user-info-hover-bg-dark: #21272e;
     --button-bg-hover: green;
     --button-light-muted-bg: green;
@@ -46,6 +46,9 @@
     --button-border: #d9d9d9;
     --user-info-hover-bg: var(--user-info-hover-bg-light);
     --button-light-bg: #1c8139;
+}
+* {
+    color: inherit;
 }
 body {
     margin: 0;
@@ -111,7 +114,6 @@ button {
     font-size: 14px;
 }
 
-/* Обновленный цвет для кнопок смены языка и темы */
 .theme-button,
 .language-button {
     background-color: var(--button-light-muted-bg);
@@ -181,13 +183,13 @@ button {
     text-decoration: none;
     color: var(--text);
     font-weight: normal;
-    display: block; /* Ссылка занимает всю строку */
+    display: block;
 }
 
 .dropdown-description {
     font-size: 12px;
     color: grey;
-    display: block; /* Текст на новой строке */
+    display: block;
 }
 
 .main-content {
@@ -213,8 +215,8 @@ button {
 
 .sign-in-link {
     color: var(--primary-link);
-    font-weight: bold; /* Жирный текст */
-    text-decoration: underline; /* Подчеркивание текста */
+    font-weight: bold;
+    text-decoration: underline;
     margin-top: 16px;
     display: inline-block;
     cursor: pointer;
@@ -231,7 +233,6 @@ button {
 .filter-bar > .search-input {
     padding: 8px;
     background-color: var(--header-footer);
-    /* background-color: #ffffff; */
     color: var(--text);
     border: 1px solid var(--button-border-dark);
     border-radius: 50px;
@@ -266,10 +267,10 @@ button {
 .meetup-card:hover {
     transform: translateY(-5px);
 }
-.meetup-grid .meetup-card .description{
+.meetup-grid .meetup-card .description {
     color: var(--description);
 }
-/* Убираем анимацию для внутренних элементов карточки */
+
 .meetup-card > * {
     transition: none !important;
 }
@@ -321,7 +322,6 @@ button {
     color: var(--text);
 }
 
-/* Styles for Logout Modal */
 .logout-modal {
     /*display: none;*/
     position: fixed;
@@ -427,7 +427,7 @@ button {
     align-items: center;
     gap: 10px;
 }
-/* Стили для input полей в формах */
+
 .sign-form .input-group input {
     width: 95%;
     padding: 8px 8px;
@@ -441,7 +441,6 @@ button {
         box-shadow 0.3s ease;
 }
 
-/* Стиль при фокусе на input поле */
 .sign-form .input-group input:focus {
     border-color: var(--primary);
     box-shadow: 0 0 5px var(--primary);
@@ -449,8 +448,8 @@ button {
 }
 
 .sign-form .input-group label {
-    color: var(--text); /* Устанавливаем цвет в соответствии с темой */
-    display: inline-block; /* Чтобы можно было применить ширину */
+    color: var(--text);
+    display: inline-block;
     font-weight: bold;
     text-align: left;
 }
@@ -571,7 +570,7 @@ textarea {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Высота на весь экран */
+    height: 100vh;
     background-color: var(--background);
 }
 
@@ -606,7 +605,6 @@ textarea {
     text-decoration: underline;
 }
 
-/* Стили для модального окна */
 .logout-modal {
     position: fixed;
     z-index: 1001;
@@ -742,4 +740,93 @@ h3 {
 .home {
     background: var(--header-footer);
     padding: 20px;
+}
+
+.create-meetup {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--header-footer);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.create-meetup h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.create-meetup .error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.create-meetup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.create-meetup-form .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.create-meetup-form .input-group label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.create-meetup-form .input-group input,
+.create-meetup-form .input-group textarea {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid var(--button-border);
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--background);
+}
+
+.create-meetup-form .input-group textarea {
+    resize: vertical;
+    height: 100px;
+}
+
+.create-meetup-form .input-group input[type='file'] {
+    padding: 5px;
+    font-size: 14px;
+}
+
+.create-meetup-form .create-meetup-button {
+    background-color: var(--button-bg);
+    font-size: 16px;
+    padding: 10px 20px;
+    border: 1px solid var(--button-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-meetup-form .create-meetup-button:hover {
+    background-color: var(--button-bg-hover);
+}
+
+@media (max-width: 600px) {
+    .create-meetup {
+        padding: 10px;
+    }
+
+    .create-meetup h1 {
+        font-size: 20px;
+    }
+
+    .create-meetup-form .create-meetup-button {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
 }

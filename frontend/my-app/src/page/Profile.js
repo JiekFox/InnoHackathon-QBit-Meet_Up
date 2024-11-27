@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { USER_API_URL } from '../constant/apiURL';
 import { useAuth } from '../utils/AuthContext';
+import { giveConfig } from '../utils/giveConfig';
 
 export default function Profile() {
     const [formData, setFormData] = useState({
@@ -11,25 +12,23 @@ export default function Profile() {
         about: '',
         photo: null
     });
-    const { token } = useAuth();
+    const { token, userID } = useAuth();
 
-    const userId = 3; // Вставьте ID пользователя, который вам нужно загрузить.
+    const userId = userID;
 
-    // Функция для загрузки данных пользователя
     const fetchUserData = async () => {
         if (!token || !token.access) {
             console.error('No access token found');
             return;
         }
-        const config = {
-            headers: { Authorization: `Bearer ${token.access}` } // Используем токен для авторизации
-        };
+        const config = giveConfig(token);
 
         try {
-            const response = await axios.get(`${USER_API_URL}${userId}`, config); // Получаем данные пользователя с авторизацией
+            //console.log(`${USER_API_URL}${userId}`, config, token, userID);
+            const response = await axios.get(`${USER_API_URL}${userId}/`, config); // Получаем данные пользователя с авторизацией
             const userData = response.data;
             console.log(userData);
-            // Заполняем форму данными пользователя
+
             setFormData({
                 name: userData.first_name || '',
                 surname: userData.last_name || '',
@@ -46,8 +45,11 @@ export default function Profile() {
     };
 
     useEffect(() => {
-        fetchUserData(); // Загружаем данные при монтировании компонента
-    }, []);
+        if (token && token.access) {
+            fetchUserData();
+        }
+    }, [token]);
+
     const onSave = data => {
         console.log(data);
     };

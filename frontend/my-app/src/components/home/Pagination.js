@@ -10,12 +10,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
     const renderPages = () => {
         const pages = [];
         if (totalPages <= 7) {
-            // Если страниц мало, показываем все
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
             }
         } else {
-            // Если страниц много, показываем начало, конец и текущие
             pages.push(1);
             if (currentPage > 3) pages.push('...');
             if (currentPage > 2) pages.push(currentPage - 1);

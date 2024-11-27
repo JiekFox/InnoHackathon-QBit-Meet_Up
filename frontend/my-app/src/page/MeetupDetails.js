@@ -6,35 +6,30 @@ import axios from 'axios';
 import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router';
 import { SIGN_IN } from '../constant/router';
+import { giveConfig } from "../utils/giveConfig";
 
 export default function MeetupDetails() {
     const navigate = useNavigate();
-    const { id } = useParams(); // Получаем ID из URL
-    const { token } = useAuth(); // Достаем токен из контекста
+    const { id } = useParams();
+    const { token } = useAuth();
     const {
         data: meetup,
         loading,
         error
     } = useFetchMeetings(`${MEETINGS_API_URL}${id}/`);
-    console.log(token);
-    // Обработчик для кнопки "Sign for meeting"
+
     const handleSignForMeeting = async () => {
         if (!token) {
             navigate(SIGN_IN);
             return;
         }
 
-        const config = {
-            headers: { Authorization: `Bearer ${token.access}` } // Используем токен для авторизации
-        };
-
         try {
             const response = await axios.post(
                 `${MEETINGS_API_URL}${id}/subscribe/`,
-                {}, // Пустое тело
-                config
+                {},
+                giveConfig(token)
             );
-            console.log('Successfully signed for meeting:', response.data);
         } catch (error) {
             console.error(
                 'Error signing for meeting:',
@@ -72,7 +67,7 @@ export default function MeetupDetails() {
                 </div>
                 <button
                     className="meetup-details-button"
-                    onClick={handleSignForMeeting} // Добавляем обработчик нажатия
+                    onClick={handleSignForMeeting}
                 >
                     {token ? 'Subscribe' : 'Sign for meeting'}
                 </button>
