@@ -24,9 +24,6 @@ if not BACKEND_URL:
     raise ValueError("Не указан BACKEND_URL в переменных окружения!")
 bot = Bot(token=BOT_TOKEN)
 
-# Вспомогательный словарь для хранения состояния пользователей
-user_states = {}
-
 
 @app.post(f"/webhook/{BOT_TOKEN}")
 async def webhook(request: Request):
@@ -40,59 +37,8 @@ async def webhook(request: Request):
             user_id = update.message.from_user.id
             username = update.message.from_user.username or "Unknown"
 
-            # Проверка состояния пользователя на ожидание ввода для поиска
-            if user_id in user_states and user_states[user_id] == "waiting_for_search":
-                query = text.strip()
-                try:
-                    response = requests.get(f"{BACKEND_URL}/meetings/")
-                    response.raise_for_status()
-                    meetings = response.json()
-
-                    if isinstance(meetings, dict):
-                        meetings = meetings.get("meetings", [])  # Предполагается, что данные могут быть в поле 'meetings'
-
-                    meeting = next(
-                        (m for m in meetings if str(m.get("id")) == query or m.get("title", "").lower() == query.lower()),
-                        None
-                    )
-                    if not meeting:
-                        await bot.send_message(chat_id=update.message.chat.id, text="❌ Митап не найден.")
-                    else:
-                        formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")
-                        caption = (
-                            f"Информация о митапе:\n"
-                            f"Название: *{meeting['title']}*\n"
-                            f"Описание: _{meeting['description']}_\n"
-                            f"Дата: {formatted_date}"
-                        )
-                        website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
-                        keyboard = InlineKeyboardMarkup(
-                            [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
-                        )
-
-                        if "image" in meeting and meeting["image"]:
-                            await bot.send_photo(
-                                chat_id=update.message.chat.id,
-                                photo=meeting["image"],
-                                caption=caption,
-                                reply_markup=keyboard,
-                                parse_mode="Markdown"
-                            )
-                        else:
-                            await bot.send_message(
-                                chat_id=update.message.chat.id,
-                                text=caption,
-                                reply_markup=keyboard,
-                                parse_mode="Markdown"
-                            )
-                except Exception as e:
-                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
-
-                # Сброс состояния пользователя после выполнения поиска
-                user_states.pop(user_id, None)
-
             # Команда /start
-            elif text == "/start":
+            if text == "/start":
                 keyboard = ReplyKeyboardMarkup(
                     [["\U0001F50D Поиск", "Все митапы"], ["Мои митапы (созданные)", "Мои митапы (подписки)"]],
                     resize_keyboard=True,
@@ -124,22 +70,19 @@ async def webhook(request: Request):
                     response = requests.get(f"{BACKEND_URL}/meetings/")
                     response.raise_for_status()
                     meetings = response.json()
-
-                    if isinstance(meetings, dict):
-                        meetings = meetings.get("meetings", [])  # Предполагается, что данные могут быть в поле 'meetings'
-
-                    if isinstance(meetings, list):
-                        message = "*Список митапов:*\n" + "\n".join(
-                            [
-                                f'• ({meeting.get("id")}) *{meeting.get("title")}* '
-                                f'(Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y %H:%M")})'
-                                for meeting in meetings[:5]
-                            ]
-                        )
-                    else:
-                        message = "❌ Ошибка: не удалось получить список митапов."
-
-                    await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown")
+                    message = "*Список митапов:*\n" + "\n".join(
+                        [
+                            f'• ({meeting["id"]}) *{meeting["title"]}* '
+                            f'(Дата: {datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")})'
+                            for meeting in meetings[:5]
+                        ]
+                    )
+                    keyboard = InlineKeyboardMarkup(
+                        [
+                            [InlineKeyboardButton("Выбрать", callback_data="choose_meetup")]
+                        ]
+                    )
+                    await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown", reply_markup=keyboard)
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
@@ -149,14 +92,13 @@ async def webhook(request: Request):
                     response = requests.get(f"{BACKEND_URL}/my_meetups_owner/tg/{user_id}")
                     response.raise_for_status()
                     meetups = response.json()
-                    if not isinstance(meetups, list) or not meetups:
-                        await bot.send_message(chat_id=update.message.chat.id,
-                                               text="\U0001F3AF У вас нет созданных митапов.")
+                    if not meetups:
+                        await bot.send_message(chat_id=update.message.chat.id, text="\U0001F3AF У вас нет созданных митапов.")
                     else:
                         message = "*Ваши созданные митапы:*\n" + "\n".join(
                             [
-                                f'• ({meetup.get("id")}) *{meetup.get("title")}* '
-                                f'(Дата: {datetime.fromisoformat(meetup.get("datetime_beg")).strftime("%d.%m.%Y %H:%M")})'
+                                f'• ({meetup["id"]}) *{meetup["title"]}* '
+                                f'(Дата: {datetime.fromisoformat(meetup["datetime_beg"]).strftime("%d.%m.%Y %H:%M")})'
                                 for meetup in meetups
                             ]
                         )
@@ -170,14 +112,13 @@ async def webhook(request: Request):
                     response = requests.get(f"{BACKEND_URL}/my_meetups_subscriber/tg/{user_id}")
                     response.raise_for_status()
                     meetups = response.json()
-                    if not isinstance(meetups, list) or not meetups:
-                        await bot.send_message(chat_id=update.message.chat.id,
-                                               text="\U0001F4CC Вы пока не подписаны на митапы.")
+                    if not meetups:
+                        await bot.send_message(chat_id=update.message.chat.id, text="\U0001F4CC Вы пока не подписаны на митапы.")
                     else:
                         message = "*Ваши подписки на митапы:*\n" + "\n".join(
                             [
-                                f'• ({meetup.get("id")}) *{meetup.get("title")}* '
-                                f'(Дата: {datetime.fromisoformat(meetup.get("datetime_beg")).strftime("%d.%m.%Y %H:%M")})'
+                                f'• ({meetup["id"]}) *{meetup["title"]}* '
+                                f'(Дата: {datetime.fromisoformat(meetup["datetime_beg"]).strftime("%d.%m.%Y %H:%M")})'
                                 for meetup in meetups
                             ]
                         )
@@ -191,61 +132,82 @@ async def webhook(request: Request):
                     chat_id=update.message.chat.id,
                     text="Введите ID или название митапа, который хотите найти."
                 )
-                user_states[user_id] = "waiting_for_search"
 
-            # Команда /search
             elif text.startswith("/search "):
                 query = text.split(" ", 1)[1].strip()
                 try:
                     response = requests.get(f"{BACKEND_URL}/meetings/")
                     response.raise_for_status()
                     meetings = response.json()
-
-                    if isinstance(meetings, dict):
-                        meetings = meetings.get("meetings", [])  # Предполагается, что данные могут быть в поле 'meetings'
-
                     meeting = next(
-                        (m for m in meetings if str(m.get("id")) == query or m.get("title", "").lower() == query.lower()),
+                        (m for m in meetings if str(m["id"]) == query or m["title"].lower() == query.lower()),
                         None
                     )
                     if not meeting:
                         await bot.send_message(chat_id=update.message.chat.id, text="❌ Митап не найден.")
-                    else:
-                        formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")
-                        caption = (
-                            f"Информация о митапе:\n"
-                            f"Название: *{meeting['title']}*\n"
-                            f"Описание: _{meeting['description']}_\n"
-                            f"Дата: {formatted_date}"
-                        )
-                        website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
-                        keyboard = InlineKeyboardMarkup(
-                            [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
-                        )
+                        return
 
-                        if "image" in meeting and meeting["image"]:
-                            await bot.send_photo(
-                                chat_id=update.message.chat.id,
-                                photo=meeting["image"],
-                                caption=caption,
-                                reply_markup=keyboard,
-                                parse_mode="Markdown"
-                            )
-                        else:
-                            await bot.send_message(
-                                chat_id=update.message.chat.id,
-                                text=caption,
-                                reply_markup=keyboard,
-                                parse_mode="Markdown"
-                            )
+                    formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")
+                    caption = (
+                        f"Информация о митапе:\n"
+                        f"Название: *{meeting['title']}*\n"
+                        f"Описание: _{meeting['description']}_\n"
+                        f"Дата: {formatted_date}"
+                    )
+                    website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
+                    keyboard = InlineKeyboardMarkup(
+                        [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
+                    )
+
+                    if "image" in meeting and meeting["image"]:
+                        await bot.send_photo(
+                            chat_id=update.message.chat.id,
+                            photo=meeting["image"],
+                            caption=caption,
+                            reply_markup=keyboard,
+                            parse_mode="Markdown"
+                        )
+                    else:
+                        await bot.send_message(
+                            chat_id=update.message.chat.id,
+                            text=caption,
+                            reply_markup=keyboard,
+                            parse_mode="Markdown"
+                        )
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
 
         # Обработка CallbackQuery
         elif update.callback_query:
-            # Если потребуется обработка callback_query, добавьте соответствующую логику здесь.
-            pass
+            callback_data = update.callback_query.data
+            if callback_data == "choose_meetup":
+                await bot.send_message(
+                    chat_id=update.callback_query.message.chat.id,
+                    text="Введите ID или название митапа, который хотите выбрать."
+                )
+                # Добавлена логика ожидания ввода после выбора митапа
+                bot_data = bot.get_chat_data(update.callback_query.message.chat.id)
+                bot_data['waiting_for_meetup_selection'] = True
 
+            elif 'waiting_for_meetup_selection' in bot.get_chat_data(update.callback_query.message.chat.id):
+                query = callback_data.strip()
+                try:
+                    response = requests.get(f"{BACKEND_URL}/meetings/")
+                    response.raise_for_status()
+                    meetings = response.json()
+                    meeting = next(
+                        (m for m in meetings if str(m["id"]) == query or m["title"].lower() == query.lower()),
+                        None
+                    )
+                    if not meeting:
+                        await bot.send_message(chat_id=update.callback_query.message.chat.id, text="❌ Митап не найден.")
+                        return
+                    # Clear waiting flag after selection is completed
+                    bot_data['waiting_for_meetup_selection'] = False
+                except Exception as e:
+                    logging.error(f"❌ Ошибка обработки: {e}")
+                    await bot.send_message(chat_id=update.callback_query.message.chat.id, text=f"❌ Ошибка при выборе митапа: {e}")
     except Exception as e:
-        logging.error(f"❌ Ошибка обработки: {e}")
-        await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка обработки: {e}")
+        logging.error(f"❌ Глобальная ошибка обработки: {e}")
+        await bot.send_message(chat_id=update.callback_query.message.chat.id, text=f"❌ Ошибка при выборе митапа: {e}")
+
