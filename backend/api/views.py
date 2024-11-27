@@ -17,7 +17,7 @@ class MeetingViewSet(ModelViewSet):
     """
     queryset = Meeting.objects.all()
     serializer_class = MeetingSerializer
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -47,7 +47,7 @@ class MeetingViewSet(ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['post'])
     def subscribe(self, request, pk=None):
 
         user = request.user 
@@ -66,7 +66,7 @@ class MeetingViewSet(ModelViewSet):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-    @action(detail=True, methods=['delete'], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['delete'])
     def unsubscribe(self, request, pk=None):
         user = request.user
         try:
@@ -100,7 +100,7 @@ class UserViewSet(ModelViewSet):
     """
     queryset = UserProfile.objects.all()
     serializer_class = UserSerializer
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
         """
@@ -186,7 +186,7 @@ class UserViewSet(ModelViewSet):
             )
         return super().destroy(request, *args, **kwargs)
     
-    @action(detail=True, methods=['get'], permission_classes=[])
+    @action(detail=True, methods=['get'])
     def meetings_owned(self, request, pk=None):
         """
         Возвращает список встреч, созданных пользователем с заданным id.
@@ -200,7 +200,7 @@ class UserViewSet(ModelViewSet):
         serializer = MeetingSerializer(meetings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['get'], permission_classes=[])
+    @action(detail=True, methods=['get'])
     def meetings_signed(self, request, pk=None):
         """
         Возвращает список встреч, подписанных пользователем с заданным id.
