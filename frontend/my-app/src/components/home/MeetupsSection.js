@@ -1,17 +1,17 @@
-import FilterBar from "./FilterBar";
-import MeetupCard from "./MeetupCard";
-import Pagination from "./Pagination";
-import icon from "../../assets/img/icon.png";
-import { MEETUP_DETAILS } from "../../constant/router";
-import React, { useEffect, useState } from "react";
-import useFetchMeetings from "../../api/useFetchMeetings";
-import { MEETINGS_API_URL } from "../../constant/apiURL";
+import FilterBar from './FilterBar';
+import MeetupCard from './MeetupCard';
+import Pagination from './Pagination';
+import icon from '../../assets/img/icon.png';
+import { MEETUP_DETAILS } from '../../constant/router';
+import React, { useEffect, useState } from 'react';
+import useFetchMeetings from '../../api/useFetchMeetings';
+import { MEETINGS_API_URL } from '../../constant/apiURL';
 
 // Константа для количества элементов на странице
 const ITEMS_PER_PAGE = 5;
 
 export default function MeetupsSection() {
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [meetups, setMeetups] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
@@ -37,7 +37,6 @@ export default function MeetupsSection() {
 
     const handleSearchChange = query => {
         setSearchQuery(query);
-
     };
     useEffect(() => {
         setCurrentPage(1);
