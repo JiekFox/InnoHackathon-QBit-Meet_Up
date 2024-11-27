@@ -66,9 +66,13 @@ async def webhook(request: Request):
                     if data.get("next"):
                         keyboard_buttons.append(InlineKeyboardButton("➡️", callback_data=f"next_page:{page + 1}:{page_size}"))
 
-                    keyboard = InlineKeyboardMarkup([keyboard_buttons])
+                    # Если есть кнопки для навигации, добавляем их
+                    if keyboard_buttons:
+                        keyboard = InlineKeyboardMarkup([keyboard_buttons])
+                        await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown", reply_markup=keyboard)
+                    else:
+                        await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown")
 
-                    await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown", reply_markup=keyboard)
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
@@ -108,13 +112,20 @@ async def webhook(request: Request):
                     if data.get("next"):
                         keyboard_buttons.append(InlineKeyboardButton("➡️", callback_data=f"next_page:{page + 1}:{page_size}"))
 
-                    keyboard = InlineKeyboardMarkup([keyboard_buttons])
+                    # Если есть кнопки для навигации, добавляем их
+                    if keyboard_buttons:
+                        keyboard = InlineKeyboardMarkup([keyboard_buttons])
+                        await bot.edit_message_text(chat_id=update.callback_query.message.chat.id,
+                                                    message_id=update.callback_query.message.message_id,
+                                                    text=message,
+                                                    parse_mode="Markdown",
+                                                    reply_markup=keyboard)
+                    else:
+                        await bot.edit_message_text(chat_id=update.callback_query.message.chat.id,
+                                                    message_id=update.callback_query.message.message_id,
+                                                    text=message,
+                                                    parse_mode="Markdown")
 
-                    await bot.edit_message_text(chat_id=update.callback_query.message.chat.id,
-                                                message_id=update.callback_query.message.message_id,
-                                                text=message,
-                                                parse_mode="Markdown",
-                                                reply_markup=keyboard)
                 except Exception as e:
                     await bot.send_message(chat_id=update.callback_query.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
