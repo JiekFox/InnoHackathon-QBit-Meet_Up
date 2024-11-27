@@ -46,8 +46,8 @@ class UserTokenSerializer(serializers.Serializer):
     def get_tokens(user):
         refresh = RefreshToken.for_user(user)
         return {
-            "access_token": str(refresh.access_token),
-            "refresh_token": str(refresh),
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
         }
 
     def to_representation(self, user):
