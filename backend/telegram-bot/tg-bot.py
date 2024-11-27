@@ -194,3 +194,4 @@ async def webhook(request: Request):
     except Exception as e:
         logging.error(f"Ошибка обработки: {e}")
         return {"ok": False, "error": str(e)}
+
