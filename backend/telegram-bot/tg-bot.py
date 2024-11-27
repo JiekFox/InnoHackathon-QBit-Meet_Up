@@ -24,6 +24,9 @@ if not BACKEND_URL:
     raise ValueError("Не указан BACKEND_URL в переменных окружения!")
 bot = Bot(token=BOT_TOKEN)
 
+# Вспомогательный словарь для хранения состояния пользователей
+user_states = {}
+
 
 @app.post(f"/webhook/{BOT_TOKEN}")
 async def webhook(request: Request):
@@ -35,179 +38,86 @@ async def webhook(request: Request):
         if update.message:
             text = update.message.text
             user_id = update.message.from_user.id
-            username = update.message.from_user.username or "Unknown"
 
-            # Команда /start
-            if text == "/start":
-                keyboard = ReplyKeyboardMarkup(
-                    [["\U0001F50D Поиск", "Все митапы"], ["Мои митапы (созданные)", "Мои митапы (подписки)"]],
-                    resize_keyboard=True,
-                    one_time_keyboard=True
-                )
-                await bot.send_message(
-                    chat_id=update.message.chat.id,
-                    text="\U0001F44B Добро пожаловать! Вы можете:\n- \U0001F4DC Посмотреть список митапов.\n- \U0001F3AF Управлять своими митапами.\n- \U0001F50D Использовать поиск.",
-                    reply_markup=keyboard
-                )
-
-            # Команда /help
-            elif text == "/help":
-                await bot.send_message(
-                    chat_id=update.message.chat.id,
-                    text=(
-                        "Вот что я могу сделать:\n"
-                        "- Команда 'Все митапы': отображает список доступных митапов.\n"
-                        "- Команда 'Мои митапы (созданные)': показывает митапы, которые вы создали.\n"
-                        "- Команда 'Мои митапы (подписки)': показывает митапы, на которые вы подписаны.\n"
-                        "- Команда 'Поиск': позволяет найти митап по ID или названию.\n"
-                        "- Команды /subscribe [ID] и /unsubscribe [ID]: подписка/отписка от митапа."
-                    )
-                )
-
-            # Команда "Все митапы"
-            elif text == "Все митапы" or text == "/meetups":
+            # Команда "Все митапы" с постраничным выводом
+            if text == "Все митапы" or text == "/meetups":
+                page = 1
+                page_size = 20
                 try:
-                    response = requests.get(f"{BACKEND_URL}/meetings/")
+                    response = requests.get(f"{BACKEND_URL}/meetings/?page={page}&page_size={page_size}")
                     response.raise_for_status()
-                    meetings = response.json()
-                    message = "*Список митапов:*\n" + "\n".join(
-                        [
-                            f'• ({meeting["id"]}) *{meeting["title"]}* '
-                            f'(Дата: {datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")})'
-                            for meeting in meetings[:5]
-                        ]
-                    )
-                    keyboard = InlineKeyboardMarkup(
-                        [
-                            [InlineKeyboardButton("Выбрать", callback_data="choose_meetup")]
-                        ]
-                    )
+                    data = response.json()
+                    meetings = data.get("results", [])
+
+                    if not meetings:
+                        message = "❌ Нет доступных митапов на этой странице."
+                    else:
+                        message = f"*Страница {page}:*\n" + "\n".join(
+                            [
+                                f'• ({meeting.get("id")}) *{meeting.get("title")}* '
+                                f'(Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y %H:%M")})'
+                                for meeting in meetings
+                            ]
+                        )
+
+                    keyboard_buttons = []
+                    if data.get("previous"):
+                        keyboard_buttons.append(InlineKeyboardButton("⬅️", callback_data=f"prev_page:{page - 1}:{page_size}"))
+                    if data.get("next"):
+                        keyboard_buttons.append(InlineKeyboardButton("➡️", callback_data=f"next_page:{page + 1}:{page_size}"))
+
+                    keyboard = InlineKeyboardMarkup([keyboard_buttons])
+
                     await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown", reply_markup=keyboard)
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
-            # Команда "Мои митапы (созданные)"
-            elif text == "Мои митапы (созданные)" or text == "/my_meetups_owner":
-                try:
-                    response = requests.get(f"{BACKEND_URL}/my_meetups_owner/tg/{user_id}")
-                    response.raise_for_status()
-                    meetups = response.json()
-                    if not meetups:
-                        await bot.send_message(chat_id=update.message.chat.id, text="\U0001F3AF У вас нет созданных митапов.")
-                    else:
-                        message = "*Ваши созданные митапы:*\n" + "\n".join(
-                            [
-                                f'• ({meetup["id"]}) *{meetup["title"]}* '
-                                f'(Дата: {datetime.fromisoformat(meetup["datetime_beg"]).strftime("%d.%m.%Y %H:%M")})'
-                                for meetup in meetups
-                            ]
-                        )
-                        await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown")
-                except Exception as e:
-                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
-
-            # Команда "Мои митапы (подписки)"
-            elif text == "Мои митапы (подписки)" or text == "/my_meetups_subscriber":
-                try:
-                    response = requests.get(f"{BACKEND_URL}/my_meetups_subscriber/tg/{user_id}")
-                    response.raise_for_status()
-                    meetups = response.json()
-                    if not meetups:
-                        await bot.send_message(chat_id=update.message.chat.id, text="\U0001F4CC Вы пока не подписаны на митапы.")
-                    else:
-                        message = "*Ваши подписки на митапы:*\n" + "\n".join(
-                            [
-                                f'• ({meetup["id"]}) *{meetup["title"]}* '
-                                f'(Дата: {datetime.fromisoformat(meetup["datetime_beg"]).strftime("%d.%m.%Y %H:%M")})'
-                                for meetup in meetups
-                            ]
-                        )
-                        await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown")
-                except Exception as e:
-                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
-
-            # Команда "Поиск"
-            elif text == "\U0001F50D Поиск":
-                await bot.send_message(
-                    chat_id=update.message.chat.id,
-                    text="Введите ID или название митапа, который хотите найти."
-                )
-
-            elif text.startswith("/search "):
-                query = text.split(" ", 1)[1].strip()
-                try:
-                    response = requests.get(f"{BACKEND_URL}/meetings/")
-                    response.raise_for_status()
-                    meetings = response.json()
-                    meeting = next(
-                        (m for m in meetings if str(m["id"]) == query or m["title"].lower() == query.lower()),
-                        None
-                    )
-                    if not meeting:
-                        await bot.send_message(chat_id=update.message.chat.id, text="❌ Митап не найден.")
-                        return
-
-                    formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")
-                    caption = (
-                        f"Информация о митапе:\n"
-                        f"Название: *{meeting['title']}*\n"
-                        f"Описание: _{meeting['description']}_\n"
-                        f"Дата: {formatted_date}"
-                    )
-                    website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
-                    keyboard = InlineKeyboardMarkup(
-                        [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
-                    )
-
-                    if "image" in meeting and meeting["image"]:
-                        await bot.send_photo(
-                            chat_id=update.message.chat.id,
-                            photo=meeting["image"],
-                            caption=caption,
-                            reply_markup=keyboard,
-                            parse_mode="Markdown"
-                        )
-                    else:
-                        await bot.send_message(
-                            chat_id=update.message.chat.id,
-                            text=caption,
-                            reply_markup=keyboard,
-                            parse_mode="Markdown"
-                        )
-                except Exception as e:
-                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
-
-        # Обработка CallbackQuery
+        # Обработка CallbackQuery для переключения страниц
         elif update.callback_query:
             callback_data = update.callback_query.data
-            if callback_data == "choose_meetup":
-                await bot.send_message(
-                    chat_id=update.callback_query.message.chat.id,
-                    text="Введите ID или название митапа, который хотите выбрать."
-                )
-                # Добавлена логика ожидания ввода после выбора митапа
-                bot_data = bot.get_chat_data(update.callback_query.message.chat.id)
-                bot_data['waiting_for_meetup_selection'] = True
-
-            elif 'waiting_for_meetup_selection' in bot.get_chat_data(update.callback_query.message.chat.id):
-                query = callback_data.strip()
+            if callback_data.startswith("prev_page") or callback_data.startswith("next_page"):
                 try:
-                    response = requests.get(f"{BACKEND_URL}/meetings/")
-                    response.raise_for_status()
-                    meetings = response.json()
-                    meeting = next(
-                        (m for m in meetings if str(m["id"]) == query or m["title"].lower() == query.lower()),
-                        None
-                    )
-                    if not meeting:
-                        await bot.send_message(chat_id=update.callback_query.message.chat.id, text="❌ Митап не найден.")
-                        return
-                    # Clear waiting flag after selection is completed
-                    bot_data['waiting_for_meetup_selection'] = False
-                except Exception as e:
-                    logging.error(f"❌ Ошибка обработки: {e}")
-                    await bot.send_message(chat_id=update.callback_query.message.chat.id, text=f"❌ Ошибка при выборе митапа: {e}")
-    except Exception as e:
-        logging.error(f"❌ Глобальная ошибка обработки: {e}")
-        await bot.send_message(chat_id=update.callback_query.message.chat.id, text=f"❌ Ошибка при выборе митапа: {e}")
+                    _, page_str, page_size_str = callback_data.split(":")
+                    page = int(page_str)
+                    page_size = int(page_size_str)
 
+                    if page < 1:
+                        await bot.answer_callback_query(update.callback_query.id, text="Это первая страница.", show_alert=True)
+                        return
+
+                    response = requests.get(f"{BACKEND_URL}/meetings/?page={page}&page_size={page_size}")
+                    response.raise_for_status()
+                    data = response.json()
+                    meetings = data.get("results", [])
+
+                    if not meetings:
+                        await bot.answer_callback_query(update.callback_query.id, text="Больше митапов нет.", show_alert=True)
+                        return
+
+                    message = f"*Страница {page}:*\n" + "\n".join(
+                        [
+                            f'• ({meeting.get("id")}) *{meeting.get("title")}* '
+                            f'(Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y %H:%M")})'
+                            for meeting in meetings
+                        ]
+                    )
+
+                    keyboard_buttons = []
+                    if data.get("previous"):
+                        keyboard_buttons.append(InlineKeyboardButton("⬅️", callback_data=f"prev_page:{page - 1}:{page_size}"))
+                    if data.get("next"):
+                        keyboard_buttons.append(InlineKeyboardButton("➡️", callback_data=f"next_page:{page + 1}:{page_size}"))
+
+                    keyboard = InlineKeyboardMarkup([keyboard_buttons])
+
+                    await bot.edit_message_text(chat_id=update.callback_query.message.chat.id,
+                                                message_id=update.callback_query.message.message_id,
+                                                text=message,
+                                                parse_mode="Markdown",
+                                                reply_markup=keyboard)
+                except Exception as e:
+                    await bot.send_message(chat_id=update.callback_query.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
+
+    except Exception as e:
+        logging.error(f"❌ Ошибка обработки: {e}")
+        await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка обработки: {e}")
