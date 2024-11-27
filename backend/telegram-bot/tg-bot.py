@@ -39,8 +39,72 @@ async def webhook(request: Request):
             text = update.message.text
             user_id = update.message.from_user.id
 
+            # Проверка состояния пользователя на ожидание ввода для поиска
+            if user_id in user_states and user_states[user_id] == "waiting_for_search":
+                query = text.strip()
+                try:
+                    page = 1
+                    page_size = 50
+                    found = False
+                    while not found:
+                        response = requests.get(f"{BACKEND_URL}/meetings/?page={page}&page_size={page_size}")
+                        response.raise_for_status()
+                        data = response.json()
+                        meetings = data.get("results", [])
+
+                        meeting = next(
+                            (m for m in meetings if
+                             str(m.get("id")) == query or m.get("title", "").lower() == query.lower()),
+                            None
+                        )
+
+                        if meeting:
+                            found = True
+                            formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y")
+                            formatted_time = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%H:%M")
+                            caption = (
+                                f"Информация о митапе:\n"
+                                f"Название: *{meeting['title']}*\n"
+                                f"Описание: _{meeting['description']}_\n"
+                                f"Дата: {formatted_date}, время: {formatted_time}\n"
+                                f"ID: {meeting['id']}"
+                            )
+                            website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
+                            keyboard = InlineKeyboardMarkup(
+                                [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
+                            )
+
+                            if "image" in meeting and meeting["image"]:
+                                await bot.send_photo(
+                                    chat_id=update.message.chat.id,
+                                    photo=meeting["image"],
+                                    caption=caption,
+                                    reply_markup=keyboard,
+                                    parse_mode="Markdown"
+                                )
+                            else:
+                                await bot.send_message(
+                                    chat_id=update.message.chat.id,
+                                    text=caption,
+                                    reply_markup=keyboard,
+                                    parse_mode="Markdown"
+                                )
+                            break
+
+                        if not data.get("next"):
+                            break
+                        page += 1
+
+                    if not found:
+                        await bot.send_message(chat_id=update.message.chat.id, text="❌ Митап не найден.")
+                except Exception as e:
+                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
+
+                # Сброс состояния пользователя после выполнения поиска
+                user_states.pop(user_id, None)
+
             # Команда "Все митапы" с постраничным выводом
-            if text == "Все митапы" or text == "/meetups":
+            elif text == "Все митапы" or text == "/meetups":
                 page = 1
                 page_size = 20
                 try:
@@ -142,7 +206,6 @@ async def webhook(request: Request):
                     except Exception as e:
                         await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
 
-
         # Обработка CallbackQuery для переключения страниц
         elif update.callback_query:
             callback_data = update.callback_query.data
@@ -167,8 +230,7 @@ async def webhook(request: Request):
 
                     message = f"*Страница {page}:*\n" + "\n".join(
                         [
-                            f'• ({meeting.get("id")}) *{meeting.get("title")}* '
-                            f'(Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y %H:%M")})'
+                            f'• {meeting.get("title")} (Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y")}, время: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%H:%M")}) id:{meeting.get("id")}'
                             for meeting in meetings
                         ]
                     )
