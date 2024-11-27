@@ -203,7 +203,8 @@ async def webhook(request: Request):
                         await bot.send_message(chat_id=update.callback_query.message.chat.id, text="❌ Митап не найден.")
                         return
                     # Clear waiting flag after selection is completed
-                    bot_data['waiting_for_meetup_selection']
+                    bot_data['waiting_for_meetup_selection'] = False
                 except Exception as e:
-                    logging.error(f"❌ Ошибка обработки: {e}")
-                    return {"ok": False, "error": str(e)}
+                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при попытке выбора митапа: {e}")
+    except Exception as e:
+        await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Глобальная ошибка: {e}")
