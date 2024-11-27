@@ -18,11 +18,16 @@ app = FastAPI()
 # Инициализация Telegram Bot
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 BACKEND_URL = os.getenv("BACKEND_URL")
+AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMyNzk2ODYzLCJpYXQiOjE3MzI3MTA0NjMsImp0aSI6IjYwYTFlMTU5Y2UxNTRhNzhhZDk5ZTdiNjE3YjE4MDZlIiwidXNlcl9pZCI6MSwidXNlcm5hbWUiOiJhZG1pbjEifQ.dhqSgFh8SZMERHzVuwjbgoqlshr8XsKzFEAjMjqI9DE"
+
 if not BOT_TOKEN:
     raise ValueError("Не указан токен бота в переменных окружения!")
 if not BACKEND_URL:
     raise ValueError("Не указан BACKEND_URL в переменных окружения!")
 bot = Bot(token=BOT_TOKEN)
+
+# Заголовки для авторизации
+HEADERS = {"Authorization": f"Bearer {AUTH_TOKEN}"}
 
 
 @app.post(f"/webhook/{BOT_TOKEN}")
@@ -37,37 +42,10 @@ async def webhook(request: Request):
             user_id = update.message.from_user.id
             username = update.message.from_user.username or "Unknown"
 
-            # Команда /start
-            if text == "/start":
-                keyboard = ReplyKeyboardMarkup(
-                    [["🔍 Поиск", "Все митапы"], ["Мои митапы (созданные)", "Мои митапы (подписки)"]],
-                    resize_keyboard=True,
-                    one_time_keyboard=True
-                )
-                await bot.send_message(
-                    chat_id=update.message.chat.id,
-                    text="👋 Добро пожаловать! Вы можете:\n- 📜 Посмотреть список митапов.\n- 🎯 Управлять своими митапами.\n- 🔍 Использовать поиск.",
-                    reply_markup=keyboard
-                )
-
-            # Команда /help
-            elif text == "/help":
-                await bot.send_message(
-                    chat_id=update.message.chat.id,
-                    text=(
-                        "Вот что я могу сделать:\n"
-                        "- Команда 'Все митапы': отображает список доступных митапов.\n"
-                        "- Команда 'Мои митапы (созданные)': показывает митапы, которые вы создали.\n"
-                        "- Команда 'Мои митапы (подписки)': показывает митапы, на которые вы подписаны.\n"
-                        "- Команда 'Поиск': позволяет найти митап по ID или названию.\n"
-                        "- Команды /subscribe [ID] и /unsubscribe [ID]: подписка/отписка от митапа."
-                    )
-                )
-
             # Команда "Все митапы"
-            elif text == "Все митапы" or text == "/meetups":
+            if text == "Все митапы" or text == "/meetups":
                 try:
-                    response = requests.get(f"{BACKEND_URL}/meetings/")
+                    response = requests.get(f"{BACKEND_URL}/meetings/", headers=HEADERS)
                     response.raise_for_status()
                     meetings = response.json()
                     message = "*Список митапов:*\n" + "\n".join(
@@ -89,7 +67,7 @@ async def webhook(request: Request):
             # Команда "Мои митапы (созданные)"
             elif text == "Мои митапы (созданные)" or text == "/my_meetups_owner":
                 try:
-                    response = requests.get(f"{BACKEND_URL}/my_meetups_owner/tg/{user_id}")
+                    response = requests.get(f"{BACKEND_URL}/my_meetups_owner/tg/{user_id}", headers=HEADERS)
                     response.raise_for_status()
                     meetups = response.json()
                     if not meetups:
@@ -109,7 +87,7 @@ async def webhook(request: Request):
             # Команда "Мои митапы (подписки)"
             elif text == "Мои митапы (подписки)" or text == "/my_meetups_subscriber":
                 try:
-                    response = requests.get(f"{BACKEND_URL}/my_meetups_subscriber/tg/{user_id}")
+                    response = requests.get(f"{BACKEND_URL}/my_meetups_subscriber/tg/{user_id}", headers=HEADERS)
                     response.raise_for_status()
                     meetups = response.json()
                     if not meetups:
@@ -130,7 +108,7 @@ async def webhook(request: Request):
             elif text.startswith("/search "):
                 query = text.split(" ", 1)[1].strip()
                 try:
-                    response = requests.get(f"{BACKEND_URL}/meetings/")
+                    response = requests.get(f"{BACKEND_URL}/meetings/", headers=HEADERS)
                     response.raise_for_status()
                     meetings = response.json()
                     meeting = next(
