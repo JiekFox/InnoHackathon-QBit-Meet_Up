@@ -1,9 +1,10 @@
 from fastapi import FastAPI, Request
-from telegram import Bot, Update, ReplyKeyboardMarkup
+from telegram import Bot, Update, ReplyKeyboardMarkup, InputMediaPhoto
 from dotenv import load_dotenv
 import os
 import logging
 import requests
+from datetime import datetime
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -23,6 +24,7 @@ if not BACKEND_URL:
     raise ValueError("Не указан BACKEND_URL в переменных окружения!")
 bot = Bot(token=BOT_TOKEN)
 
+
 @app.post(f"/webhook/{BOT_TOKEN}")
 async def webhook(request: Request):
     try:
@@ -37,41 +39,33 @@ async def webhook(request: Request):
             # Обработка команды /start
             if text == "/start":
                 keyboard = ReplyKeyboardMarkup(
-                    [["Все юзеры", "Все митапы"], ["Выбор митапа", "/help"]],
+                    [["Все митапы", "Выбор митапа"]],
                     resize_keyboard=True,
                     one_time_keyboard=True
                 )
                 await bot.send_message(
                     chat_id=update.message.chat.id,
-                    text="Добро пожаловать! Выберите действие:",
+                    text=(
+                        "Добро пожаловать! Вы можете:\n"
+                        "- Посмотреть список митапов.\n"
+                        "- Выбрать митап по ID.\n"
+                        "Если у вас есть вопросы, используйте команду /help."
+                    ),
                     reply_markup=keyboard
                 )
 
             # Обработка команды /help
             elif text == "/help":
-                keyboard = ReplyKeyboardMarkup(
-                    [["Все юзеры", "Все митапы"], ["Выбор митапа"]],
-                    resize_keyboard=True,
-                    one_time_keyboard=True
-                )
                 await bot.send_message(
                     chat_id=update.message.chat.id,
-                    text="Выберите одно из действий:",
-                    reply_markup=keyboard
-                )
-
-            # Обработка выбора "Все юзеры"
-            elif text == "Все юзеры":
-                try:
-                    response = requests.get(f"{BACKEND_URL}/users/")
-                    response.raise_for_status()
-                    users = response.json()
-                    message = "Список пользователей:\n" + "\n".join(
-                        [f"- {user['name']}" for user in users[:5]]
+                    text=(
+                        "Вот что я могу сделать:\n"
+                        "- Команда 'Все митапы': отображает список доступных митапов.\n"
+                        "- Команда 'Выбор митапа': позволяет ввести ID митапа и получить его описание.\n"
+                        "- Команда /search [ID]: позволяет найти митап по его ID.\n"
+                        "Выберите действие из меню или введите команду вручную."
                     )
-                except Exception as e:
-                    message = f"Ошибка при получении пользователей: {e}"
-                await bot.send_message(chat_id=update.message.chat.id, text=message)
+                )
 
             # Обработка выбора "Все митапы"
             elif text == "Все митапы":
@@ -80,8 +74,12 @@ async def webhook(request: Request):
                     response.raise_for_status()
                     meetings = response.json()
                     message = "Список митапов:\n" + "\n".join(
-                        [f"- {meeting['title']} (Дата: {meeting['datetime_beg']}, Ссылка: {meeting['link']})"
-                         for meeting in meetings[:5]]
+                        [
+                            f'- "{meeting["title"]}" '
+                            f'(Дата: {datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")}, '
+                            f'Ссылка: {meeting["link"]})'
+                            for meeting in meetings[:5]
+                        ]
                     )
                 except Exception as e:
                     message = f"Ошибка при получении митапов: {e}"
@@ -101,18 +99,26 @@ async def webhook(request: Request):
                     response = requests.get(f"{BACKEND_URL}/meetings/{meeting_id}")
                     response.raise_for_status()
                     meeting = response.json()
-                    message = (
+                    formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")
+                    caption = (
                         f"Информация о митапе:\n"
-                        f"Название: {meeting['title']}\n"
-                        f"Описание: {meeting['description']}\n"
-                        f"Дата: {meeting['datetime_beg']}\n"
-                        f"Ссылка: {meeting['link']}\n"
+                        f"Название: *\"{meeting['title']}\"*\n"
+                        f"Описание: _{meeting['description']}_\n"
+                        f"Дата: {formatted_date}\n"
+                        f"Ссылка: {meeting['link']}"
                     )
                     if meeting.get("image"):
-                        await bot.send_photo(chat_id=update.message.chat.id, photo=meeting["image"])
+                        await bot.send_photo(
+                            chat_id=update.message.chat.id,
+                            photo=meeting["image"],
+                            caption=caption,
+                            parse_mode="Markdown"
+                        )
+                    else:
+                        await bot.send_message(chat_id=update.message.chat.id, text=caption, parse_mode="Markdown")
                 except Exception as e:
                     message = f"Ошибка при получении митапа с ID {meeting_id}: {e}"
-                await bot.send_message(chat_id=update.message.chat.id, text=message)
+                    await bot.send_message(chat_id=update.message.chat.id, text=message)
 
             # Обработка ввода ID митапа
             elif text.isdigit():
@@ -121,18 +127,26 @@ async def webhook(request: Request):
                     response = requests.get(f"{BACKEND_URL}/meetings/{meeting_id}")
                     response.raise_for_status()
                     meeting = response.json()
-                    message = (
+                    formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")
+                    caption = (
                         f"Информация о митапе:\n"
-                        f"Название: {meeting['title']}\n"
-                        f"Описание: {meeting['description']}\n"
-                        f"Дата: {meeting['datetime_beg']}\n"
-                        f"Ссылка: {meeting['link']}\n"
+                        f"Название: *\"{meeting['title']}\"*\n"
+                        f"Описание: _{meeting['description']}_\n"
+                        f"Дата: {formatted_date}\n"
+                        f"Ссылка: {meeting['link']}"
                     )
                     if meeting.get("image"):
-                        await bot.send_photo(chat_id=update.message.chat.id, photo=meeting["image"])
+                        await bot.send_photo(
+                            chat_id=update.message.chat.id,
+                            photo=meeting["image"],
+                            caption=caption,
+                            parse_mode="Markdown"
+                        )
+                    else:
+                        await bot.send_message(chat_id=update.message.chat.id, text=caption, parse_mode="Markdown")
                 except Exception as e:
                     message = f"Ошибка при получении митапа с ID {text}: {e}"
-                await bot.send_message(chat_id=update.message.chat.id, text=message)
+                    await bot.send_message(chat_id=update.message.chat.id, text=message)
 
             # Обработка неизвестных сообщений
             else:
