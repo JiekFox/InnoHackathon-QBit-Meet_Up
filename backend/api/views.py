@@ -36,7 +36,7 @@ class MeetingViewSet(ModelViewSet):
     filterset_class = MeetingFilter
     search_fields = ["title", "description"]
     ordering_fields = ["datetime_beg", "location"]
-    ordering = ["datetime_beg"]
+    ordering = ["-datetime_beg"]
 
 
     def get_permissions(self):
