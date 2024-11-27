@@ -3,12 +3,12 @@ import { useAuth } from '../utils/AuthContext';
 import axios from 'axios';
 import { MEETINGS_API_URL } from '../constant/apiURL';
 import { useNavigate } from 'react-router';
-import { SIGN_IN } from '../constant/router';
+import { MEETUP_DETAILS, SIGN_IN } from '../constant/router';
 import { giveConfig } from '../utils/giveConfig';
 
 export function CreateMeetup() {
     const navigate = useNavigate();
-    const { token, userID } = useAuth(); // Получаем токен и ID автора из AuthContext
+    const { token, userID } = useAuth();
     const [formData, setFormData] = useState({
         title: '',
         datetime_beg: '',
@@ -18,13 +18,11 @@ export function CreateMeetup() {
     });
     const [error, setError] = useState(null);
 
-    // Обработчик изменения полей
     const handleChange = e => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // Обработчик загрузки изображения
     const handleImageUpload = e => {
         const file = e.target.files[0];
         if (file) {
@@ -36,7 +34,7 @@ export function CreateMeetup() {
         e.preventDefault();
 
         if (!token) {
-            navigate(SIGN_IN); // Если нет токена, перенаправляем на страницу входа
+            navigate(SIGN_IN);
             return;
         }
 
@@ -47,7 +45,7 @@ export function CreateMeetup() {
         meetingData.append('link', formData.link);
         meetingData.append('description', formData.description);
         if (formData.image) {
-            meetingData.append('image', formData.image); // Добавляем изображение
+            meetingData.append('image', formData.image);
         }
 
         console.log(formData);
@@ -59,7 +57,7 @@ export function CreateMeetup() {
                 giveConfig(token)
             );
             console.log('Successfully created meeting:', response.data);
-            navigate(`/meetup/${response.id}`);
+            navigate(`${MEETUP_DETAILS}/${response.data.id}`);
         } catch (error) {
             console.error(
                 'Error creating meeting:',

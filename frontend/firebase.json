@@ -1,11 +1,18 @@
+
 {
   "hosting": {
     "site": "qbit-meetup",
     "public": "/my-app/build/.",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
     "ignore": [
       "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+      "/.*",
+      "/node_modules/**"
     ]
   }
 }
