@@ -14,8 +14,8 @@
     --dropdown-shadow: rgba(0, 0, 0, 0.2);
     --user-info-hover-bg-light: #d0d0d0; /* Более темный цвет при наведении на user-info в светлой теме */
     --user-info-hover-bg-dark: #21272e;
-    --button-bg-hover: red; /*изменить*/
-    --button-light-muted-bg: red;
+    --button-bg-hover: green;
+    --button-light-muted-bg: green;
     --description-color-dark: #AFAFAF;
     --description-color-light: #757575;
     --primary-link: #4a4aff;
@@ -45,7 +45,7 @@
     --button-bg: var(--button-bg-light);
     --button-border: #d9d9d9;
     --user-info-hover-bg: var(--user-info-hover-bg-light);
-    --button-light-bg: #72ed72;
+    --button-light-bg: #1c8139;
 }
 body {
     margin: 0;
