@@ -139,7 +139,7 @@ async def webhook(request: Request):
 
 
             # Команда "Все митапы" с постраничным выводом
-            elif text == "Все митапы" or text == "/meetups":
+            elif text == "Все митапы" or text == "📜 Все митапы" or text == "/meetups":
                 page = 1
                 page_size = 20
                 try:
@@ -174,7 +174,7 @@ async def webhook(request: Request):
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
-            elif text == "🔍 Поиск" or text.startswith("/search"):
+            elif text == "🔍 Поиск" or text == "Поиск" or text.startswith("/search"):
                 if text == "🔍 Поиск":
                     await bot.send_message(
                         chat_id=update.message.chat.id,
