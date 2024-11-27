@@ -4,7 +4,6 @@ import Pagination from './Pagination';
 import icon from '../../assets/img/icon.png';
 import { MEETUP_DETAILS } from '../../constant/router';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import useFetchMeetings from '../../api/useFetchMeetings';
 import { MEETINGS_API_URL } from '../../constant/apiURL';
 

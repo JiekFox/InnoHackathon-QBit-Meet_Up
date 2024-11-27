@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null); // Токен
     const [name, setName] = useState(null); // Имя пользователя
     const [userID, setUserID] = useState(null); // ID пользователя
+    const [loading, setLoading] = useState(true);
 
     // Сохранение токена в localStorage
     const saveToken = newToken => {
@@ -35,6 +36,7 @@ export const AuthProvider = ({ children }) => {
         });
         saveName(newDate.username);
         saveId(newDate.user_id);
+        setLoading(false); // Устанавливаем, что загрузка завершена
     };
 
     // Удаление токена из состояния и localStorage
@@ -79,6 +81,7 @@ export const AuthProvider = ({ children }) => {
                 console.error('Failed to parse ID from localStorage:', error);
             }
         }
+        setLoading(false); // Устанавливаем, что загрузка завершена
     }, []);
     console.log(name, userID, token);
     /*
@@ -126,8 +129,13 @@ export const AuthProvider = ({ children }) => {
         name,
         saveToken,
         removeToken,
-        saveDate
+        saveDate,
+        loading
     };
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return loading ? (
+        <div>Loading...</div>
+    ) : (
+        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+    );
 };

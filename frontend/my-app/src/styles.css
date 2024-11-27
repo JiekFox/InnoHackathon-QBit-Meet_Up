@@ -16,7 +16,7 @@
     --user-info-hover-bg-dark: #21272e;
     --button-bg-hover: red; /*изменить*/
     --button-light-muted-bg: red;
-    --description-color-dark: #AFAFAF;
+    --description-color-dark: #afafaf;
     --description-color-light: #757575;
     --primary-link: #4a4aff;
     --card-border: black;
@@ -46,6 +46,9 @@
     --button-border: #d9d9d9;
     --user-info-hover-bg: var(--user-info-hover-bg-light);
     --button-light-bg: #72ed72;
+}
+* {
+    color: inherit;
 }
 body {
     margin: 0;
@@ -266,7 +269,7 @@ button {
 .meetup-card:hover {
     transform: translateY(-5px);
 }
-.meetup-grid .meetup-card .description{
+.meetup-grid .meetup-card .description {
     color: var(--description);
 }
 /* Убираем анимацию для внутренних элементов карточки */
@@ -742,4 +745,104 @@ h3 {
 .home {
     background: var(--header-footer);
     padding: 20px;
+}
+
+/* Основной контейнер для страницы создания митинга */
+.create-meetup {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--header-footer);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок страницы */
+.create-meetup h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+/* Ошибки */
+.create-meetup .error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Форма */
+.create-meetup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Группа инпутов */
+.create-meetup-form .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Лейблы */
+.create-meetup-form .input-group label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Инпуты и текстовые области */
+.create-meetup-form .input-group input,
+.create-meetup-form .input-group textarea {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid var(--button-border);
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--background);
+}
+
+/* Текстовые области */
+.create-meetup-form .input-group textarea {
+    resize: vertical;
+    height: 100px;
+}
+
+/* Кнопка загрузки файла */
+.create-meetup-form .input-group input[type='file'] {
+    padding: 5px;
+    font-size: 14px;
+}
+
+/* Кнопка отправки */
+.create-meetup-form .create-meetup-button {
+    background-color: var(--button-bg);
+    font-size: 16px;
+    padding: 10px 20px;
+    border: 1px solid var(--button-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-meetup-form .create-meetup-button:hover {
+    background-color: var(--button-bg-hover);
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+    .create-meetup {
+        padding: 10px;
+    }
+
+    .create-meetup h1 {
+        font-size: 20px;
+    }
+
+    .create-meetup-form .create-meetup-button {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
 }

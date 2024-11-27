@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { USER_API_URL } from '../constant/apiURL';
+import { giveConfig, USER_API_URL } from '../constant/apiURL';
 import { useAuth } from '../utils/AuthContext';
 
 export default function Profile() {
@@ -11,9 +11,9 @@ export default function Profile() {
         about: '',
         photo: null
     });
-    const { token } = useAuth();
+    const { token, userID } = useAuth();
 
-    const userId = 3; // Вставьте ID пользователя, который вам нужно загрузить.
+    const userId = userID; // Вставьте ID пользователя, который вам нужно загрузить.
 
     // Функция для загрузки данных пользователя
     const fetchUserData = async () => {
@@ -21,12 +21,11 @@ export default function Profile() {
             console.error('No access token found');
             return;
         }
-        const config = {
-            headers: { Authorization: `Bearer ${token.access}` } // Используем токен для авторизации
-        };
+        const config = giveConfig(token);
 
         try {
-            const response = await axios.get(`${USER_API_URL}${userId}`, config); // Получаем данные пользователя с авторизацией
+            console.log(`${USER_API_URL}${userId}`, config, token, userID);
+            const response = await axios.get(`${USER_API_URL}${userId}/`, config); // Получаем данные пользователя с авторизацией
             const userData = response.data;
             console.log(userData);
             // Заполняем форму данными пользователя
@@ -46,8 +45,11 @@ export default function Profile() {
     };
 
     useEffect(() => {
-        fetchUserData(); // Загружаем данные при монтировании компонента
-    }, []);
+        if (token && token.access) {
+            fetchUserData(); // Загружаем данные пользователя, если токен доступен
+        }
+    }, [token]);
+
     const onSave = data => {
         console.log(data);
     };
