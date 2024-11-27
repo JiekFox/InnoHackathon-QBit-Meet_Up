@@ -40,13 +40,13 @@ async def webhook(request: Request):
             # Команда /start
             if text == "/start":
                 keyboard = ReplyKeyboardMarkup(
-                    [["🔍 Поиск", "Все митапы"], ["Мои митапы (созданные)", "Мои митапы (подписки)"]],
+                    [["\U0001F50D Поиск", "Все митапы"], ["Мои митапы (созданные)", "Мои митапы (подписки)"]],
                     resize_keyboard=True,
                     one_time_keyboard=True
                 )
                 await bot.send_message(
                     chat_id=update.message.chat.id,
-                    text="👋 Добро пожаловать! Вы можете:\n- 📜 Посмотреть список митапов.\n- 🎯 Управлять своими митапами.\n- 🔍 Использовать поиск.",
+                    text="\U0001F44B Добро пожаловать! Вы можете:\n- \U0001F4DC Посмотреть список митапов.\n- \U0001F3AF Управлять своими митапами.\n- \U0001F50D Использовать поиск.",
                     reply_markup=keyboard
                 )
 
@@ -93,7 +93,7 @@ async def webhook(request: Request):
                     response.raise_for_status()
                     meetups = response.json()
                     if not meetups:
-                        await bot.send_message(chat_id=update.message.chat.id, text="🎯 У вас нет созданных митапов.")
+                        await bot.send_message(chat_id=update.message.chat.id, text="\U0001F3AF У вас нет созданных митапов.")
                     else:
                         message = "*Ваши созданные митапы:*\n" + "\n".join(
                             [
@@ -113,7 +113,7 @@ async def webhook(request: Request):
                     response.raise_for_status()
                     meetups = response.json()
                     if not meetups:
-                        await bot.send_message(chat_id=update.message.chat.id, text="📌 Вы пока не подписаны на митапы.")
+                        await bot.send_message(chat_id=update.message.chat.id, text="\U0001F4CC Вы пока не подписаны на митапы.")
                     else:
                         message = "*Ваши подписки на митапы:*\n" + "\n".join(
                             [
@@ -127,6 +127,12 @@ async def webhook(request: Request):
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
             # Команда "Поиск"
+            elif text == "\U0001F50D Поиск":
+                await bot.send_message(
+                    chat_id=update.message.chat.id,
+                    text="Введите ID или название митапа, который хотите найти."
+                )
+
             elif text.startswith("/search "):
                 query = text.split(" ", 1)[1].strip()
                 try:
@@ -179,8 +185,25 @@ async def webhook(request: Request):
                     chat_id=update.callback_query.message.chat.id,
                     text="Введите ID или название митапа, который хотите выбрать."
                 )
+                # Добавлена логика ожидания ввода после выбора митапа
+                bot_data = bot.get_chat_data(update.callback_query.message.chat.id)
+                bot_data['waiting_for_meetup_selection'] = True
 
-        return {"ok": True}
-    except Exception as e:
-        logging.error(f"❌ Ошибка обработки: {e}")
-        return {"ok": False, "error": str(e)}
+            elif 'waiting_for_meetup_selection' in bot.get_chat_data(update.callback_query.message.chat.id):
+                query = callback_data.strip()
+                try:
+                    response = requests.get(f"{BACKEND_URL}/meetings/")
+                    response.raise_for_status()
+                    meetings = response.json()
+                    meeting = next(
+                        (m for m in meetings if str(m["id"]) == query or m["title"].lower() == query.lower()),
+                        None
+                    )
+                    if not meeting:
+                        await bot.send_message(chat_id=update.callback_query.message.chat.id, text="❌ Митап не найден.")
+                        return
+                    # Clear waiting flag after selection is completed
+                    bot_data['waiting_for_meetup_selection']
+                except Exception as e:
+                    logging.error(f"❌ Ошибка обработки: {e}")
+                    return {"ok": False, "error": str(e)}
