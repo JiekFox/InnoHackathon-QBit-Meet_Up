@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from datetime import datetime
+from datetime import datetime, timezone
 from .models import Meeting, SignedToMeeting, UserProfile
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
@@ -166,10 +166,17 @@ class UserViewSet(ModelViewSet):
         """
         if self.action == "register":
             return UserRegistrationSerializer
+        elif self.action in [
+            "meetings_signed_active", 
+            "meetings_signed", 
+            "meetings_owned", 
+            "meetings_authored_active"
+        ]:
+            return MeetingSerializer
         return super().get_serializer_class()
 
 
-    @action(detail=False, methods=["post"], permission_classes=[AllowAny])
+    @action(detail=False, methods=["post"])
     def register(self, request):
         """
         Регистрация нового пользователя.
@@ -190,8 +197,8 @@ class UserViewSet(ModelViewSet):
                         "message": "User registered successfully",
                         "user_id": user.id,
                         "username": user.username,
-                        "access_token": tokens.get("access"),
-                        "refresh_token": tokens.get("refresh"),
+                        "access": tokens.get("access"),
+                        "refresh": tokens.get("refresh"),
                     },
                     status=status.HTTP_201_CREATED
                 )
@@ -201,15 +208,6 @@ class UserViewSet(ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-    def list(self, request, *args, **kwargs):
-        """
-        Получение списка пользователей.
-        """
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
 
 
     def create(self, request, *args, **kwargs):
@@ -247,7 +245,7 @@ class UserViewSet(ModelViewSet):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
         meetings = Meeting.objects.filter(author=user)
-        serializer = MeetingSerializer(meetings, many=True)
+        serializer = self.get_serializer(meetings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -262,7 +260,86 @@ class UserViewSet(ModelViewSet):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
         meetings = Meeting.objects.filter(attendees__user=user)
-        serializer = MeetingSerializer(meetings, many=True)
+        serializer = self.get_serializer(meetings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    @staticmethod
+    def get_user_by_param(request, param):
+        param_value = request.query_params.get(param, None)
+
+        if not param_value:
+            return None, f"{param} is required"
+
+        try:
+            if param == "tg_id":
+                return UserProfile.objects.get(tg_id=param_value), None
+            elif param == "teams_id":
+                return UserProfile.objects.get(teams_id=param_value), None
+            else:
+                return None, f"Invalid parameter {param}"
+        except UserProfile.DoesNotExist:
+            return None, "User not found"
+
+    
+    @action(detail=False, methods=["get"])
+    def meetings_signed_active(self, request):
+        """
+        Возвращает список актуальных встреч, на которые подписан пользователь по его tg_id или teams_id.
+        """
+        tg_id = request.query_params.get('tg_id', None)
+        teams_id = request.query_params.get('teams_id', None)
+
+        user = None
+        if tg_id:
+            user, error = self.get_user_by_param(request, 'tg_id')
+        elif teams_id:
+            user, error = self.get_user_by_param(request, 'teams_id')
+        else:
+            return Response({"error": "tg_id or teams_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if user is None:
+            return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
+
+        now = datetime.now(timezone.utc)
+
+        meetings = Meeting.objects.filter(
+            attendees__user=user,
+            datetime_beg__gt=now,
+        ).exclude(
+            author=user
+        )
+
+        serializer = self.get_serializer(meetings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=["get"])
+    def meetings_authored_active(self, request):
+        """
+        Возвращает список актуальных встреч, на которые подписан пользователь по его tg_id или teams_id.
+        """
+        tg_id = request.query_params.get('tg_id', None)
+        teams_id = request.query_params.get('teams_id', None)
+
+        user = None
+        if tg_id:
+            user, error = self.get_user_by_param(request, 'tg_id')
+        elif teams_id:
+            user, error = self.get_user_by_param(request, 'teams_id')
+        else:
+            return Response({"error": "tg_id or teams_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if user is None:
+            return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
+
+        now = datetime.now(timezone.utc)
+
+        meetings = Meeting.objects.filter(
+            author=user,
+            datetime_beg__gt=now
+        )
+
+        serializer = self.get_serializer(meetings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     
