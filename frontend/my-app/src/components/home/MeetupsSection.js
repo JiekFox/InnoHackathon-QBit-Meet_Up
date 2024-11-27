@@ -8,33 +8,32 @@ import useFetchMeetings from '../../api/useFetchMeetings';
 import { MEETINGS_API_URL } from '../../constant/apiURL';
 
 // Константа для количества элементов на странице
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 5;
 
 export default function MeetupsSection() {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [meetups, setMeetups] = useState([]);
+    const [totalPages, setTotalPages] = useState(0);
 
-    const { data, loading, error } = useFetchMeetings(MEETINGS_API_URL);
+    const { data, loading, error } = useFetchMeetings(
+        `${MEETINGS_API_URL}?page=${currentPage}&page_size=${ITEMS_PER_PAGE}`
+    );
+
     useEffect(() => {
-        setMeetups(
-            data.map(item => ({
-                id: item.id,
-                title: item.title,
-                description: item.description,
-                image: item.image ? item.image : icon
-            }))
-        );
-    }, [data]);
+        if (data.results) {
+            setMeetups(
+                data.results.map(item => ({
+                    id: item.id,
+                    title: item.title,
+                    description: item.description,
+                    image: item.image ? item.image : icon
+                }))
+            );
 
-    const filteredMeetups = meetups.filter(meetup =>
-        meetup.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const totalPages = Math.ceil(filteredMeetups.length / ITEMS_PER_PAGE);
-    const paginatedMeetups = filteredMeetups.slice(
-        (currentPage - 1) * ITEMS_PER_PAGE,
-        currentPage * ITEMS_PER_PAGE
-    );
+            setTotalPages(Math.ceil(data.count / ITEMS_PER_PAGE));
+        }
+    }, [data]);
 
     const handleSearchChange = query => {
         setSearchQuery(query);
@@ -42,10 +41,9 @@ export default function MeetupsSection() {
     useEffect(() => {
         setCurrentPage(1);
     }, [searchQuery]);
-
-    const handlePageChange = page => {
-        setCurrentPage(page);
-    };
+    const filteredMeetups = meetups.filter(meetup =>
+        meetup.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <section className="home">
@@ -53,24 +51,25 @@ export default function MeetupsSection() {
 
             <div className="meetup-grid">
                 {loading ? (
-                    <div>loading...</div>
+                    <div>Loading...</div>
+                ) : error ? (
+                    <h1>Error: {error.message}</h1>
                 ) : (
-                    error ? <h1>error: {error.message}</h1> : (
-                    paginatedMeetups.map(meetup => (
+                    filteredMeetups.map(meetup => (
                         <MeetupCard
                             key={meetup.id}
                             to={`${MEETUP_DETAILS}/${meetup.id}`}
                             {...meetup}
                         />
                     ))
-                    )
                 )}
             </div>
 
+            {/* Пагинация */}
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={handlePageChange}
+                onPageChange={setCurrentPage}
             />
         </section>
     );
