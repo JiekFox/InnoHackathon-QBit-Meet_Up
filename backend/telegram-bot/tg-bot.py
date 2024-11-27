@@ -206,6 +206,6 @@ async def webhook(request: Request):
                 except Exception as e:
                     logging.error(f"❌ Ошибка обработки: {e}")
                     await bot.send_message(chat_id=update.callback_query.message.chat.id, text=f"❌ Ошибка при выборе митапа: {e}")
+
     except Exception as e:
-        logging.error(f"❌ Глобальная ошибка: {e}")
-        await bot.send_message(chat_id=update.callback_query.message.chat.id, text=f"❌ Глобальная ошибка: {e}")
+        await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Глобальная ошибка: {e}")
