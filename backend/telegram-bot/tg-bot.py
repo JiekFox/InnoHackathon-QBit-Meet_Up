@@ -54,8 +54,7 @@ async def webhook(request: Request):
                     else:
                         message = f"*Страница {page}:*\n" + "\n".join(
                             [
-                                f'• ({meeting.get("id")}) *{meeting.get("title")}* '
-                                f'(Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y %H:%M")})'
+                                f'• {meeting.get("title")} (Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y")}, время: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%H:%M")}) id:{meeting.get("id")}'
                                 for meeting in meetings
                             ]
                         )
@@ -75,6 +74,74 @@ async def webhook(request: Request):
 
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
+
+            elif text == "🔍 Поиск" or text.startswith("/search"):
+                if text == "🔍 Поиск":
+                    await bot.send_message(
+                        chat_id=update.message.chat.id,
+                        text="Введите ID или название митапа, который хотите найти."
+                    )
+                    user_states[user_id] = "waiting_for_search"
+                else:
+                    query = text.split(" ", 1)[1].strip()
+                    try:
+                        page = 1
+                        page_size = 50
+                        found = False
+                        while not found:
+                            response = requests.get(f"{BACKEND_URL}/meetings/?page={page}&page_size={page_size}")
+                            response.raise_for_status()
+                            data = response.json()
+                            meetings = data.get("results", [])
+
+                            meeting = next(
+                                (m for m in meetings if
+                                 str(m.get("id")) == query or m.get("title", "").lower() == query.lower()),
+                                None
+                            )
+
+                            if meeting:
+                                found = True
+                                formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y")
+                                formatted_time = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%H:%M")
+                                caption = (
+                                    f"Информация о митапе:\n"
+                                    f"Название: *{meeting['title']}*\n"
+                                    f"Описание: _{meeting['description']}_\n"
+                                    f"Дата: {formatted_date}, время: {formatted_time}\n"
+                                    f"ID: {meeting['id']}"
+                                )
+                                website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
+                                keyboard = InlineKeyboardMarkup(
+                                    [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
+                                )
+
+                                if "image" in meeting and meeting["image"]:
+                                    await bot.send_photo(
+                                        chat_id=update.message.chat.id,
+                                        photo=meeting["image"],
+                                        caption=caption,
+                                        reply_markup=keyboard,
+                                        parse_mode="Markdown"
+                                    )
+                                else:
+                                    await bot.send_message(
+                                        chat_id=update.message.chat.id,
+                                        text=caption,
+                                        reply_markup=keyboard,
+                                        parse_mode="Markdown"
+                                    )
+                                break
+
+                            if not data.get("next"):
+                                break
+                            page += 1
+
+                        if not found:
+                            await bot.send_message(chat_id=update.message.chat.id, text="❌ Митап не найден.")
+                    except Exception as e:
+                        await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
+
 
         # Обработка CallbackQuery для переключения страниц
         elif update.callback_query:
