@@ -86,10 +86,6 @@ async def webhook(request: Request):
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
-            # Обработка CallbackQuery для кнопки "Выбрать"
-            elif update.callback_query and update.callback_query.data == "choose_meetup":
-                await bot.send_message(chat_id=update.callback_query.message.chat.id, text="Введите ID или название митапа для поиска.")
-
             # Команда "Мои митапы (созданные)"
             elif text == "Мои митапы (созданные)" or text == "/my_meetups_owner":
                 try:
@@ -130,53 +126,59 @@ async def webhook(request: Request):
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
-            # Обработка поиска
-            elif text == "🔍 Поиск" or text.startswith("/search "):
-                query = text.split(" ", 1)[1] if text.startswith("/search ") else None
-                if not query:
-                    await bot.send_message(chat_id=update.message.chat.id, text="Введите ID или название митапа для поиска.")
-                else:
-                    try:
-                        response = requests.get(f"{BACKEND_URL}/meetings/")
-                        response.raise_for_status()
-                        meetings = response.json()
-                        meeting = next(
-                            (m for m in meetings if str(m["id"]) == query or m["title"].lower() == query.lower()),
-                            None
-                        )
-                        if not meeting:
-                            await bot.send_message(chat_id=update.message.chat.id, text="❌ Митап не найден.")
-                            return
+            # Команда "Поиск"
+            elif text.startswith("/search "):
+                query = text.split(" ", 1)[1].strip()
+                try:
+                    response = requests.get(f"{BACKEND_URL}/meetings/")
+                    response.raise_for_status()
+                    meetings = response.json()
+                    meeting = next(
+                        (m for m in meetings if str(m["id"]) == query or m["title"].lower() == query.lower()),
+                        None
+                    )
+                    if not meeting:
+                        await bot.send_message(chat_id=update.message.chat.id, text="❌ Митап не найден.")
+                        return
 
-                        formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")
-                        caption = (
-                            f"Информация о митапе:\n"
-                            f"Название: *{meeting['title']}*\n"
-                            f"Описание: _{meeting['description']}_\n"
-                            f"Дата: {formatted_date}"
-                        )
-                        website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
-                        keyboard = InlineKeyboardMarkup(
-                            [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
-                        )
+                    formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")
+                    caption = (
+                        f"Информация о митапе:\n"
+                        f"Название: *{meeting['title']}*\n"
+                        f"Описание: _{meeting['description']}_\n"
+                        f"Дата: {formatted_date}"
+                    )
+                    website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
+                    keyboard = InlineKeyboardMarkup(
+                        [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
+                    )
 
-                        if "image" in meeting and meeting["image"]:
-                            await bot.send_photo(
-                                chat_id=update.message.chat.id,
-                                photo=meeting["image"],
-                                caption=caption,
-                                reply_markup=keyboard,
-                                parse_mode="Markdown"
-                            )
-                        else:
-                            await bot.send_message(
-                                chat_id=update.message.chat.id,
-                                text=caption,
-                                reply_markup=keyboard,
-                                parse_mode="Markdown"
-                            )
-                    except Exception as e:
-                        await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
+                    if "image" in meeting and meeting["image"]:
+                        await bot.send_photo(
+                            chat_id=update.message.chat.id,
+                            photo=meeting["image"],
+                            caption=caption,
+                            reply_markup=keyboard,
+                            parse_mode="Markdown"
+                        )
+                    else:
+                        await bot.send_message(
+                            chat_id=update.message.chat.id,
+                            text=caption,
+                            reply_markup=keyboard,
+                            parse_mode="Markdown"
+                        )
+                except Exception as e:
+                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
+
+        # Обработка CallbackQuery
+        elif update.callback_query:
+            callback_data = update.callback_query.data
+            if callback_data == "choose_meetup":
+                await bot.send_message(
+                    chat_id=update.callback_query.message.chat.id,
+                    text="Введите ID или название митапа, который хотите выбрать."
+                )
 
         return {"ok": True}
     except Exception as e:
