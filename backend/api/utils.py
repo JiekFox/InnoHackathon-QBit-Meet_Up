@@ -7,5 +7,5 @@ def send_email(subject, to_email, template_name, context):
     """
     message = render_to_string(template_name, context)
     email = EmailMessage(subject, message, to=[to_email])
-    email.content_subtype = 'html'
+    email.content_subtype = "html"
     email.send()

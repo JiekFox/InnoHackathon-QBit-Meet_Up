@@ -9,6 +9,19 @@ from rest_framework.decorators import action
 from .serializers import MeetingSerializer, UserRegistrationSerializer, ObtainTokenSerializer, UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .utils import send_email
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.pagination import PageNumberPagination
+from .filters import MeetingFilter
+
+
+class MeetingPagination(PageNumberPagination):
+    """
+    Класс для настройки пагинации.
+    """
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 50
 
 
 class MeetingViewSet(ModelViewSet):
@@ -18,12 +31,19 @@ class MeetingViewSet(ModelViewSet):
     queryset = Meeting.objects.all()
     serializer_class = MeetingSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = MeetingPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]  
+    filterset_class = MeetingFilter
+    search_fields = ["title", "description"]
+    ordering_fields = ["datetime_beg", "location"]
+    ordering = ["datetime_beg"]
+
 
     def get_permissions(self):
         """
         Возвращает разрешения для текущего действия.
         """
-        if self.action in ['list', 'retrieve']:  
+        if self.action in ["list", "retrieve"]:  
             return [AllowAny()]
         return [IsAuthenticated()]
 
@@ -32,41 +52,49 @@ class MeetingViewSet(ModelViewSet):
         """
         Получение списка мероприятий.
         """
-        queryset = self.get_queryset()
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        image = request.FILES.get('image')
+        image = request.FILES.get("image")
         if image and image.size > 5 * 1024 * 1024:  
             return Response({"error": "Размер файла не должен превышать 5 MB"}, status=status.HTTP_400_BAD_REQUEST)
 
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
     def destroy(self, request, *args, **kwargs):
         meeting = self.get_object()
         meeting.delete()
         return Response({"message": "Встреча успешно удалена"}, status=status.HTTP_204_NO_CONTENT)
 
+
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
     
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def subscribe(self, request, pk=None):
-
         user = request.user 
         if not isinstance(user, UserProfile):
             return Response({"error": "User is not of type UserProfile"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -83,7 +111,7 @@ class MeetingViewSet(ModelViewSet):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-    @action(detail=True, methods=['delete'])
+    @action(detail=True, methods=["delete"])
     def unsubscribe(self, request, pk=None):
         user = request.user
         try:
@@ -92,7 +120,8 @@ class MeetingViewSet(ModelViewSet):
             return Response({"message": "Unsubscribed successfully"}, status=status.HTTP_204_NO_CONTENT)
         except SignedToMeeting.DoesNotExist:
             return Response({"error": "Subscription not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+     
+       
 class EmailService:
     @staticmethod
     def send_welcome_email(email):
@@ -105,11 +134,13 @@ class EmailService:
         send_email(subject, email, "email/index.html", context)
         return "Письмо отправлено"
 
+
 class WelcomeEmailView(APIView):
     def get(self, request):
-        email = request.query_params.get('email', 'example@example.com')
+        email = request.query_params.get("email", "example@example.com")
         message = EmailService.send_welcome_email(email)
         return Response({"message": message}, status=status.HTTP_200_OK)
+
 
 class UserViewSet(ModelViewSet):
     """
@@ -119,23 +150,26 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
+
     def get_permissions(self):
         """
         Переопределение прав доступа для конкретных действий.
         """
-        if self.action == 'register':
+        if self.action in ["register", "list", "retrieve"]:
             return [AllowAny()]
         return super().get_permissions()
+
 
     def get_serializer_class(self):
         """
         Возвращает правильный сериализатор для текущего действия.
         """
-        if self.action == 'register':
+        if self.action == "register":
             return UserRegistrationSerializer
         return super().get_serializer_class()
 
-    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+
+    @action(detail=False, methods=["post"], permission_classes=[AllowAny])
     def register(self, request):
         """
         Регистрация нового пользователя.
@@ -145,8 +179,8 @@ class UserViewSet(ModelViewSet):
             user = serializer.save()
 
             token_serializer = ObtainTokenSerializer(data={
-                'username': user.username,
-                'password': request.data.get('password')
+                "username": user.username,
+                "password": request.data.get("password")
             })
 
             if token_serializer.is_valid():
@@ -156,8 +190,8 @@ class UserViewSet(ModelViewSet):
                         "message": "User registered successfully",
                         "user_id": user.id,
                         "username": user.username,
-                        "access_token": tokens.get('access'),
-                        "refresh_token": tokens.get('refresh'),
+                        "access_token": tokens.get("access"),
+                        "refresh_token": tokens.get("refresh"),
                     },
                     status=status.HTTP_201_CREATED
                 )
@@ -168,18 +202,15 @@ class UserViewSet(ModelViewSet):
                 )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
     def list(self, request, *args, **kwargs):
         """
         Получение списка пользователей.
         """
-        if not request.user.is_staff:
-            return Response(
-                {"error": "Only staff can view the list of users."},
-                status=status.HTTP_403_FORBIDDEN
-            )
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
 
     def create(self, request, *args, **kwargs):
         """
@@ -192,6 +223,7 @@ class UserViewSet(ModelViewSet):
             )
         return super().create(request, *args, **kwargs)
 
+
     def destroy(self, request, *args, **kwargs):
         """
         Удаление пользователя (только для администраторов).
@@ -203,7 +235,8 @@ class UserViewSet(ModelViewSet):
             )
         return super().destroy(request, *args, **kwargs)
     
-    @action(detail=True, methods=['get'])
+
+    @action(detail=True, methods=["get"])
     def meetings_owned(self, request, pk=None):
         """
         Возвращает список встреч, созданных пользователем с заданным id.
@@ -217,7 +250,8 @@ class UserViewSet(ModelViewSet):
         serializer = MeetingSerializer(meetings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['get'])
+
+    @action(detail=True, methods=["get"])
     def meetings_signed(self, request, pk=None):
         """
         Возвращает список встреч, подписанных пользователем с заданным id.
@@ -232,6 +266,5 @@ class UserViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     
-
 class ObtainTokenView(TokenObtainPairView):
     serializer_class = ObtainTokenSerializer
