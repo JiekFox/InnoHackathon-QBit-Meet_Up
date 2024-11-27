@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from telegram import Bot, Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Bot, Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from dotenv import load_dotenv
 import os
 import logging
@@ -28,7 +28,6 @@ bot = Bot(token=BOT_TOKEN)
 @app.post(f"/webhook/{BOT_TOKEN}")
 async def webhook(request: Request):
     try:
-        # Получение обновления от Telegram
         data = await request.json()
         update = Update.de_json(data, bot)
         logging.info(f"Обновление: {update}")
@@ -47,12 +46,7 @@ async def webhook(request: Request):
                 )
                 await bot.send_message(
                     chat_id=update.message.chat.id,
-                    text=(
-                        "👋 Добро пожаловать! Вы можете:\n"
-                        "- 📜 Посмотреть список митапов.\n"
-                        "- 🎯 Управлять своими митапами (созданные/подписки).\n"
-                        "- 🔍 Использовать поиск митапов по ID или названию."
-                    ),
+                    text="👋 Добро пожаловать! Вы можете:\n- 📜 Посмотреть список митапов.\n- 🎯 Управлять своими митапами.\n- 🔍 Использовать поиск.",
                     reply_markup=keyboard
                 )
 
@@ -65,12 +59,12 @@ async def webhook(request: Request):
                         "- Команда 'Все митапы': отображает список доступных митапов.\n"
                         "- Команда 'Мои митапы (созданные)': показывает митапы, которые вы создали.\n"
                         "- Команда 'Мои митапы (подписки)': показывает митапы, на которые вы подписаны.\n"
-                        "- Команда 'Поиск': позволяет найти митап по его ID или названию.\n"
-                        "- Запись/отписка: используйте команды /subscribe [ID] и /unsubscribe [ID]."
+                        "- Команда 'Поиск': позволяет найти митап по ID или названию.\n"
+                        "- Команды /subscribe [ID] и /unsubscribe [ID]: подписка/отписка от митапа."
                     )
                 )
 
-            # Обработка команды "Все митапы" или /meetups
+            # Команда "Все митапы"
             elif text == "Все митапы" or text == "/meetups":
                 try:
                     response = requests.get(f"{BACKEND_URL}/meetings/")
@@ -83,40 +77,27 @@ async def webhook(request: Request):
                             for meeting in meetings[:5]
                         ]
                     )
-                    button = InlineKeyboardMarkup([
-                        [InlineKeyboardButton("Выбрать", callback_data="select_meetup")]
-                    ])
-                    await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown", reply_markup=button)
-                except Exception as e:
-                    message = f"❌ Ошибка при получении митапов: {e}"
-                    await bot.send_message(chat_id=update.message.chat.id, text=message)
-
-            # Обработка кнопки "Выбрать"
-            elif update.callback_query and update.callback_query.data == "select_meetup":
-                await bot.send_message(
-                    chat_id=update.callback_query.message.chat.id,
-                    text="Введите ID или название митапа для поиска:"
-                )
-
-            # Обработка команды поиска
-            elif text == "🔍 Поиск" or text.startswith("/search "):
-                query = text.split(" ", 1)[1] if text.startswith("/search ") else None
-                if query:
-                    await bot.send_message(
-                        chat_id=update.message.chat.id,
-                        text=f"🔎 Ищем митап: {query}"
+                    # Добавление кнопки "Выбрать"
+                    keyboard = InlineKeyboardMarkup(
+                        [
+                            [InlineKeyboardButton("Выбрать", callback_data="choose_meetup")]
+                        ]
                     )
+                    await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown", reply_markup=keyboard)
+                except Exception as e:
+                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
-            # Обработка ввода ID/названия для поиска
+            # Обработка CallbackQuery для кнопки "Выбрать"
+            elif update.callback_query and update.callback_query.data == "choose_meetup":
+                await bot.send_message(chat_id=update.callback_query.message.chat.id, text="Введите ID или название митапа для поиска.")
+
+            # Обработка поиска митапа
             elif text.isdigit() or text.isalnum():
                 query = text
-                logging.info(f"Пользователь ищет митап: {query} (tgUserId={username})")
                 try:
                     response = requests.get(f"{BACKEND_URL}/meetings/")
                     response.raise_for_status()
                     meetings = response.json()
-
-                    # Поиск митапа по ID или названию
                     meeting = next(
                         (m for m in meetings if str(m["id"]) == query or m["title"].lower() == query.lower()),
                         None
@@ -125,33 +106,33 @@ async def webhook(request: Request):
                         await bot.send_message(chat_id=update.message.chat.id, text="❌ Митап не найден.")
                         return
 
+                    # Формирование сообщения с кнопкой и изображением
                     formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y %H:%M")
                     caption = (
                         f"Информация о митапе:\n"
                         f"Название: *{meeting['title']}*\n"
                         f"Описание: _{meeting['description']}_\n"
-                        f"Дата: {formatted_date}\n"
-                        f"Ссылка: {meeting['link']}"
+                        f"Дата: {formatted_date}"
                     )
-                    buttons = InlineKeyboardMarkup([
-                        [
-                            InlineKeyboardButton("Перейти на сайт", url=f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}")
-                        ]
-                    ])
-                    if meeting.get("image"):
+                    website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
+                    keyboard = InlineKeyboardMarkup(
+                        [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
+                    )
+
+                    if "image" in meeting and meeting["image"]:
                         await bot.send_photo(
                             chat_id=update.message.chat.id,
                             photo=meeting["image"],
                             caption=caption,
-                            parse_mode="Markdown",
-                            reply_markup=buttons
+                            reply_markup=keyboard,
+                            parse_mode="Markdown"
                         )
                     else:
                         await bot.send_message(
                             chat_id=update.message.chat.id,
                             text=caption,
-                            parse_mode="Markdown",
-                            reply_markup=buttons
+                            reply_markup=keyboard,
+                            parse_mode="Markdown"
                         )
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
