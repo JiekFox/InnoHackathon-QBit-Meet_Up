@@ -40,7 +40,7 @@ async def chatgpt_endpoint(request: Request):
             json={
                 "model": "gpt-3.5-turbo",
                 "messages": [{"role": "user", "content": user_message}],
-                "max_tokens": 100,
+                "max_tokens": 500,
             },
         )
 
