@@ -100,8 +100,8 @@ async def webhook(request: Request):
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
 
-            # Сброс состояния пользователя после выполнения поиска
-            user_states.pop(user_id, None)
+                # Сброс состояния пользователя после выполнения поиска
+                user_states.pop(user_id, None)
 
             # Обработка команды /start
             if text == "/start":
@@ -124,19 +124,18 @@ async def webhook(request: Request):
 
             # Обработка команды /help
             elif text == "/help":
-                    await bot.send_message(
-                        chat_id=update.message.chat.id,
-                        text=(
-                            "Вот что я могу сделать:\n"
-                            "- 📜 Команда 'Все митапы': отображает список доступных митапов.\n"
-                            "- 🎯 Команда 'Мои митапы (созданные)': показывает митапы, которые вы создали.\n"
-                            "- 📌 Команда 'Мои митапы (подписки)': показывает митапы, на которые вы подписаны.\n"
-                            "- 🔍 Команда 'Поиск': позволяет найти митап по его ID или названию.\n"
-                            "- 📝 Запись/отписка: используйте команды /subscribe [ID] и /unsubscribe [ID].\n\n"
-                            "Выберите действие из меню или введите команду вручную."
-                        )
+                await bot.send_message(
+                    chat_id=update.message.chat.id,
+                    text=(
+                        "Вот что я могу сделать:\n"
+                        "- 📜 Команда 'Все митапы': отображает список доступных митапов.\n"
+                        "- 🎯 Команда 'Мои митапы (созданные)': показывает митапы, которые вы создали.\n"
+                        "- 📌 Команда 'Мои митапы (подписки)': показывает митапы, на которые вы подписаны.\n"
+                        "- 🔍 Команда 'Поиск': позволяет найти митап по его ID или названию.\n"
+                        "- 📝 Запись/отписка: используйте команды /subscribe [ID] и /unsubscribe [ID].\n\n"
+                        "Выберите действие из меню или введите команду вручную."
                     )
-
+                )
 
             # Команда "Все митапы" с постраничным выводом
             elif text == "Все митапы" or text == "📜 Все митапы" or text == "/meetups":
@@ -281,56 +280,6 @@ async def webhook(request: Request):
                 except Exception as e:
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
-            # Добавление кнопок "Записаться" и "Отписаться" при просмотре митапа
-            if meeting:
-                found = True
-                formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y")
-                formatted_time = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%H:%M")
-                caption = (
-                    f"Информация о митапе:\n"
-                    f"Название: *{meeting['title']}*\n"
-                    f"Описание: _{meeting['description']}_\n"
-                    f"Дата: {formatted_date}, время: {formatted_time}\n"
-                    f"ID: {meeting['id']}"
-                )
-                website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
-                keyboard_buttons = [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
-
-                # Проверка подписки
-                try:
-                    response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}")
-                    response.raise_for_status()
-                    signed_meetings = response.json()
-                    is_signed = any(m["id"] == meeting["id"] for m in signed_meetings)
-
-                    if is_signed:
-                        keyboard_buttons.append(
-                            [InlineKeyboardButton("Отписаться", callback_data=f"unsubscribe:{meeting['id']}")])
-                    else:
-                        keyboard_buttons.append(
-                            [InlineKeyboardButton("Записаться", callback_data=f"subscribe:{meeting['id']}")])
-
-                except Exception as e:
-                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при проверке подписки: {e}")
-
-                keyboard = InlineKeyboardMarkup(keyboard_buttons)
-
-                if "image" in meeting and meeting["image"]:
-                    await bot.send_photo(
-                        chat_id=update.message.chat.id,
-                        photo=meeting["image"],
-                        caption=caption,
-                        reply_markup=keyboard,
-                        parse_mode="Markdown"
-                    )
-                else:
-                    await bot.send_message(
-                        chat_id=update.message.chat.id,
-                        text=caption,
-                        reply_markup=keyboard,
-                        parse_mode="Markdown"
-                    )
-
         # Обработка CallbackQuery для переключения страниц
         elif update.callback_query:
             callback_data = update.callback_query.data
@@ -355,7 +304,7 @@ async def webhook(request: Request):
 
                     message = f"*Страница {page}:*\n" + "\n".join(
                         [
-                            f'• *{meeting.get("title")}* (Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y")}, время: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%H:%M")}) id:{meeting.get("id")}'
+                            f'• *{meeting.get("title")}* (Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y")}, время: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%H:%M")}) id:{meeting.get("id")}"
                             for meeting in meetings
                         ]
                     )
