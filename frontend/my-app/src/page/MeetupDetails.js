@@ -1,15 +1,16 @@
 import React from 'react';
-import { NavLink, useParams, useNavigate } from "react-router-dom";
+import { NavLink, useParams, useNavigate } from 'react-router-dom';
 import { useMeetupDetails } from '../utils/hooks/useMeetupDetails';
 import icon from '../assets/img/icon.png';
 import { useAuth } from '../utils/AuthContext';
-import { USERS_DETAIL, EDIT_MEETUP } from "../constant/router";
-import Loader from "../components/Loader";
+import { USERS_DETAIL, EDIT_MEETUP } from '../constant/router';
+import Loader from '../components/Loader';
 
 export default function MeetupDetails() {
     const { token, userID } = useAuth();
     const { id } = useParams();
-    const { meetup, loading, error, handleSignForMeeting, formattedDate } = useMeetupDetails(id);
+    const { meetup, loading, error, handleSignForMeeting, formattedDate } =
+        useMeetupDetails(id);
     const navigate = useNavigate();
 
     if (loading) return <Loader />;
@@ -30,11 +31,14 @@ export default function MeetupDetails() {
                         {meetup.title || 'Untitled Meetup'}
                     </h1>
                     <h2 className="meetup-details-author">
-                        Author: {(meetup.author_id && meetup.author) ? (
-                        <NavLink to={`${USERS_DETAIL}/${meetup.author_id}`}>
-                            {meetup.author}
-                        </NavLink>
-                    ) : 'Unknown'}
+                        Author:{' '}
+                        {meetup.author_id && meetup.author ? (
+                            <NavLink to={`${USERS_DETAIL}/${meetup.author_id}`}>
+                                {meetup.author}
+                            </NavLink>
+                        ) : (
+                            'Unknown'
+                        )}
                     </h2>
                     <p className="meetup-details-date">
                         {`Date begin: ${formattedDate}`}
@@ -48,7 +52,10 @@ export default function MeetupDetails() {
                     </p>
                 </div>
                 {userID === meetup.author_id ? (
-                    <button className="meetup-details-button" onClick={handleEditClick}>
+                    <button
+                        className="meetup-details-button"
+                        onClick={handleEditClick}
+                    >
                         Edit Meetup
                     </button>
                 ) : (

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from 'react';
 import DropdownItem from './DropdownItem';
 import LogoutModal from '../LogoutModal';
 import icon from '../../assets/img/icon.png';
@@ -16,9 +16,11 @@ const UserMenu = React.memo(({ userName }) => {
     const { removeToken } = useAuth();
     const navigate = useNavigate();
     const [logo, setLogo] = useState(icon);
-    const {img} = useAuth();
+    const { img } = useAuth();
     useEffect(() => {
-
+        if (img) {
+            setLogo(img);
+        }
     }, [img]);
     const handleLogoutClick = useCallback(() => {
         setShowLogoutModal(true);
@@ -36,7 +38,7 @@ const UserMenu = React.memo(({ userName }) => {
     return (
         <div className="user-info">
             <span className="user-name">{userName}</span>
-            <img className="user-avatar" src={icon} alt="User Avatar" />
+            <img className="user-avatar" src={logo} alt="User Avatar" />
             <div className="user-dropdown">
                 <DropdownItem
                     to={PROFILE}

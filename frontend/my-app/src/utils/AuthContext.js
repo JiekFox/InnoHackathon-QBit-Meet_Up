@@ -6,9 +6,8 @@ import React, {
     useCallback
 } from 'react';
 
-import { USER_API_URL } from "../constant/apiURL";
-import axios from "axios";
-
+import { USER_API_URL } from '../constant/apiURL';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -90,16 +89,13 @@ export const AuthProvider = ({ children }) => {
             console.log(userID);
             try {
                 const response = await axios.get(`${USER_API_URL}${userID}/`);
-                console.log(response.data);
-                setImg(response.data.photo)
-                //setData(response.data);
+                //console.log(response.data);
+                setImg(response.data.photo);
             } catch (err) {
-                //setError(err.message || 'Something went wrong');
-            } finally {
-                //setLoading(false);
+                console.log(err);
             }
         }
-        if(userID) {
+        if (userID) {
             giveImg();
         }
         console.log(img);

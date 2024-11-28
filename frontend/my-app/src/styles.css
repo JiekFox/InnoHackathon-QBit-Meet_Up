@@ -95,7 +95,14 @@ button {
     width: 100%;
     justify-content: space-between;
 }
-
+.header .container .logo-title {
+    display: flex;
+    align-items: center;
+}
+.header .container .logo-title img {
+    height: 60px;
+    width: 60px;
+}
 .header .container .navbar-sign-in {
     display: contents;
 }
@@ -148,8 +155,8 @@ button {
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -738,7 +745,7 @@ textarea {
 h3 {
     font-size: 24px;
 }
-.meetup-details .meetup-details-author a{
+.meetup-details .meetup-details-author a {
     text-decoration: underline;
     cursor: pointer;
 }

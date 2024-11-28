@@ -3,7 +3,8 @@ import { ErrorPage } from '../page/ErrorPage/ErrorPage';
 import Root from './Root/Root';
 import Home from '../page/Home';
 import {
-    CREATE_MEETUPS, EDIT_MEETUP,
+    CREATE_MEETUPS,
+    EDIT_MEETUP,
     MEETUP_DETAILS,
     MY_MEETUPS,
     MY_MEETUPS_OWNER,
@@ -12,7 +13,7 @@ import {
     SIGN_IN,
     SIGN_UP,
     USERS_DETAIL
-} from "../constant/router";
+} from '../constant/router';
 import Profile from '../page/Profile';
 import MyMeetups from '../page/MyMeetups';
 import MyMeetupsSubscriber from '../page/MyMeetupsSubscriber';
@@ -22,7 +23,7 @@ import SignIn from '../page/SignIn';
 import SignUp from '../page/SignUp';
 import { CreateMeetup } from '../page/CreateMeetup';
 import ProfileViewer from '../page/ProfileViewer';
-import { EditMeetup } from "../page/EditMeetup";
+import { EditMeetup } from '../page/EditMeetup';
 
 function Router() {
     const router = createBrowserRouter([

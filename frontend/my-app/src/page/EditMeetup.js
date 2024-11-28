@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
-import { SIGN_IN } from '../constant/router';
-import Loader from "../components/Loader";
+import { MEETUP_DETAILS, SIGN_IN } from '../constant/router';
+import Loader from '../components/Loader';
 import axios from 'axios';
 import { MEETINGS_API_URL } from '../constant/apiURL';
-import { giveConfig } from "../utils/giveConfig";
+import { giveConfig } from '../utils/giveConfig';
 
 export function EditMeetup() {
     const { token } = useAuth();
@@ -13,10 +13,10 @@ export function EditMeetup() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         title: '',
-        datetime_beg:  '',
-        description:  '',
+        datetime_beg: '',
         link: '',
-        image:  null,
+        description: '',
+        image: null
     });
     const [isPending, setIsPending] = useState(false);
     const [error, setError] = useState();
@@ -41,36 +41,57 @@ export function EditMeetup() {
     useEffect(() => {
         const fetchMeetupDetails = async () => {
             try {
-                const response = await axios.get(`${MEETINGS_API_URL}${id}/`,giveConfig(token));
+                const response = await axios.get(
+                    `${MEETINGS_API_URL}${id}/`,
+                    giveConfig(token)
+                );
                 console.log(response);
                 setFormData({
                     title: response.data.title || '',
-                    datetime_beg: new Date(response.data.datetime_beg).toISOString().slice(0, 16) || '',
+                    datetime_beg:
+                        new Date(response.data.datetime_beg)
+                            .toISOString()
+                            .slice(0, 16) || '',
                     description: response.data.description || '',
                     link: response.data.link || '',
-                    image: response.data.image || null,
+                    image: null
                 });
             } catch (error) {
                 setError(error.message);
-                console.error("Error fetching meetup details:", error);
+                console.error('Error fetching meetup details:', error);
             }
         };
         fetchMeetupDetails();
     }, [id, setFormData]);
 
-    const handleEditSubmit = async (e) => {
-        setIsPending(true);
+    const handleEditSubmit = async e => {
         e.preventDefault();
-        console.log(`${MEETINGS_API_URL}${id}/`, formData, giveConfig(token));
+        setIsPending(true);
+
+        // Создаем объект FormData
+        const formDataToSend = new FormData();
+        formDataToSend.append('title', formData.title);
+        formDataToSend.append('datetime_beg', formData.datetime_beg);
+        formDataToSend.append('description', formData.description);
+        formDataToSend.append('link', formData.link);
+
+        if (formData.image) {
+            formDataToSend.append('image', formData.image);
+        }
+
         try {
-            await axios.put(`${MEETINGS_API_URL}${id}/`, formData, giveConfig(token));
+            // Отправляем запрос с FormData
+            await axios.put(
+                `${MEETINGS_API_URL}${id}/`,
+                formDataToSend,
+                giveConfig(token)
+            );
             alert('Meetup updated successfully');
-            navigate(`/meetups/${id}`);
+            navigate(`${MEETUP_DETAILS}/${id}`);
         } catch (error) {
             setError(error.message);
-            console.error("Error updating meetup:", error);
-        }
-        finally {
+            console.error('Error updating meetup:', error);
+        } finally {
             setIsPending(false);
         }
     };
@@ -135,7 +156,10 @@ export function EditMeetup() {
                         onChange={handleImageUpload}
                     />
                 </div>
-                <button type="submit" className="edit-meetup-button create-meeting-button">
+                <button
+                    type="submit"
+                    className="edit-meetup-button create-meeting-button"
+                >
                     {isPending ? 'Saving...' : 'Save Changes'}
                 </button>
             </form>
