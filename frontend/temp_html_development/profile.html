@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Profile</title>
+</head>
+<body data-theme="light">
+<header class="header">
+    <h1>Meet Up!</h1>
+    <div class="controls">
+        <button id="theme-toggle" class="theme-button">Change Theme</button>
+        <button id="language-toggle" class="language-button">Language</button>
+        <div class="user-info">
+            <span>User Name</span>
+            <img class="user-avatar" src="user-avatar.jpg" alt="User Avatar">
+            <div class="user-dropdown">
+                <div class="dropdown-item">
+                    <a href="profile.html" target="_blank" class="dropdown-title">Profile</a>
+                    <span class="dropdown-description">Explore your profile</span>
+                </div>
+                <div class="dropdown-item">
+                    <a href="my-meetups.html" target="_blank" class="dropdown-title">My Meet Ups</a>
+                    <span class="dropdown-description">View all the meetings you have subscribed to</span>
+                </div>
+                <hr>
+                <div class="dropdown-item log-out" id="log-out">
+                    Log Out
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<main class="main-content">
+    <div class="profile-section">
+        <div class="profile-info">
+            <label for="name">Name</label>
+            <input type="text" id="name" value="Value" readonly>
+
+            <label for="surname">Surname</label>
+            <input type="text" id="surname" value="Value" readonly>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" value="Value" readonly>
+
+            <label for="about">About myself</label>
+            <textarea id="about" rows="4" readonly>Value</textarea>
+        </div>
+        <div class="profile-photo">
+            <img src="profile-photo.jpg" alt="Profile Photo" class="user-avatar">
+            <p>Upload photo</p>
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="credits">Meet Up!<br>Made by "Q-bit" team, Gomel, Belarus, 2024</div>
+</footer>
+
+<script src="theme-toggle.js"></script>
+<script src="language-toggle.js"></script>
+<script src="scripts.js"></script>
+</body>
+</html>
