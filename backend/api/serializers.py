@@ -5,64 +5,66 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class MeetingSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField(read_only=True)
-    author_id = serializers.PrimaryKeyRelatedField(
-        queryset=UserProfile.objects.all(), source="author", write_only=True
-    )
 
     class Meta:
         model = Meeting
-        fields = ['id', 'title', 'author', 'author_id', 'datetime_beg', 'link', 'description', 'image']
+        fields = ["id", "title", "author", "datetime_beg", "is_online", "link", "location", "description", "image"]
 
     def create(self, validated_data):
-        validated_data['author'] = self.context['request'].user  # Автор назначается текущим пользователем
+        validated_data["author"] = self.context["request"].user
         return super().create(validated_data)
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'email', 'photo', 'user_description']
+        fields = ["id", "username", "first_name","last_name","email", "photo", "user_description", "tg_id", "teams_id"]
 
 class SignedToMeetingSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)  
+    user = serializers.StringRelatedField()
 
     class Meta:
         model = SignedToMeeting
-        fields = ['id', 'user', 'meeting', 'signed_at']
+        fields = ["id", "user", "meeting", "signed_at"]
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = UserProfile
-        fields = ['username', 'email', 'password']
+        fields = ["username", "email", "password"]
 
     def create(self, validated_data):
-        user = UserProfile.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password']
-        )
+        user = UserProfile.objects.create_user(**validated_data)
         return user
     
-class UserTokenSerializer(serializers.ModelSerializer):
-    access_token = serializers.CharField(source='access')
-    refresh_token = serializers.CharField(source='refresh')
+    
+class UserTokenSerializer(serializers.Serializer):
+    access_token = serializers.CharField()
+    refresh_token = serializers.CharField()
 
-    class Meta:
-        model = UserProfile
-        fields = ['access_token', 'refresh_token']
-
-    def to_representation(self, instance):
-        refresh = RefreshToken.for_user(instance)
+    @staticmethod
+    def get_tokens(user):
+        refresh = RefreshToken.for_user(user)
         return {
-            'access_token': str(refresh.access_token),
-            'refresh_token': str(refresh)
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
         }
+
+    def to_representation(self, user):
+        tokens = self.get_tokens(user)
+        return tokens
     
 
 class ObtainTokenSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
+        data["username"] = self.user.username
+        data["user_id"] = self.user.id
+        refresh = self.get_token(self.user)
+        refresh["username"] = self.user.username
+        refresh["user_id"] = self.user.id
+        data["access"] = str(refresh.access_token)
+        data["refresh"] = str(refresh)
         user = self.user
         if user and user.id is None:
             raise serializers.ValidationError("Invalid user ID.")

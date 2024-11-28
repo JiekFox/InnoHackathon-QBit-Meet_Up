@@ -45,17 +45,17 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'storages'
+    'storages',
+    'django_filters'
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ],
-    # TODO: Change on prod
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
 }
 
 
@@ -157,7 +157,8 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
 CORS_ALLOWED_ORIGINS = [
     "https://qbit-meetup.web.app",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://tdpmxgwhxrhqvuaupenr.supabase.co"
 ]
 
 STORAGES = {
