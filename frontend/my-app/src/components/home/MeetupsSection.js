@@ -16,7 +16,8 @@ export default function MeetupsSection() {
         setCurrentPage,
         handleSearchChange,
         handleDateFilter,
-        handleRecommendedByAI // Добавляем функцию из useMeetups
+        handleRecommendedByAI, // Добавляем функцию из useMeetups
+        handleSearchByAI
     } = useMeetups();
 
     useEffect(() => {
@@ -29,8 +30,8 @@ export default function MeetupsSection() {
             <FilterBar
                 onSearchChange={handleSearchChange}
                 onDateFilter={handleDateFilter}
-                onRecommendByAI={handleRecommendedByAI} // Передаем функцию в FilterBar
-                isLoading={loading} // Передаем состояние загрузки
+                onRecommendByAI={handleRecommendedByAI}
+                onQueryTuchUseAI={handleSearchByAI}
             />
 
             <div className="meetup-grid">

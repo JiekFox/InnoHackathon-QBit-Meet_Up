@@ -45,7 +45,6 @@ export function CreateMeetup() {
             Ничего больше добавлять не нужно. НЕ ПИШИ вводных слов, комментариев, заключений, либо других текстов вне указанного формата. ТОЛЬКО содержимое улучшенного описания. 
             ВАЖНО: ответ должен быть в пределах 480 символов. Если текст превышает это количество, сократи его.`;
 
-
         try {
             const gptResponse = await axios.post(
                 `${GPT_URL}/chatgpt`,
@@ -64,17 +63,17 @@ export function CreateMeetup() {
             }
 
             // if (gptMessage.startsWith('Success')) {
-                // Регулярное выражение для извлечения текста независимо от типа кавычек
-                // const match = gptMessage.match(/Success,\s*\n([\s\S]*)/);
-                // if (match && match[1]) {
-                //     const newDescription = match[1].trim(); // Очищаем от лишних пробелов
-                //     console.log('Extracted AI description:', newDescription);
-                //     setAiResponse(newDescription);
-                    setAiResponse(gptMessage);
-                    setIsAiResponseVisible(true); // Показать текстовое поле и кнопку
-                // } else {
-                //     throw new Error('Response format is invalid.');
-                // }
+            // Регулярное выражение для извлечения текста независимо от типа кавычек
+            // const match = gptMessage.match(/Success,\s*\n([\s\S]*)/);
+            // if (match && match[1]) {
+            //     const newDescription = match[1].trim(); // Очищаем от лишних пробелов
+            //     console.log('Extracted AI description:', newDescription);
+            //     setAiResponse(newDescription);
+            setAiResponse(gptMessage);
+            setIsAiResponseVisible(true); // Показать текстовое поле и кнопку
+            // } else {
+            //     throw new Error('Response format is invalid.');
+            // }
 
             // } else {
             //     alert('AI could not improve the description.');
