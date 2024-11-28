@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../utils/AuthContext";
-import { useProfileActions } from "../utils/hooks/useProfileActions";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../utils/AuthContext';
+import { useProfileActions } from '../utils/hooks/useProfileActions';
+import PhotoUpload from '../components/PhotoUpload';
 
 export default function Profile() {
     const [formData, setFormData] = useState({
@@ -123,7 +124,11 @@ export default function Profile() {
                                 placeholder="Value"
                             />
                         </div>
-
+                        <PhotoUpload
+                            photo={formData.photo}
+                            onPhotoUpload={handlePhotoUpload}
+                            classVisible="photo-upload-unvisible"
+                        />
                         <div className="input-row">
                             <div className="input-group">
                                 <label htmlFor="tg_id" className="info-label">
@@ -175,7 +180,7 @@ export default function Profile() {
                             Save Changes
                         </button>
                     </div>
-
+                    {/*
                     <div className="photo-upload">
                         <div className="photo-preview">
                             {formData.photo ? (
@@ -201,7 +206,12 @@ export default function Profile() {
                             onChange={handlePhotoUpload}
                             className="photo-input"
                         />
-                    </div>
+                    </div>*/}
+                    <PhotoUpload
+                        photo={formData.photo}
+                        onPhotoUpload={handlePhotoUpload}
+                        classVisible="photo-upload-visible"
+                    />
                 </form>
             )}
         </div>

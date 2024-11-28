@@ -4,6 +4,7 @@ import MeetupCard from './MeetupCard';
 import Pagination from './Pagination';
 import { MEETUP_DETAILS } from '../../constant/router';
 import { useMeetups } from '../../utils/hooks/useMeetups';
+import Loader from '../Loader';
 
 export default function MeetupsSection() {
     const {
@@ -22,7 +23,7 @@ export default function MeetupsSection() {
 
             <div className="meetup-grid">
                 {loading ? (
-                    <div>Loading...</div>
+                    <Loader />
                 ) : error ? (
                     <h1>Error: {error.message}</h1>
                 ) : (

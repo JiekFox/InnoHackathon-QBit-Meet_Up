@@ -50,14 +50,17 @@
     --button-light-bg: #1c8139;
     --primary-link: var(--primary-link-light);
 }
+
 * {
     color: inherit;
 }
+
 body {
     margin: 0;
     padding: 0;
     min-height: 100%;
 }
+
 a {
     text-decoration: none;
     color: inherit;
@@ -72,6 +75,7 @@ a {
     flex-direction: column;
     min-height: 100vh;
 }
+
 button {
     color: var(--button-text);
 }
@@ -91,9 +95,11 @@ button {
     width: 100%;
     justify-content: space-between;
 }
+
 .header .container .navbar-sign-in {
     display: contents;
 }
+
 .header .container .navbar-sign-in p {
     text-decoration: underline;
 }
@@ -221,6 +227,7 @@ button {
     cursor: pointer;
     padding: 12px 20px;
 }
+
 .sign-button {
     margin-top: 8px;
 }
@@ -263,10 +270,11 @@ button {
     background-color: var(--header-footer);
     padding: 20px;
 }
+
 .meetup-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 570px));
-    gap: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .meetup-card {
@@ -274,11 +282,13 @@ button {
     padding: 16px;
     border-radius: 8px;
     transition: transform 0.2s ease;
+    width: calc(25% - 48px);
 }
 
 .meetup-card:hover {
     transform: translateY(-5px);
 }
+
 .meetup-grid .meetup-card .description {
     color: var(--description);
 }
@@ -293,7 +303,9 @@ button {
     transition: none !important;
     transform: none !important;
 }
+
 .meetup-card img {
+    height: 300px;
     width: 100%;
 }
 
@@ -412,7 +424,6 @@ button {
 .profile-edit-form .form-fields {
     display: flex;
     flex-direction: column;
-    width: 50%;
     gap: 16px;
 }
 
@@ -428,17 +439,21 @@ button {
     gap: 8px;
     align-items: flex-start;
 }
+
 .profile-edit-form .input-row .input-group {
     display: flex;
     gap: 16px;
     width: 100%;
 }
+
 .profile-edit-form .input-row .input-group label {
     font-size: 16px;
 }
+
 .sign-form p {
     margin: 0;
 }
+
 .sign-form .input-group {
     display: flex;
     flex-direction: column;
@@ -547,28 +562,6 @@ textarea {
     border-radius: 8px;
     font-size: 14px;
     text-align: center;
-}
-
-@media (max-width: 1200px) {
-    .profile-edit-form .photo-preview {
-        width: 200px;
-        height: 200px;
-    }
-
-    #detail {
-        margin: 80px 8%;
-    }
-}
-
-@media (max-width: 700px) {
-    .profile-edit-form .photo-preview {
-        width: 100px;
-        height: 100px;
-    }
-
-    #detail {
-        margin: 40px 4%;
-    }
 }
 
 .sign-title {
@@ -683,12 +676,14 @@ textarea {
     font-size: 14px;
     color: var(--text);
 }
+
 .forgot-password .input-group {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
 }
+
 .meetup-details {
     padding: 20px;
     display: flex;
@@ -714,12 +709,14 @@ textarea {
     width: 600px;
     object-fit: cover;
 }
+
 .meetup-details-content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     text-align: start;
 }
+
 .meetup-details .meetup-details-content {
     padding: 20px;
 }
@@ -735,6 +732,7 @@ textarea {
     font-size: 1rem;
     margin-bottom: 5px;
 }
+
 .meetup-details .meetup-details-author,
 h3 {
     font-size: 24px;
@@ -843,21 +841,6 @@ h3 {
     background-color: var(--button-bg-hover);
 }
 
-@media (max-width: 600px) {
-    .create-meetup {
-        padding: 10px;
-    }
-
-    .create-meetup h1 {
-        font-size: 20px;
-    }
-
-    .create-meetup-form .create-meetup-button {
-        font-size: 14px;
-        padding: 8px 15px;
-    }
-}
-
 .password-container {
     position: relative;
     width: 105%;
@@ -880,7 +863,9 @@ h3 {
 .profile-edit-form .form-fields .info-button {
     background: var(--background);
     height: 18px;
+    cursor: pointer;
 }
+
 .profile-edit-form .form-fields .info-label {
     display: flex;
     align-items: center;
@@ -890,6 +875,107 @@ h3 {
 .profile-edit-form .form-fields .info-popup a {
     text-decoration: underline;
 }
+
 .profile-edit-form .form-fields .info-popup {
     height: 90px;
+}
+.profile-edit-form .photo-upload-unvisible {
+    display: none;
+}
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    background-color: var(--background);
+    z-index: 1000;
+}
+
+.loader-logo {
+    width: 100px;
+    height: 100px;
+    animation: rotate 1.5s linear infinite;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 1920px) {
+    .meetup-card {
+        width: calc(33% - 42px);
+    }
+}
+
+@media (max-width: 1200px) {
+    .main-content {
+        padding: 12px 24px;
+    }
+    .meetup-details .meetup-details-image img {
+        height: 300px;
+        width: 400px;
+    }
+    .meetup-card {
+        width: calc(50% - 42px);
+    }
+
+    .profile-edit-form .photo-preview {
+        width: 200px;
+        height: 200px;
+    }
+
+    #detail {
+        margin: 80px 8%;
+    }
+}
+
+@media (max-width: 700px) {
+    .profile-edit-form .photo-upload-unvisible {
+        display: flex;
+        width: 100%;
+    }
+    .profile-edit-form .photo-upload-visible {
+        display: none;
+    }
+
+    .main-content {
+        padding: 0;
+    }
+    .meetup-details .meetup-details-image img {
+        height: 200px;
+        width: 300px;
+    }
+    .meetup-card {
+        width: calc(100% - 2px);
+    }
+    .profile-edit-form .photo-preview {
+        width: 100px;
+        height: 100px;
+    }
+
+    #detail {
+        margin: 40px 4%;
+    }
+    .create-meetup {
+        padding: 10px;
+    }
+
+    .create-meetup h1 {
+        font-size: 20px;
+    }
+
+    .create-meetup-form .create-meetup-button {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
 }
