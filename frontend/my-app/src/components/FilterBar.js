@@ -62,7 +62,7 @@ const FilterBar = React.memo(
                 )}
 
                 <button
-                    className="AI-buttons"
+                    className="ai-button"
                     onClick={onRecommendByAI}
                     disabled={isLoading}
                 >

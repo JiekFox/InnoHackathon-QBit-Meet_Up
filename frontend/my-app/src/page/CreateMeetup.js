@@ -37,13 +37,14 @@ export function CreateMeetup() {
 
         setIsPendingAI(true);
 
-        const gptPrompt = `Тебе дано краткое описание мероприятия: ${formData.description}. 
-        Твоя задача: расписать это описание больше объемом (если меньше 4 предложений дано, расписать хотя бы до 4 предложений, 
-        иначе просто сделать текст красивее), сделать его структурированным, по желанию - по пунктам. 
-        Затем дать мне ответ СТРОГО В ТАКОМ ФОРМАТЕ: "Success, 'текст расширенного описания митапа, который ты придумаешь'". 
-        Если ты не смог придумать из-за какой-то ошибки, возвращаешь мне строго такой ответ: "Fail, 'описание, почему ты не смог улучшить текст'. 
-        Строго запрещается давать ответ Fail без причины. Единственная доступная тебе для этого причина: в предложенном тексте меньше 10 слов. В таком случае ты можешь просто написать: "Fail, текст слишком короткий". 
-        Иначе ты ОБЯЗАН хоть как-то преобразовать, расширить и улучшить текст.`;
+        const gptPrompt = `
+            Тебе дано краткое описание мероприятия: "${formData.description}". 
+            Твоя задача: расписать это описание больше объемом, сделать его структурированным и по пунктам. 
+            Затем дай мне ответ СТРОГО В СЛЕДУЮЩЕМ ФОРМАТЕ: 
+            "текст расширенного описания митапа, который ты придумаешь"
+            Ничего больше добавлять не нужно. НЕ ПИШИ вводных слов, комментариев, заключений, либо других текстов вне указанного формата. ТОЛЬКО содержимое улучшенного описания. 
+            ВАЖНО: ответ должен быть в пределах 480 символов. Если текст превышает это количество, сократи его.`;
+
 
         try {
             const gptResponse = await axios.post(
@@ -62,20 +63,22 @@ export function CreateMeetup() {
                 console.log(gptMessage);
             }
 
-            if (gptMessage.startsWith('Success')) {
+            // if (gptMessage.startsWith('Success')) {
                 // Регулярное выражение для извлечения текста независимо от типа кавычек
-                const match = gptMessage.match(/new_meetup_description:\s*["'](.+?)["']/);
-                if (match && match[1]) {
-                    const newDescription = match[1]; // Текст описания
-                    console.log('Extracted AI description:', newDescription);
-                    setAiResponse(newDescription);
+                // const match = gptMessage.match(/Success,\s*\n([\s\S]*)/);
+                // if (match && match[1]) {
+                //     const newDescription = match[1].trim(); // Очищаем от лишних пробелов
+                //     console.log('Extracted AI description:', newDescription);
+                //     setAiResponse(newDescription);
+                    setAiResponse(gptMessage);
                     setIsAiResponseVisible(true); // Показать текстовое поле и кнопку
-                } else {
-                    throw new Error('Response format is invalid.');
-                }
-            } else {
-                alert('AI could not improve the description.');
-            }
+                // } else {
+                //     throw new Error('Response format is invalid.');
+                // }
+
+            // } else {
+            //     alert('AI could not improve the description.');
+            // }
         } catch (error) {
             console.error('Error occurred while communicating with AI:', error);
             alert('Failed to communicate with AI.');
@@ -163,7 +166,7 @@ export function CreateMeetup() {
                         </div>
                         <button
                             type="button"
-                            className="accept-ai-button"
+                            className="ai-button"
                             onClick={handleAcceptAiSuggestion}
                         >
                             Accept AI Suggestion
