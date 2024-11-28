@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import DebounceInput from './DebounceInput';
 
 const FilterBar = React.memo(({ onSearchChange, onDateFilter }) => {
-    console.log(onDateFilter);
     const [showDateFilters, setShowDateFilters] = useState(false);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');

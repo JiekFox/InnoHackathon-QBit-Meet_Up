@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from "react";
 import DropdownItem from './DropdownItem';
 import LogoutModal from '../LogoutModal';
 import icon from '../../assets/img/icon.png';
@@ -15,7 +15,11 @@ const UserMenu = React.memo(({ userName }) => {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const { removeToken } = useAuth();
     const navigate = useNavigate();
+    const [logo, setLogo] = useState(icon);
+    const {img} = useAuth();
+    useEffect(() => {
 
+    }, [img]);
     const handleLogoutClick = useCallback(() => {
         setShowLogoutModal(true);
     }, []);

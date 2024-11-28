@@ -6,7 +6,7 @@ const MeetupCard = React.memo(({ title, description, image, dateTime, to }) => {
     const day = date.getUTCDate();
     const month = date.getUTCMonth() + 1;
     const year = date.getUTCFullYear();
-
+    console.log();
     return (
         <div className="meetup-card">
             <NavLink to={to}>

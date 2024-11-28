@@ -425,6 +425,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    width: 50%;
 }
 
 .profile-edit-form .input-row {
@@ -737,7 +738,10 @@ textarea {
 h3 {
     font-size: 24px;
 }
-
+.meetup-details .meetup-details-author a{
+    text-decoration: underline;
+    cursor: pointer;
+}
 .meetup-details .meetup-details-description {
     margin-top: 15px;
     font-size: 1rem;
