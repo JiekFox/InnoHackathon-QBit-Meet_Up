@@ -15,4 +15,5 @@ def clear_meetings_cache():
     cache.delete('meetings_list')
 
 def clear_all_cache():
-    cache.clear()
+    #cache.clear()
+    ...
