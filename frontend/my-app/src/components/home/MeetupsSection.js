@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import FilterBar from '../FilterBar';
 import MeetupCard from '../MeetupCard';
 import Pagination from '../Pagination';
@@ -8,6 +8,7 @@ import Loader from '../Loader';
 
 export default function MeetupsSection() {
     const {
+        filteredMeetups,
         currentPage,
         totalPages,
         loading,
@@ -15,14 +16,22 @@ export default function MeetupsSection() {
         setCurrentPage,
         handleSearchChange,
         handleDateFilter,
-        meetups
+        handleRecommendedByAI, // Добавляем функцию из useMeetups
+        handleSearchByAI
     } = useMeetups();
 
+    useEffect(() => {
+        console.log('Filtered meetups updated:', filteredMeetups);
+    }, [filteredMeetups]);
+
+    console.log(filteredMeetups);
     return (
         <section className="home">
             <FilterBar
                 onSearchChange={handleSearchChange}
                 onDateFilter={handleDateFilter}
+                onRecommendByAI={handleRecommendedByAI}
+                onQueryTuchUseAI={handleSearchByAI}
             />
 
             <div className="meetup-grid">
@@ -31,7 +40,7 @@ export default function MeetupsSection() {
                 ) : error ? (
                     <h1>Error: {error.message}</h1>
                 ) : (
-                    meetups.map(meetup => (
+                    filteredMeetups.map(meetup => (
                         <MeetupCard
                             key={meetup.id}
                             to={`${MEETUP_DETAILS}/${meetup.id}`}

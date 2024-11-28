@@ -47,9 +47,9 @@ export default function MeetupDetails() {
                         {`Already signed: ${meetup.attendees_count || 0}`}
                     </p>
                     <h3>Description:</h3>
-                    <p className="meetup-details-description">
+                    <pre className="meetup-details-description">
                         {meetup.description || 'No description available.'}
-                    </p>
+                    </pre>
                 </div>
                 {userID === meetup.author_id ? (
                     <button
