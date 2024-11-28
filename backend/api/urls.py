@@ -1,9 +1,15 @@
 from django.urls import path
-from .views import send_welcome_email, get_meetings, create_meeting, meeting_detail
+from rest_framework.routers import DefaultRouter
+from .views import MeetingViewSet, WelcomeEmailView, UserViewSet, ObtainTokenView
+from rest_framework_simplejwt import views as jwt_views
+
+router = DefaultRouter()
+router.register(r"meetings", MeetingViewSet, basename="meeting")
+router.register(r"users", UserViewSet, basename="user")
 
 urlpatterns = [
-    path('send-email/', send_welcome_email, name='send_email'),
-    path('meetings/', get_meetings, name='get_meetings'),
-    path('meetings/create/', create_meeting, name='create_meeting'),
-    path('meetings/<int:pk>', meeting_detail, name='meeting_detail')
-]
+    path("send-email/", WelcomeEmailView.as_view(), name="send-email"),
+    path("token/", ObtainTokenView.as_view(), name="token_obtain_pair"),
+    path("token/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"),
+] + router.urls
+
