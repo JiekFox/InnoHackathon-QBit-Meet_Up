@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import FilterBar from '../components/FilterBar';
 import MeetupCard from '../components/MeetupCard';
 import Pagination from '../components/Pagination';
 import Loader from '../components/Loader';
 import { useUserMeetups } from '../utils/hooks/useUserMeetups';
+import { useAuth } from '../utils/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { SIGN_IN } from '../constant/router';
 
 export default function MyMeetupsSubscriber() {
+    const { token } = useAuth();
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (!token) {
+            navigate(SIGN_IN);
+        }
+    }, []);
     const {
         paginatedMeetups,
         currentPage,
@@ -13,16 +23,12 @@ export default function MyMeetupsSubscriber() {
         loading,
         error,
         setCurrentPage,
-        handleSearchChange,
-        handleDateFilter
+        handleSearchChange
     } = useUserMeetups('meetings_signed');
 
     return (
         <section className="home">
-            <FilterBar
-                onSearchChange={handleSearchChange}
-                onDateFilter={handleDateFilter}
-            />
+            <FilterBar onSearchChange={handleSearchChange} />
 
             <div className="meetup-grid">
                 {loading ? (

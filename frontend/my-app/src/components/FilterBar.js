@@ -29,34 +29,39 @@ const FilterBar = React.memo(({ onSearchChange, onDateFilter }) => {
                 onChange={handleSearchChange}
                 delay={500}
             />
-
-            <button
-                className="filter-button"
-                onClick={() => setShowDateFilters(!showDateFilters)}
-            >
-                Filter by Date 🗓️
-            </button>
-
-            {showDateFilters && (
-                <div className="date-filters">
-                    <input
-                        type="date"
-                        value={startDate}
-                        onChange={e => setStartDate(e.target.value)}
-                        placeholder="Start Date"
-                    />
-                    <input
-                        type="date"
-                        value={endDate}
-                        onChange={e => setEndDate(e.target.value)}
-                        placeholder="End Date"
-                    />
-                    <button onClick={handleDateFilterApply} className="apply-button">
-                        Apply
+            {onDateFilter && (
+                <>
+                    {' '}
+                    <button
+                        className="filter-button"
+                        onClick={() => setShowDateFilters(!showDateFilters)}
+                    >
+                        Filter by Date 🗓️
                     </button>
-                </div>
+                    {showDateFilters && (
+                        <div className="date-filters">
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={e => setStartDate(e.target.value)}
+                                placeholder="Start Date"
+                            />
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={e => setEndDate(e.target.value)}
+                                placeholder="End Date"
+                            />
+                            <button
+                                onClick={handleDateFilterApply}
+                                className="apply-button"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                    )}
+                </>
             )}
-
             <button
                 className="AI-buttons"
                 onClick={() => {

@@ -8,14 +8,14 @@ import Loader from '../Loader';
 
 export default function MeetupsSection() {
     const {
-        filteredMeetups,
         currentPage,
         totalPages,
         loading,
         error,
         setCurrentPage,
         handleSearchChange,
-        handleDateFilter
+        handleDateFilter,
+        meetups
     } = useMeetups();
 
     return (
@@ -31,7 +31,7 @@ export default function MeetupsSection() {
                 ) : error ? (
                     <h1>Error: {error.message}</h1>
                 ) : (
-                    filteredMeetups.map(meetup => (
+                    meetups.map(meetup => (
                         <MeetupCard
                             key={meetup.id}
                             to={`${MEETUP_DETAILS}/${meetup.id}`}

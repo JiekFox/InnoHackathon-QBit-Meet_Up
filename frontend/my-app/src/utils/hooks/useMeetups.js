@@ -55,19 +55,23 @@ export const useMeetups = () => {
         setCurrentPage(1);
     }, [searchQuery, dateFilter]);
 
-    const filteredMeetups = meetups.filter(meetup =>
-        meetup.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    useEffect(() => {
+        setMeetups(
+            meetups.filter(meetup =>
+                meetup.title.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+        );
+    }, [searchQuery]);
 
     return {
         searchQuery,
-        filteredMeetups,
         currentPage,
         totalPages,
         loading,
         error,
         setCurrentPage,
         handleSearchChange,
-        handleDateFilter
+        handleDateFilter,
+        meetups
     };
 };
