@@ -308,7 +308,7 @@ class UserViewSet(ModelViewSet):
         except UserProfile.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        meetings = Meeting.objects.filter(attendees__user=user)
+        meetings = Meeting.objects.filter(attendees__user=user).exclude(author=user)
         serializer = self.get_serializer(meetings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
