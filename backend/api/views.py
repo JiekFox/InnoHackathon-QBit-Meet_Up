@@ -246,30 +246,6 @@ class UserViewSet(ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def create(self, request, *args, **kwargs):
-        """
-        Создание нового пользователя (доступно только админам).
-        """
-        if not request.user.is_staff:
-            return Response(
-                {"error": "Only staff can create new users."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        return super().create(request, *args, **kwargs)
-
-
-    def destroy(self, request, *args, **kwargs):
-        """
-        Удаление пользователя (только для администраторов).
-        """
-        # if not request.user.is_staff:
-        #     return Response(
-        #         {"error": "Only staff can delete users."},
-        #         status=status.HTTP_403_FORBIDDEN
-        #     )
-        return super().destroy(request, *args, **kwargs)
-    
-
     @action(detail=True, methods=["get"])
     def meetings_owned(self, request, pk=None):
         """
