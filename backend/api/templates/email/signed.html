@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Подписка на митап</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; background-color: #f9f9f9; margin: 0; padding: 20px;">
+    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <h1 style="color: #333333;">{{ subject }}</h1>
+        <p style="color: #555555;">Здравствуйте, {{ username }}!</p>
+        <p style="color: #555555;">Вы успешно подписались на митап "<strong>{{ meeting_title }}</strong>".</p>
+        <p style="color: #555555;">Начало в: "<strong>{{ datetime_beg }}</strong>".</p>
+        <p style="color: #555555;">Ссылка на мероприятие: <a href="{{ meeting_link }}" style="color: #007bff;">Перейти</a></p>
+        <p style="color: #555555;">Мы рады видеть вас среди участников!</p>
+        <p style="color: #555555;">С уважением,<br>Команда QBit</p>
+        <footer style="color: #888888; font-size: 12px; text-align: center; margin-top: 20px;">
+            © {{ year }} Meet Up! Все права защищены.
+        </footer>
+    </div>
+</body>
+</html>

@@ -106,6 +106,13 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': config('REDIS_URL'),
+    }
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -191,3 +198,5 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'api.UserProfile'
+
+RABBITMQ_URL = config("RABBITMQ_URL")
