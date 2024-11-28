@@ -93,9 +93,9 @@ async def webhook(request: Request):
 
                             keyboard = InlineKeyboardMarkup(keyboard_buttons)
 
-                            keyboard = InlineKeyboardMarkup(
-                                [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
-                            )
+                            # keyboard = InlineKeyboardMarkup(
+                            #     [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
+                            # )
 
                             if "image" in meeting and meeting["image"]:
                                 await bot.send_photo(
