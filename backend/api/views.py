@@ -15,7 +15,7 @@ from rest_framework.pagination import PageNumberPagination
 from .filters import MeetingFilter
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
-from .cache_control import clear_meetings_cache
+from .cache_control import clear_meetings_cache, clear_users_cache
 from .permissions import IsAuthor, IsStaff
 
 
@@ -76,7 +76,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return [IsAuthenticated(), IsAuthor(), IsStaff()]
         return super().get_permissions()
 
-    @method_decorator(cache_page(60 * 5))
+    @method_decorator(cache_page(60 * 15))
     def list(self, request, *args, **kwargs):
         """
         Получение списка мероприятий с кэшированием.
@@ -90,6 +90,9 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
 
+    @method_decorator(cache_page(60 * 15))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -171,6 +174,21 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return None, Response({"error": "tg_id or teams_id is required"}, status=status.HTTP_400_BAD_REQUEST)
         user, error = get_user_by_param(request, 'tg_id' if tg_id else 'teams_id')
         return (user, None) if user else (None, Response({"error": error}, status=status.HTTP_404_NOT_FOUND))
+    
+    @action(detail=True, methods=["get"])
+    def is_subscribed(self, request, pk=None):
+        """
+        Проверяет, подписан ли текущий пользователь на мероприятие.
+        """
+        meeting, error_response = self.get_meeting(pk)
+        if error_response:
+            return error_response
+
+        try:
+            SignedToMeeting.objects.get(user=request.user, meeting=meeting)
+            return Response({"message": True}, status=status.HTTP_200_OK)
+        except SignedToMeeting.DoesNotExist:
+            return Response({"message": False}, status=status.HTTP_200_OK)
      
        
 class EmailService:
@@ -233,6 +251,23 @@ class UserViewSet(ModelViewSet):
             return MeetingSerializer
         return super().get_serializer_class()
 
+    @method_decorator(cache_page(60 * 15))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+    @method_decorator(cache_page(60 * 15))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        clear_users_cache()
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+        clear_users_cache()
+        return response
 
     @action(detail=False, methods=["post"])
     def register(self, request):
@@ -357,7 +392,7 @@ class UserViewSet(ModelViewSet):
 
         serializer = self.get_serializer(meetings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
+    
 
 class ObtainTokenView(TokenObtainPairView):
     serializer_class = ObtainTokenSerializer
