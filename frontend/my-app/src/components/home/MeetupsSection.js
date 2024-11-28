@@ -8,14 +8,14 @@ import Loader from '../Loader';
 
 export default function MeetupsSection() {
     const {
-        filteredMeetups,
+        filteredMeetups, // Используем фильтрованные митапы
         currentPage,
         totalPages,
         loading,
         error,
         setCurrentPage,
         handleSearchChange,
-        handleDateFilter
+        handleDateFilter,
     } = useMeetups();
 
     return (
