@@ -7,8 +7,6 @@ import React, { useEffect, useState } from 'react';
 import useFetchMeetings from '../../api/useFetchMeetings';
 import { MEETINGS_API_URL } from '../../constant/apiURL';
 
-
-// Константа для количества элементов на странице
 const ITEMS_PER_PAGE = 5;
 
 export default function MeetupsSection() {
@@ -68,7 +66,6 @@ export default function MeetupsSection() {
                 )}
             </div>
 
-            {/* Пагинация */}
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
