@@ -6,7 +6,7 @@ import { BASE_API_URL, GPT_URL } from '../constant/apiURL';
 import {useMeetups} from "../utils/hooks/useMeetups.js";
 
 
-const FilterBar = React.memo(({ onSearchChange, onDateFilter }) => {
+const FilterBar = React.memo(({ onSearchChange, onDateFilter,onRecommendByAI, isLoading }) => {
     const { token, userID } = useAuth(); // Получаем токен и userID
     const [showDateFilters, setShowDateFilters] = useState(false);
     const [startDate, setStartDate] = useState("");
@@ -24,8 +24,6 @@ const FilterBar = React.memo(({ onSearchChange, onDateFilter }) => {
     const handleDateFilterApply = () => {
         onDateFilter(startDate, endDate);
     };
-
-
 
 
     return (
@@ -67,8 +65,12 @@ const FilterBar = React.memo(({ onSearchChange, onDateFilter }) => {
                 </div>
             )}
 
-            <button className="AI-buttons" onClick={handleRecommendedByAI}>
-                Recommended by AI✨
+            <button
+                className="AI-buttons"
+                onClick={onRecommendByAI}
+                disabled={isLoading}
+            >
+                {isLoading ? "Loading AI recommendations..." : "Recommended by AI ✨"}
             </button>
         </div>
     );

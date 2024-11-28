@@ -28,7 +28,7 @@ export const useMeetups = () => {
         }
         return url;
     };
-
+    //const data =[],  loading = false, error = undefined;
     const { data, loading, error } = useFetchMeetings(buildApiUrl());
 
     useEffect(() => {
@@ -61,11 +61,12 @@ export const useMeetups = () => {
     }, [searchQuery, dateFilter]);
 
     const filteredMeetups = useMemo(() => {
+        console.log('update filtered', meetups);
         return meetups.filter(meetup =>
             meetup.title.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [meetups, searchQuery]);
-useState()
+
     const handleRecommendedByAI = async () => {
         try {
             if (!userID) {
@@ -130,6 +131,8 @@ useState()
                 setMeetups(filteredMeetupsV2);
                 setTotalPages(1);
                 setCurrentPage(1);
+                // Проверяем состояние после обновления
+                console.log("Updated meetups state:", filteredMeetupsV2);
             } else {
                 console.error("GPT returned a Fail response or no relevant IDs.");
                 //setAiMeetups({ meetups: [] }); // Сбрасываем список, если ничего не найдено
@@ -137,10 +140,13 @@ useState()
         } catch (error) {
             console.error("Error occurred while processing AI recommendation:", error);
         }
-        finally {
-            console.log('finally',meetups);
-        }
+
     };
+    useEffect(() => {
+        if (meetups.length > 0) {
+            console.log("Meetups updated:", meetups);
+        }
+    }, [meetups]);
 
     /*useEffect(() => {
 

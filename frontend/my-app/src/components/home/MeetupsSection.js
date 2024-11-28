@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import FilterBar from '../FilterBar';
 import MeetupCard from '../MeetupCard';
 import Pagination from '../Pagination';
@@ -8,7 +8,7 @@ import Loader from '../Loader';
 
 export default function MeetupsSection() {
     const {
-        filteredMeetups, // Используем фильтрованные митапы
+        filteredMeetups,
         currentPage,
         totalPages,
         loading,
@@ -16,13 +16,20 @@ export default function MeetupsSection() {
         setCurrentPage,
         handleSearchChange,
         handleDateFilter,
+        handleRecommendedByAI, // Добавляем функцию из useMeetups
     } = useMeetups();
+
+    useEffect(() => {
+        console.log('Filtered meetups updated:', filteredMeetups);
+    }, [filteredMeetups]);
 
     return (
         <section className="home">
             <FilterBar
                 onSearchChange={handleSearchChange}
                 onDateFilter={handleDateFilter}
+                onRecommendByAI={handleRecommendedByAI} // Передаем функцию в FilterBar
+                isLoading={loading} // Передаем состояние загрузки
             />
 
             <div className="meetup-grid">
