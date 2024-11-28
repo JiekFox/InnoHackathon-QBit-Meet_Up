@@ -197,19 +197,10 @@ class UserViewSet(ModelViewSet):
     """
     ViewSet для управления пользователями и регистрации.
     """
+    queryset = UserProfile.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
-
-    def get_queryset(self):
-        """
-        Ограничивает доступ к данным только для авторизованных пользователей,
-        предоставляя им только те данные, которые они имеют право видеть. (должно работать, но пока что-то кисло)
-        """
-        user = self.request.user
-        if user.is_staff:
-            return super().get_queryset()
-        return super().get_queryset().filter(user=user)
 
     def get_permissions(self):
         """
