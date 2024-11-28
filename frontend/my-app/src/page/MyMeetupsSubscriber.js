@@ -1,70 +1,48 @@
-import Pagination from '../components/home/Pagination';
-import { useState } from 'react';
+import React from 'react';
+import FilterBar from '../components/FilterBar';
+import MeetupCard from '../components/MeetupCard';
+import Pagination from '../components/Pagination';
+import Loader from '../components/Loader';
+import { useUserMeetups } from '../utils/hooks/useUserMeetups';
 
 export default function MyMeetupsSubscriber() {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filter, setFilter] = useState('');
-    const meetings = [
-        {
-            title: 'Team Meeting',
-            date: '02/02/2020',
-            description: 'Discuss project updates and next steps.'
-        },
-        {
-            title: 'Client Presentation',
-            date: '03/03/2020',
-            description: 'Showcase our progress to the client.'
-        }
-    ];
-
-    const handleSearch = query => {
-        setSearchQuery(query);
-        console.log('Search query:', query);
-    };
-
-    const handleFilterChange = filterValue => {
-        setFilter(filterValue);
-        console.log('Filter selected:', filterValue);
-    };
+    const {
+        paginatedMeetups,
+        currentPage,
+        totalPages,
+        loading,
+        error,
+        setCurrentPage,
+        handleSearchChange,
+        handleDateFilter
+    } = useUserMeetups('meetings_signed');
 
     return (
-        <main className="main-content">
-            <h2>Meetups you have subscribed to:</h2>
-            <section className="meetups">
-                <div className="filter-bar">
-                    <select
-                        id="filter"
-                        name="filter"
-                        className="filter-bar > select"
-                        onChange={e => handleFilterChange(e.target.value)}
-                    >
-                        <option value="value">Value</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="past">Past</option>
-                    </select>
+        <section className="home">
+            <FilterBar
+                onSearchChange={handleSearchChange}
+                onDateFilter={handleDateFilter}
+            />
 
-                    <input
-                        type="text"
-                        id="search"
-                        name="search"
-                        placeholder="Search meetups..."
-                        className="filter-bar > search-input"
-                        onChange={e => handleSearch(e.target.value)}
-                    />
-                </div>
+            <div className="meetup-grid">
+                {loading ? (
+                    <Loader />
+                ) : error ? (
+                    <h1>Error: {error}</h1>
+                ) : paginatedMeetups.length > 0 ? (
+                    paginatedMeetups.map(meetup => (
+                        <MeetupCard key={meetup.id} {...meetup} />
+                    ))
+                ) : (
+                    <h2>No meetups found.</h2>
+                )}
+            </div>
 
-                <div className="meetup-grid">
-                    {meetings.map((meeting, index) => (
-                        <div className="meetup-card" key={index}>
-                            <h3>{meeting.title}</h3>
-                            <p>{meeting.date}</p>
-                            <p>{meeting.description}</p>
-                        </div>
-                    ))}
-                </div>
-
-                <Pagination />
-            </section>
-        </main>
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+            />
+        </section>
     );
 }
