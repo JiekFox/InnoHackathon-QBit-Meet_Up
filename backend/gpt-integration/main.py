@@ -17,30 +17,39 @@ app.add_middleware(
 
 # Получаем API ключ OpenAI из переменных окружения
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY is not set")
+
 
 @app.post("/chatgpt")
 async def chatgpt_endpoint(request: Request):
-    body = await request.json()
-    user_message = body.get("message", "")
+    try:
+        body = await request.json()
+        user_message = body.get("message", "")
 
-    if not user_message:
-        return {"error": "No message provided"}
+        if not user_message:
+            return {"error": "No message provided"}
 
-    # Запрос к ChatGPT API
-    response = requests.post(
-        "https://api.openai.com/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "model": "gpt-3.5-turbo",
-            "messages": [{"role": "user", "content": user_message}],
-            "max_tokens": 500
-        }
-    )
+        # Запрос к OpenAI API
+        response = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENAI_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": "gpt-3.5-turbo",
+                "messages": [{"role": "user", "content": user_message}],
+                "max_tokens": 100,
+            },
+        )
 
-    if response.status_code != 200:
-        return {"error": "Failed to communicate with OpenAI API"}
+        response_data = response.json()
+        print("OpenAI API Response:", response_data)  # Логируем ответ
+        if response.status_code != 200:
+            return {"error": response_data.get("error", {}).get("message", "Unknown error")}
+        return response_data
 
-    return response.json()
+    except Exception as e:
+        print("Error:", e)
+        return {"error": str(e)}
