@@ -6,7 +6,7 @@ import Loader from '../components/Loader';
 import MeetupCard from '../components/MeetupCard';
 import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { SIGN_IN } from '../constant/router';
+import { MEETUP_DETAILS, SIGN_IN } from '../constant/router';
 
 export default function MyMeetups() {
     const { token } = useAuth();
@@ -23,11 +23,9 @@ export default function MyMeetups() {
         loading,
         error,
         setCurrentPage,
-        handleSearchChange,
-        handleDateFilter
+        handleSearchChange
     } = useUserMeetups('meetings_owned');
 
-    console.log(handleDateFilter);
     return (
         <section className="home">
             <FilterBar onSearchChange={handleSearchChange} />
@@ -39,7 +37,11 @@ export default function MyMeetups() {
                     <h1>Error: {error}</h1>
                 ) : paginatedMeetups.length > 0 ? (
                     paginatedMeetups.map(meetup => (
-                        <MeetupCard key={meetup.id} {...meetup} />
+                        <MeetupCard
+                            key={meetup.id}
+                            to={`${MEETUP_DETAILS}/${meetup.id}`}
+                            {...meetup}
+                        />
                     ))
                 ) : (
                     <h2>No meetups found.</h2>

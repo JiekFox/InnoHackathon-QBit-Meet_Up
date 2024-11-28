@@ -84,7 +84,6 @@ export const useUserMeetups = path => {
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
     );
-    console.log(handleDateFilter);
     return {
         searchQuery,
         paginatedMeetups,

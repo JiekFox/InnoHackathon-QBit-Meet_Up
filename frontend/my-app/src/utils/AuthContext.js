@@ -6,6 +6,9 @@ import React, {
     useCallback
 } from 'react';
 
+import { USER_API_URL } from '../constant/apiURL';
+import axios from 'axios';
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -16,6 +19,7 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [name, setName] = useState(null);
     const [userID, setUserID] = useState(null);
+    const [img, setImg] = useState();
     const [loading, setLoading] = useState(true);
 
     const saveToken = useCallback(newToken => {
@@ -80,7 +84,25 @@ export const AuthProvider = ({ children }) => {
         }
         setLoading(false);
     }, []);
-
+    useEffect(() => {
+        async function giveImg() {
+            console.log(userID);
+            try {
+                const response = await axios.get(`${USER_API_URL}${userID}/`);
+                //console.log(response.data);
+                setImg(response.data.photo);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (userID) {
+            giveImg();
+        }
+        console.log(img);
+        //console.log(data);
+        //setImg(data)
+    }, [userID]);
+    console.log(token);
     const value = {
         token,
         userID,
@@ -88,7 +110,8 @@ export const AuthProvider = ({ children }) => {
         saveToken,
         removeToken,
         saveDate,
-        loading
+        loading,
+        img
     };
 
     return loading ? (

@@ -6,7 +6,7 @@ import Loader from '../components/Loader';
 import { useUserMeetups } from '../utils/hooks/useUserMeetups';
 import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { SIGN_IN } from '../constant/router';
+import { MEETUP_DETAILS, SIGN_IN } from '../constant/router';
 
 export default function MyMeetupsSubscriber() {
     const { token } = useAuth();
@@ -37,7 +37,11 @@ export default function MyMeetupsSubscriber() {
                     <h1>Error: {error}</h1>
                 ) : paginatedMeetups.length > 0 ? (
                     paginatedMeetups.map(meetup => (
-                        <MeetupCard key={meetup.id} {...meetup} />
+                        <MeetupCard
+                            key={meetup.id}
+                            to={`${MEETUP_DETAILS}/${meetup.id}`}
+                            {...meetup}
+                        />
                     ))
                 ) : (
                     <h2>No meetups found.</h2>
