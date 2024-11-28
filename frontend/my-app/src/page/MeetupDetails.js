@@ -33,9 +33,9 @@ export default function MeetupDetails() {
                         {`Already signed: ${meetup.signed || 0}`}
                     </p>
                     <h3>Description:</h3>
-                    <p className="meetup-details-description">
+                    <pre className="meetup-details-description">
                         {meetup.description || 'No description available.'}
-                    </p>
+                    </pre>
                 </div>
                 <button
                     className="meetup-details-button"

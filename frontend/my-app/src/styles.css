@@ -306,7 +306,7 @@ button {
 
 .meetup-card img {
     height: 300px;
-    width: 100%;
+    width: 300px;
 }
 
 .meetup-info p {
@@ -741,6 +741,7 @@ h3 {
 .meetup-details .meetup-details-description {
     margin-top: 15px;
     font-size: 1rem;
+    text-wrap: auto;
 }
 
 .meetup-details .meetup-details-button {
@@ -815,6 +816,11 @@ h3 {
     width: 100%;
     box-sizing: border-box;
     background: var(--background);
+}
+.create-meetup-form .input-group textarea {
+    resize: none; /* Отключаем ручное изменение размера */
+    overflow: hidden; /* Скрываем прокрутку, чтобы выглядело аккуратно */
+    min-height: 50px; /* Минимальная высота */
 }
 
 .create-meetup-form .input-group textarea {
@@ -1017,5 +1023,57 @@ h3 {
     .create-meetup-form .create-meetup-button {
         font-size: 14px;
         padding: 8px 15px;
+    }
+}
+
+.ai-button {
+    background-color: #6c757d;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+    max-width: 220px;
+    transition:
+        background-color 0.5s ease,
+        transform 0.2s ease,
+        background-image 1s ease; /* Плавные эффекты */
+}
+
+.ai-button:hover {
+    background-color: #5a6268; /* Темный оттенок при наведении */
+    transform: scale(1.05); /* Легкое увеличение */
+    background-image: linear-gradient(
+        45deg,
+        #fd7f84,
+        #efcc7d,
+        #cd52f5,
+        #892de8
+    ); /* Переливка цветами */
+    background-size: 400% 400%; /* Расширение фона для переливов */
+    animation: gradientAnimation 3s infinite; /* Добавление анимации перелива */
+}
+
+.ai-button:active {
+    background-color: #343a40; /* Темно-серый при нажатии */
+    transform: scale(0.95); /* Легкое уменьшение */
+}
+
+.ai-button-meetups-section {
+    margin: 0px;
+}
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
     }
 }
