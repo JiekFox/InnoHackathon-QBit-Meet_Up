@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from decouple import config
+from datetime import timedelta
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -42,9 +43,21 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
-    'storages'
+    'storages',
+    'django_filters'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -87,7 +100,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('NAME'),
         'USER': config('USER'),
-        'PASSWORD': config('PASSWORD'),
+        'PASSWORD': config('DB_PASSWORD'),
         'HOST': config('HOST'),
         'PORT': config('PORT'),
     }
@@ -144,7 +157,8 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
 CORS_ALLOWED_ORIGINS = [
     "https://qbit-meetup.web.app",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://tdpmxgwhxrhqvuaupenr.supabase.co"
 ]
 
 STORAGES = {
@@ -166,3 +180,14 @@ STORAGES = {
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+SIMPLE_JWT = {
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7), 
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+}
+
+AUTH_USER_MODEL = 'api.UserProfile'
