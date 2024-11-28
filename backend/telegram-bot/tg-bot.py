@@ -93,10 +93,6 @@ async def webhook(request: Request):
 
                             keyboard = InlineKeyboardMarkup(keyboard_buttons)
 
-                            # keyboard = InlineKeyboardMarkup(
-                            #     [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
-                            # )
-
                             if "image" in meeting and meeting["image"]:
                                 await bot.send_photo(
                                     chat_id=update.message.chat.id,
@@ -163,7 +159,7 @@ async def webhook(request: Request):
             # Команда "Все митапы" с постраничным выводом
             elif text == "Все митапы" or text == "📜 Все митапы" or text == "/meetups":
                 page = 1
-                page_size = 10
+                page_size = 15
                 try:
                     response = requests.get(f"{BACKEND_URL}/meetings/?page={page}&page_size={page_size}")
                     response.raise_for_status()
@@ -359,13 +355,14 @@ async def webhook(request: Request):
 
             if callback_data.startswith("subscribe") or callback_data.startswith("unsubscribe"):
                 try:
+                    user_id = update.callback_query.from_user.id
                     _, meeting_id = callback_data.split(":")
                     if callback_data.startswith("subscribe"):
                         response = requests.post(
-                            f"{BACKEND_URL}/meetings/{meeting_id}/subscribe_by_id/?tg_id={user_id}")
+                            f"{BACKEND_URL}/meetings/{meeting_id}/subscribe_by_id/?tg_id={user_id}", headers=headers)
                     elif callback_data.startswith("unsubscribe"):
                         response = requests.delete(
-                            f"{BACKEND_URL}/meetings/{meeting_id}/unsubscribe_by_id/?tg_id={user_id}")
+                            f"{BACKEND_URL}/meetings/{meeting_id}/unsubscribe_by_id/?tg_id={user_id}", headers=headers)
 
                     response.raise_for_status()
                     if response.status_code in [200, 201]:
@@ -380,6 +377,7 @@ async def webhook(request: Request):
                 except Exception as e:
                     await bot.send_message(chat_id=update.callback_query.message.chat.id,
                                            text=f"❌ Ошибка при выполнении операции: {e}")
+
 
     except Exception as e:
         logging.error(f"❌ Ошибка обработки: {e}")
