@@ -76,17 +76,21 @@ async def webhook(request: Request):
                             keyboard_buttons = [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
                             # Добавление кнопок подписки/отписки
                             try:
-                                response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}", headers=headers)
+                                response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}",
+                                                        headers=headers)
                                 response.raise_for_status()
                                 signed_meetings = response.json()
                                 is_signed = any(m["id"] == meeting["id"] for m in signed_meetings)
                                 if is_signed:
-                                    keyboard_buttons.append([InlineKeyboardButton("Отписаться", callback_data=f"unsubscribe:{meeting['id']}")])
+                                    keyboard_buttons.append(InlineKeyboardButton("Отписаться ❌",
+                                                                                 callback_data=f"unsubscribe:{meeting['id']}"))
                                 else:
-                                    keyboard_buttons.append([InlineKeyboardButton("Записаться", callback_data=f"subscribe:{meeting['id']}")])
+                                    keyboard_buttons.append(InlineKeyboardButton("Записаться ✅",
+                                                                                 callback_data=f"subscribe:{meeting['id']}"))
                             except Exception as e:
-                                await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при проверке подписки: {e}")
-                            keyboard = InlineKeyboardMarkup(keyboard_buttons)
+                                await bot.send_message(chat_id=update.message.chat.id,
+                                                       text=f"❌ Ошибка при проверке подписки: {e}")
+                            keyboard = InlineKeyboardMarkup([keyboard_buttons])
                             keyboard = InlineKeyboardMarkup(
                                 [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
                             )
@@ -258,7 +262,7 @@ async def webhook(request: Request):
                         await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
 
             # Команда "Мои митапы (созданные)"
-            elif text == "Мои митапы \(созданные\)" or text == "/my_meetups_owner":
+            elif text == "Мои митапы (созданные)" or text == "🎯 Мои митапы (созданные)" or text == "/my_meetups_owner":
                 logging.info("Запрос на митапы, созданные пользователем")
                 try:
                     response = requests.get(f"{BACKEND_URL}/users/meetings_authored_active/?tg_id={user_id}", headers=headers)
@@ -279,7 +283,7 @@ async def webhook(request: Request):
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
             # Команда "Мои митапы (подписки)"
-            elif text == "Мои митапы \(подписки\)" or text == "/my_meetups_subscriber":
+            elif text == "Мои митапы (подписки)" or text == "📌 Мои митапы (подписки)" or text == "/my_meetups_subscriber":
                 logging.info("Запрос на митапы, на которые подписан пользователь")
                 try:
                     response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}", headers=headers)
