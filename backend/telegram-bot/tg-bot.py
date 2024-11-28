@@ -58,7 +58,7 @@ async def webhook(request: Request):
                             None
                         )
 
-                        if meeting:
+                        if 'meeting' in locals() and meeting:
                             found = True
                             formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y")
                             formatted_time = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%H:%M")
@@ -70,6 +70,20 @@ async def webhook(request: Request):
                                 f"ID: {meeting['id']}"
                             )
                             website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
+                            keyboard_buttons = [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
+                            # Добавление кнопок подписки/отписки
+                            try:
+                                response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}")
+                                response.raise_for_status()
+                                signed_meetings = response.json()
+                                is_signed = any(m["id"] == meeting["id"] for m in signed_meetings)
+                                if is_signed:
+                                    keyboard_buttons.append([InlineKeyboardButton("Отписаться", callback_data=f"unsubscribe:{meeting['id']}")])
+                                else:
+                                    keyboard_buttons.append([InlineKeyboardButton("Записаться", callback_data=f"subscribe:{meeting['id']}")])
+                            except Exception as e:
+                                await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при проверке подписки: {e}")
+                            keyboard = InlineKeyboardMarkup(keyboard_buttons)
                             keyboard = InlineKeyboardMarkup(
                                 [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
                             )
@@ -241,7 +255,8 @@ async def webhook(request: Request):
                         await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
 
             # Команда "Мои митапы (созданные)"
-            elif text == "Мои митапы (созданные)":
+            elif text == "Мои митапы \(созданные\)" or text == "/my_meetups_owner":
+                logging.info("Запрос на митапы, созданные пользователем")
                 try:
                     response = requests.get(f"{BACKEND_URL}/users/meetings_authored_active/?tg_id={user_id}")
                     response.raise_for_status()
@@ -261,7 +276,8 @@ async def webhook(request: Request):
                     await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
 
             # Команда "Мои митапы (подписки)"
-            elif text == "Мои митапы (подписки)":
+            elif text == "Мои митапы \(подписки\)" or text == "/my_meetups_subscriber":
+                logging.info("Запрос на митапы, на которые подписан пользователь")
                 try:
                     response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}")
                     response.raise_for_status()
@@ -304,7 +320,7 @@ async def webhook(request: Request):
 
                     message = f"*Страница {page}:*\n" + "\n".join(
                         [
-                            f'• {meeting.get("title")} (Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y")}, время: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%H:%M")}) id:{meeting.get("id")}'
+                            f'• *{meeting.get("title")}* (Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y")}, время: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%H:%M")}) id:{meeting.get("id")}'
                             for meeting in meetings
                         ]
                     )
