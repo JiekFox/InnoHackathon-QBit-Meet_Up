@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import icon from '../assets/img/icon.png';
 
 const MeetupCard = React.memo(
     ({ title, description, image, dateTime, datetime_beg, to }) => {
@@ -12,7 +13,7 @@ const MeetupCard = React.memo(
         return (
             <div className="meetup-card">
                 <NavLink to={to}>
-                    <img className="image" src={image} alt="Meetup Image" />
+                    <img className="image" src={image || icon} alt="Meetup Image" />
                     <h3 className="title">{title}</h3>
                     <h4>{`${day}.${month}.${year}`}</h4>
                     <p className="description">{description}</p>
