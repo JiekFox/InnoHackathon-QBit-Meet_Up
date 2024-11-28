@@ -109,7 +109,7 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': config('REDIS_URL'),
+        'LOCATION': config('REDIS_LOCAL_URL'),
     }
 }
 
@@ -198,3 +198,5 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'api.UserProfile'
+
+RABBITMQ_URL = config("RABBITMQ_URL")
