@@ -103,7 +103,8 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-backend/Telegram bot/supabase/functions/telegram-bot/.env
+
+.env
 
 .venv
 .env
