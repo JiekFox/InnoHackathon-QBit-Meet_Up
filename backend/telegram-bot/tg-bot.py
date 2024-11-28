@@ -94,7 +94,7 @@ async def webhook(request: Request):
                                     else:
                                         await bot.send_message(chat_id=update.message.chat.id,
                                                                text=f"❌ Ошибка при проверке подписки: {http_err}")
-                                except Exception as e:
+                            except Exception as e:
                                 await bot.send_message(chat_id=update.message.chat.id,
                                                        text=f"❌ Ошибка при проверке подписки: {e}")
 
