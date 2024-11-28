@@ -14,7 +14,9 @@ export default function SignUp() {
     const [errorMessage, setErrorMessage] = useState('');
     const { saveDate } = useAuth();
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
 
+    const togglePasswordVisibility = () => setShowPassword(!showPassword);
     const handleInputChange = e => {
         const { name, value } = e.target;
         setFormData(prevData => ({
@@ -73,14 +75,25 @@ export default function SignUp() {
                 </div>
                 <div className="input-group">
                     <label htmlFor="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        required
-                    />
+                    <div className="password-container">
+                        <input
+                            type={showPassword ? 'text' : 'password'} // Меняем тип в зависимости от состояния
+                            id="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            required
+                            className="password-input"
+                        />
+                        <span
+                            className="toggle-password"
+                            onClick={togglePasswordVisibility}
+                            role="button"
+                            aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
+                        >
+                        {showPassword ? '🔓' : '🔒'}
+                        </span>
+                    </div>
                 </div>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
                 <button type="submit" className="sign-button">

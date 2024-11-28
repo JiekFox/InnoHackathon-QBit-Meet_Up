@@ -839,3 +839,22 @@ h3 {
         padding: 8px 15px;
     }
 }
+
+.password-container {
+    position: relative;
+    width: 105%;
+}
+
+.password-input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 15px;
+}
