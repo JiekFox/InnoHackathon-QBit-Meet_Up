@@ -76,7 +76,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return [IsAuthenticated(), IsAuthor(), IsStaff()]
         return super().get_permissions()
 
-    #@method_decorator(cache_page(60 * 15))
+    @method_decorator(cache_page(60 * 15))
     def list(self, request, *args, **kwargs):
         """
         Получение списка мероприятий с кэшированием.
@@ -90,7 +90,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
 
-    #@method_decorator(cache_page(60 * 5))
+    @method_decorator(cache_page(60 * 5))
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
@@ -251,11 +251,11 @@ class UserViewSet(ModelViewSet):
             return MeetingSerializer
         return super().get_serializer_class()
 
-    #@method_decorator(cache_page(60 * 5))
+    @method_decorator(cache_page(60 * 5))
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
     
-    #@method_decorator(cache_page(60 * 5))
+    @method_decorator(cache_page(60 * 5))
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
