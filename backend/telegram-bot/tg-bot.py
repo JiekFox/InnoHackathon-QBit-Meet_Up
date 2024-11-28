@@ -18,6 +18,9 @@ app = FastAPI()
 # Инициализация Telegram Bot
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 BACKEND_URL = os.getenv("BACKEND_URL")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+headers = {'Authorization': f'Bearer {ACCESS_TOKEN}'}
+
 if not BOT_TOKEN:
     raise ValueError("Не указан токен бота в переменных окружения!")
 if not BACKEND_URL:
@@ -73,7 +76,7 @@ async def webhook(request: Request):
                             keyboard_buttons = [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
                             # Добавление кнопок подписки/отписки
                             try:
-                                response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}")
+                                response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}", headers=headers)
                                 response.raise_for_status()
                                 signed_meetings = response.json()
                                 is_signed = any(m["id"] == meeting["id"] for m in signed_meetings)
@@ -258,7 +261,7 @@ async def webhook(request: Request):
             elif text == "Мои митапы \(созданные\)" or text == "/my_meetups_owner":
                 logging.info("Запрос на митапы, созданные пользователем")
                 try:
-                    response = requests.get(f"{BACKEND_URL}/users/meetings_authored_active/?tg_id={user_id}")
+                    response = requests.get(f"{BACKEND_URL}/users/meetings_authored_active/?tg_id={user_id}", headers=headers)
                     response.raise_for_status()
                     meetings = response.json()
 
@@ -279,7 +282,7 @@ async def webhook(request: Request):
             elif text == "Мои митапы \(подписки\)" or text == "/my_meetups_subscriber":
                 logging.info("Запрос на митапы, на которые подписан пользователь")
                 try:
-                    response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}")
+                    response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}", headers=headers)
                     response.raise_for_status()
                     meetings = response.json()
 
