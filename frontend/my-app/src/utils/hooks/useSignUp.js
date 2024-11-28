@@ -14,6 +14,7 @@ export const useSignUp = () => {
     const { saveDate } = useAuth();
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const [isPending, setIsPending] = useState(false);
 
     const togglePasswordVisibility = useCallback(
         () => setShowPassword(prev => !prev),
@@ -26,6 +27,7 @@ export const useSignUp = () => {
 
     const handleSubmit = useCallback(
         async e => {
+            setIsPending(true);
             e.preventDefault();
             try {
                 const response = await axios.post(REGISTER_API_URL, formData);
@@ -37,6 +39,8 @@ export const useSignUp = () => {
                     error.response?.data?.username[0] ||
                         'Registration failed. Please try again.'
                 );
+            } finally {
+                setIsPending(false);
             }
         },
         [formData, saveDate, navigate]
@@ -48,6 +52,7 @@ export const useSignUp = () => {
         showPassword,
         togglePasswordVisibility,
         handleInputChange,
-        handleSubmit
+        handleSubmit,
+        isPending
     };
 };

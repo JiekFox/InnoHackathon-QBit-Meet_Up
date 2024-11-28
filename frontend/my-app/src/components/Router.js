@@ -10,7 +10,8 @@ import {
     MY_MEETUPS_SUBSCRIBER,
     PROFILE,
     SIGN_IN,
-    SIGN_UP
+    SIGN_UP,
+    USERS_DETAIL
 } from '../constant/router';
 import Profile from '../page/Profile';
 import MyMeetups from '../page/MyMeetups';
@@ -20,6 +21,7 @@ import MeetupDetails from '../page/MeetupDetails';
 import SignIn from '../page/SignIn';
 import SignUp from '../page/SignUp';
 import { CreateMeetup } from '../page/CreateMeetup';
+import ProfileViewer from '../page/ProfileViewer';
 
 function Router() {
     const router = createBrowserRouter([
@@ -70,6 +72,10 @@ function Router() {
                 {
                     path: CREATE_MEETUPS,
                     element: <CreateMeetup />
+                },
+                {
+                    path: `${USERS_DETAIL}/:id`,
+                    element: <ProfileViewer />
                 }
             ]
         }

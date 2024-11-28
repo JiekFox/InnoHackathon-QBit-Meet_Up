@@ -18,6 +18,7 @@ export const useMeetupDetails = id => {
             try {
                 const response = await axios.get(`${MEETINGS_API_URL}${id}/`);
                 setMeetup(response.data);
+                console.log(response.data);
                 setLoading(false);
             } catch (err) {
                 setError(err.response?.data || err.message);

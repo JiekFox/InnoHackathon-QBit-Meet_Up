@@ -1,8 +1,26 @@
-import { useMeetupForm } from '../utils/hooks/useMeetupForm'; // Импортируем хук
+import { useMeetupForm } from '../utils/hooks/useMeetupForm';
+import { useAuth } from '../utils/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { SIGN_IN } from '../constant/router';
+import { useEffect } from 'react';
 
 export function CreateMeetup() {
-    const { formData, error, handleChange, handleImageUpload, handleSubmit } =
-        useMeetupForm();
+    const { token } = useAuth();
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (!token) {
+            navigate(SIGN_IN);
+        }
+    }, []);
+
+    const {
+        formData,
+        error,
+        handleChange,
+        handleImageUpload,
+        handleSubmit,
+        isPending
+    } = useMeetupForm();
 
     return (
         <main className="create-meetup">
@@ -64,7 +82,7 @@ export function CreateMeetup() {
                     />
                 </div>
                 <button type="submit" className="create-meetup-button">
-                    Create Meetup
+                    {isPending ? 'is pending...' : 'Create Meetup'}
                 </button>
             </form>
         </main>
