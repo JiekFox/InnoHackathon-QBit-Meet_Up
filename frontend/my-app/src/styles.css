@@ -920,7 +920,7 @@ h3 {
     padding: 8px;
     border: 1px solid var(--button-border);
     border-radius: 4px;
-    background: var(--header-footer);
+    background: var(--button-bg);
 }
 
 .filter-bar .apply-button {
