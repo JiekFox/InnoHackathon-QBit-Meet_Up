@@ -8,14 +8,14 @@ const MeetupCard = React.memo(({ title, description, image, dateTime, to }) => {
     const year = date.getUTCFullYear();
 
     return (
-        <NavLink to={to}>
-            <div className="meetup-card">
+        <div className="meetup-card">
+            <NavLink to={to}>
                 <img className="image" src={image} alt="Meetup Image" />
                 <h3 className="title">{title}</h3>
                 <h4>{`${day}.${month}.${year}`}</h4>
                 <p className="description">{description}</p>
-            </div>
-        </NavLink>
+            </NavLink>
+        </div>
     );
 });
 
