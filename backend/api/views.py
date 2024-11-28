@@ -13,6 +13,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 from .filters import MeetingFilter
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from .cache_control import clear_meetings_cache
+from .permissions import IsAuthor, IsStaff
 
 
 class MeetingPagination(PageNumberPagination):
@@ -68,21 +73,35 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         """
         if self.action in ["list", "retrieve"]:  
             return [AllowAny()]
+        if self.action in ["update", "partial_update", "destroy"]:
+            return [IsAuthenticated(), IsAuthor(), IsStaff()]
         return super().get_permissions()
 
 
     def list(self, request, *args, **kwargs):
-        """
-        Получение списка мероприятий.
-        """
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            """
+            Получение списка мероприятий с кэшированием.
+            """
 
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+            cache_key = 'meetings_list'
+            cached_data = cache.get(cache_key)
+            
+            if cached_data:
+                return Response(cached_data)
+
+            queryset = self.filter_queryset(self.get_queryset())
+            page = self.paginate_queryset(queryset)
+            
+            if page is not None:
+
+                serializer = self.get_serializer(page, many=True)
+                response_data = self.get_paginated_response(serializer.data)
+            else:
+                serializer = self.get_serializer(queryset, many=True)
+                response_data = Response(serializer.data)
+            
+            cache.set(cache_key, response_data.data, timeout=60 * 5)
+            return response_data
 
 
     def create(self, request, *args, **kwargs):
@@ -94,12 +113,14 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return Response({"error": "Размер файла не должен превышать 5 MB"}, status=status.HTTP_400_BAD_REQUEST)
 
         self.perform_create(serializer)
+        clear_meetings_cache()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
     def destroy(self, request, *args, **kwargs):
         meeting = self.get_object()
         meeting.delete()
+        clear_meetings_cache()
         return Response({"message": "Встреча успешно удалена"}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -109,6 +130,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
+        clear_meetings_cache()
         return Response(serializer.data)
     
 
@@ -188,10 +210,19 @@ class UserViewSet(ModelViewSet):
     """
     ViewSet для управления пользователями и регистрации.
     """
-    queryset = UserProfile.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
+
+    def get_queryset(self):
+        """
+        Ограничивает доступ к данным только для авторизованных пользователей,
+        предоставляя им только те данные, которые они имеют право видеть. (должно работать, но пока что-то кисло)
+        """
+        user = self.request.user
+        if user.is_staff:
+            return super().get_queryset()
+        return super().get_queryset().filter(author=user)
 
     def get_permissions(self):
         """
@@ -199,6 +230,13 @@ class UserViewSet(ModelViewSet):
         """
         if self.action in ["register", "list", "retrieve"]:
             return [AllowAny()]
+        if self.action in [
+                "update",             
+                "partial_update", 
+                "destroy", 
+                "meetings_owned"
+            ]:
+            return [IsAuthenticated(), IsAuthor(), IsStaff()]
         return super().get_permissions()
 
 

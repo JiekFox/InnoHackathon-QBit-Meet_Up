@@ -5,19 +5,45 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class MeetingSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField(read_only=True)
+    author_id = serializers.IntegerField(source="author.id", read_only=True)
+    attendees_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Meeting
-        fields = ["id", "title", "author", "datetime_beg", "is_online", "link", "location", "description", "image"]
+        fields = [
+            "id",
+            "title",
+            "author",
+            "author_id",
+            "datetime_beg",
+            "is_online",
+            "link",
+            "location",
+            "description",
+            "image",
+            "attendees_count",
+        ]
 
-    def create(self, validated_data):
-        validated_data["author"] = self.context["request"].user
-        return super().create(validated_data)
+    def get_attendees_count(self, obj):
+        """
+        Метод для вычисления количества участников встречи.
+        """
+        return obj.attendees.count()
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ["id", "username", "first_name","last_name","email", "photo", "user_description", "tg_id", "teams_id"]
+        fields = [
+            "id", 
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "photo",
+            "user_description",
+            "tg_id",
+            "teams_id"
+        ]
 
 class SignedToMeetingSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
