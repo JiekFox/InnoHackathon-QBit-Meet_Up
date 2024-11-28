@@ -23,8 +23,31 @@ class MeetingPagination(PageNumberPagination):
     page_size_query_param = "page_size"
     max_page_size = 50
 
+class SubscriptionMixin:
+    @staticmethod
+    def get_meeting(pk):
+        try:
+            return Meeting.objects.get(pk=pk), None
+        except Meeting.DoesNotExist:
+            return None, Response({"error": "Meeting not found"}, status=status.HTTP_404_NOT_FOUND)
 
-class MeetingViewSet(ModelViewSet):
+    @staticmethod
+    def manage_subscription(user, meeting, action="subscribe"):
+        if action == "subscribe":
+            subscription, created = SignedToMeeting.objects.get_or_create(user=user, meeting=meeting)
+            return (
+                {"message": "Subscribed successfully"} if created else {"message": "Already subscribed"},
+                status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+            )
+        if action == "unsubscribe":
+            try:
+                subscription = SignedToMeeting.objects.get(user=user, meeting=meeting)
+                subscription.delete()
+                return {"message": "Unsubscribed successfully"}, status.HTTP_204_NO_CONTENT
+            except SignedToMeeting.DoesNotExist:
+                return {"error": "Subscription not found"}, status.HTTP_404_NOT_FOUND
+
+class MeetingViewSet(ModelViewSet, SubscriptionMixin):
     """
     ViewSet для управления встречами.
     """
@@ -95,104 +118,50 @@ class MeetingViewSet(ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def subscribe(self, request, pk=None):
-        user = request.user 
-        if not isinstance(user, UserProfile):
-            return Response({"error": "User is not of type UserProfile"}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        try:
-            meeting = self.get_object() 
-            subscription, created = SignedToMeeting.objects.get_or_create(user=user, meeting=meeting)
-            if created:
-                return Response({"message": "Subscribed successfully"}, status=status.HTTP_201_CREATED)
-            return Response({"message": "Already subscribed"}, status=status.HTTP_200_OK)
-        except Meeting.DoesNotExist:
-            return Response({"error": "Meeting not found"}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=["post"])
-    def subscribe_by_id(self, request, pk=None):
-        """
-        Записывает пользователя на мероприятие по tg_id или teams_id через query параметры.
-        """
-
-        tg_id = request.query_params.get('tg_id')
-        teams_id = request.query_params.get('teams_id')
-
-        if not tg_id and not teams_id:
-            return Response(
-                {"error": "tg_id or teams_id is required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-
-        user, error = None, None
-        if tg_id:
-            user, error = get_user_by_param(request, 'tg_id')
-        elif teams_id:
-            user, error = get_user_by_param(request, 'teams_id')
-
-        if user is None:
-            return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
-
-
-        try:
-            meeting = Meeting.objects.get(pk=pk)
-        except Meeting.DoesNotExist:
-            return Response({"error": "Meeting not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        subscription, created = SignedToMeeting.objects.get_or_create(user=user, meeting=meeting)
-        if created:
-            return Response({"message": "Subscribed successfully"}, status=status.HTTP_201_CREATED)
-        return Response({"message": "Already subscribed"}, status=status.HTTP_200_OK)
-
-
-    @action(detail=True, methods=["delete"])
-    def unsubscribe_by_id(self, request, pk=None):
-        """
-        Отписывает пользователя от мероприятия по tg_id или teams_id через query параметры.
-        """
-
-        tg_id = request.query_params.get('tg_id')
-        teams_id = request.query_params.get('teams_id')
-
-        if not tg_id and not teams_id:
-            return Response(
-                {"error": "tg_id or teams_id is required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        user, error = None, None
-        if tg_id:
-            user, error = get_user_by_param(request, 'tg_id')
-        elif teams_id:
-            user, error = get_user_by_param(request, 'teams_id')
-
-        if user is None:
-            return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
-
-        try:
-            meeting = Meeting.objects.get(pk=pk)
-        except Meeting.DoesNotExist:
-            return Response({"error": "Meeting not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        try:
-            subscription = SignedToMeeting.objects.get(user=user, meeting=meeting)
-            subscription.delete()
-            return Response({"message": "Unsubscribed successfully"}, status=status.HTTP_204_NO_CONTENT)
-        except SignedToMeeting.DoesNotExist:
-            return Response({"error": "Subscription not found"}, status=status.HTTP_404_NOT_FOUND)
-
+        meeting, error_response = self.get_meeting(pk)
+        if error_response:
+            return error_response
+        response_data, status_code = self.manage_subscription(request.user, meeting, action="subscribe")
+        return Response(response_data, status=status_code)
 
     @action(detail=True, methods=["delete"])
     def unsubscribe(self, request, pk=None):
-        user = request.user
-        try:
-            subscription = SignedToMeeting.objects.get(user=user, meeting_id=pk)
-            subscription.delete()
-            return Response({"message": "Unsubscribed successfully"}, status=status.HTTP_204_NO_CONTENT)
-        except SignedToMeeting.DoesNotExist:
-            return Response({"error": "Subscription not found"}, status=status.HTTP_404_NOT_FOUND)
+        meeting, error_response = self.get_meeting(pk)
+        if error_response:
+            return error_response
+        response_data, status_code = self.manage_subscription(request.user, meeting, action="unsubscribe")
+        return Response(response_data, status=status_code)
+
+    @action(detail=True, methods=["post"])
+    def subscribe_by_id(self, request, pk=None):
+        user, error_response = self.get_user_from_query_params(request)
+        if error_response:
+            return error_response
+        meeting, error_response = self.get_meeting(pk)
+        if error_response:
+            return error_response
+        response_data, status_code = self.manage_subscription(user, meeting, action="subscribe")
+        return Response(response_data, status=status_code)
+
+    @action(detail=True, methods=["delete"])
+    def unsubscribe_by_id(self, request, pk=None):
+        user, error_response = self.get_user_from_query_params(request)
+        if error_response:
+            return error_response
+        meeting, error_response = self.get_meeting(pk)
+        if error_response:
+            return error_response
+        response_data, status_code = self.manage_subscription(user, meeting, action="unsubscribe")
+        return Response(response_data, status=status_code)
+
+    @staticmethod
+    def get_user_from_query_params(request):
+        tg_id = request.query_params.get('tg_id')
+        teams_id = request.query_params.get('teams_id')
+        if not tg_id and not teams_id:
+            return None, Response({"error": "tg_id or teams_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        user, error = get_user_by_param(request, 'tg_id' if tg_id else 'teams_id')
+        return (user, None) if user else (None, Response({"error": error}, status=status.HTTP_404_NOT_FOUND))
      
        
 class EmailService:
@@ -323,9 +292,9 @@ class UserViewSet(ModelViewSet):
 
         user = None
         if tg_id:
-            user, error = self.get_user_by_param(request, 'tg_id')
+            user, error = get_user_by_param(request, 'tg_id')
         elif teams_id:
-            user, error = self.get_user_by_param(request, 'teams_id')
+            user, error = get_user_by_param(request, 'teams_id')
         else:
             return Response({"error": "tg_id or teams_id is required"}, status=status.HTTP_400_BAD_REQUEST)
 
