@@ -612,6 +612,10 @@ textarea {
     background-color: var(--button-bg-hover);
 }
 
+.AI-buttons:hover {
+    background-color: var(--button-bg-hover);
+}
+
 .forgot-password-link {
     display: block;
     margin-top: 16px;
