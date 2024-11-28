@@ -304,7 +304,7 @@ async def webhook(request: Request):
 
                     message = f"*Страница {page}:*\n" + "\n".join(
                         [
-                            f'• *{meeting.get("title")}* (Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y")}, время: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%H:%M")}) id:{meeting.get("id")}"
+                            f'• {meeting.get("title")} (Дата: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%d.%m.%Y")}, время: {datetime.fromisoformat(meeting.get("datetime_beg")).strftime("%H:%M")}) id:{meeting.get("id")}'
                             for meeting in meetings
                         ]
                     )
