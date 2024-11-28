@@ -1,30 +1,34 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { AuthProvider } from '../../utils/AuthContext';
+import { ThemeProvider, useTheme } from '../../utils/ThemeContext';
 
-const Root = React.memo(() => {
-    const [theme, setTheme] = useState('dark');
-
-    const toggleTheme = useCallback(() => {
-        setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
-    }, []);
+const RootContent = React.memo(() => {
+    const { theme } = useTheme();
 
     return (
-        <AuthProvider>
-            <div className="body" data-theme={theme}>
-                <Navbar theme={theme} onThemeToggle={toggleTheme} />
-
-                <main id="detail" className="main-content">
-                    <Outlet />
-                </main>
-                <footer>
-                    <Footer />
-                </footer>
-            </div>
-        </AuthProvider>
+        <div className="body" data-theme={theme}>
+            <Navbar />
+            <main id="detail" className="main-content">
+                <Outlet />
+            </main>
+            <footer>
+                <Footer />
+            </footer>
+        </div>
     );
 });
+
+const Root = () => {
+    return (
+        <AuthProvider>
+            <ThemeProvider>
+                <RootContent />
+            </ThemeProvider>
+        </AuthProvider>
+    );
+};
 
 export default Root;
