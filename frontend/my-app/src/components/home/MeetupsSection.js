@@ -1,7 +1,7 @@
 import React from 'react';
-import FilterBar from './FilterBar';
-import MeetupCard from './MeetupCard';
-import Pagination from './Pagination';
+import FilterBar from '../FilterBar';
+import MeetupCard from '../MeetupCard';
+import Pagination from '../Pagination';
 import { MEETUP_DETAILS } from '../../constant/router';
 import { useMeetups } from '../../utils/hooks/useMeetups';
 import Loader from '../Loader';
@@ -14,12 +14,16 @@ export default function MeetupsSection() {
         loading,
         error,
         setCurrentPage,
-        handleSearchChange
+        handleSearchChange,
+        handleDateFilter
     } = useMeetups();
 
     return (
         <section className="home">
-            <FilterBar onSearchChange={handleSearchChange} />
+            <FilterBar
+                onSearchChange={handleSearchChange}
+                onDateFilter={handleDateFilter}
+            />
 
             <div className="meetup-grid">
                 {loading ? (

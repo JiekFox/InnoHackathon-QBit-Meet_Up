@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import useFetchMeetings from '../api/useFetchMeetings';
 import Loader from '../components/Loader';
 import PhotoUpload from '../components/PhotoUpload';
+import { USER_API_URL } from '../constant/apiURL';
 
 export default function ProfileViewer() {
     const { id } = useParams();
@@ -10,9 +11,7 @@ export default function ProfileViewer() {
         data: formData,
         loading,
         error
-    } = useFetchMeetings(
-        `https://innohackathon-qbit-meet-up.onrender.com/api/users/${id}/`
-    );
+    } = useFetchMeetings(`${USER_API_URL}${id}/`);
 
     if (loading) return <Loader />;
     if (error) return <div className="error-message">{error}</div>;

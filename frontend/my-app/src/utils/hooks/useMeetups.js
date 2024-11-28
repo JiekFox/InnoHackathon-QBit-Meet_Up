@@ -10,10 +10,23 @@ export const useMeetups = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [meetups, setMeetups] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
+    const [dateFilter, setDateFilter] = useState({ startDate: '', endDate: '' });
 
-    const { data, loading, error } = useFetchMeetings(
-        `${MEETINGS_API_URL}?page=${currentPage}&page_size=${ITEMS_PER_PAGE}`
-    );
+    const buildApiUrl = () => {
+        let url = `${MEETINGS_API_URL}?page=${currentPage}&page_size=${ITEMS_PER_PAGE}`;
+        if (searchQuery) {
+            url += `&search=${searchQuery}`;
+        }
+        if (dateFilter.startDate) {
+            url += `&datetime_beg__gt=${dateFilter.startDate}`;
+        }
+        if (dateFilter.endDate) {
+            url += `&datetime_beg__lt=${dateFilter.endDate}`;
+        }
+        return url;
+    };
+
+    const { data, loading, error } = useFetchMeetings(buildApiUrl());
 
     useEffect(() => {
         if (data.results) {
@@ -22,7 +35,7 @@ export const useMeetups = () => {
                     id: item.id,
                     title: item.title,
                     description: item.description,
-                    image: item.image ? item.image : icon,
+                    image: item.image || icon,
                     dateTime: item.datetime_beg
                 }))
             );
@@ -34,9 +47,13 @@ export const useMeetups = () => {
         setSearchQuery(query);
     }, []);
 
+    const handleDateFilter = useCallback((startDate, endDate) => {
+        setDateFilter({ startDate, endDate });
+    }, []);
+
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchQuery]);
+    }, [searchQuery, dateFilter]);
 
     const filteredMeetups = meetups.filter(meetup =>
         meetup.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -50,6 +67,7 @@ export const useMeetups = () => {
         loading,
         error,
         setCurrentPage,
-        handleSearchChange
+        handleSearchChange,
+        handleDateFilter
     };
 };
