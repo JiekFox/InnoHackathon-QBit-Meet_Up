@@ -374,9 +374,52 @@ async def webhook(request: Request):
                     else:
                         await bot.answer_callback_query(update.callback_query.id, text="Не удалось выполнить операцию.",
                                                         show_alert=True)
+
+                    # Обновление сообщения после изменения состояния подписки
+                    meeting_response = requests.get(f"{BACKEND_URL}/meetings/{meeting_id}")
+                    meeting_response.raise_for_status()
+                    meeting = meeting_response.json()
+                    formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y")
+                    formatted_time = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%H:%M")
+                    caption = (
+                        f"Информация о митапе:\n"
+                        f"Название: *{meeting['title']}*\n"
+                        f"Описание: _{meeting['description']}_\n"
+                        f"Дата: {formatted_date}, время: {formatted_time}\n"
+                        f"ID: {meeting['id']}"
+                    )
+                    website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
+                    keyboard_buttons = [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
+
+                    # Добавление кнопок подписки/отписки
+                    try:
+                        response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}",
+                                                headers=headers)
+                        response.raise_for_status()
+                        signed_meetings = response.json()
+                        is_signed = any(m["id"] == meeting["id"] for m in signed_meetings)
+                        if is_signed:
+                            keyboard_buttons[0].append(
+                                InlineKeyboardButton("Отписаться ❌", callback_data=f"unsubscribe:{meeting['id']}"))
+                        else:
+                            keyboard_buttons[0].append(
+                                InlineKeyboardButton("Записаться ✅", callback_data=f"subscribe:{meeting['id']}"))
+                    except Exception as e:
+                        await bot.send_message(chat_id=update.callback_query.message.chat.id,
+                                               text=f"❌ Ошибка при проверке подписки: {e}")
+
+                    keyboard = InlineKeyboardMarkup(keyboard_buttons)
+                    await bot.edit_message_caption(
+                        chat_id=update.callback_query.message.chat.id,
+                        message_id=update.callback_query.message.message_id,
+                        caption=caption,
+                        reply_markup=keyboard,
+                        parse_mode="Markdown"
+                    )
                 except Exception as e:
                     await bot.send_message(chat_id=update.callback_query.message.chat.id,
                                            text=f"❌ Ошибка при выполнении операции: {e}")
+
 
 
     except Exception as e:
