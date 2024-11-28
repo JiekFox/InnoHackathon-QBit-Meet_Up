@@ -133,7 +133,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         meeting, error_response = self.get_meeting(pk)
         if error_response:
             return error_response
-        
+
         response_data, status_code = self.manage_subscription(request.user, meeting, action="subscribe")
         if status_code == status.HTTP_201_CREATED:
             EmailService.send_signed_email(
@@ -144,6 +144,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
                 meeting.link
             )
             EmailService.process_queue()
+
         return Response(response_data, status=status_code)
 
     @action(detail=True, methods=["delete"])
@@ -200,6 +201,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         except SignedToMeeting.DoesNotExist:
             return Response({"message": False}, status=status.HTTP_200_OK)
            
+
        
 class UserViewSet(ModelViewSet):
     """
