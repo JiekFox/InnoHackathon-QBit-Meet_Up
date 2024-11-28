@@ -87,7 +87,14 @@ async def webhook(request: Request):
                                 else:
                                     keyboard_buttons[0].append(InlineKeyboardButton("Записаться ✅",
                                                                                     callback_data=f"subscribe:{meeting['id']}"))
-                            except Exception as e:
+                            except requests.exceptions.HTTPError as http_err:
+                                    if http_err.response.status_code == 404:
+                                        await bot.send_message(chat_id=update.message.chat.id,
+                                                               text="❌ В системе не найден ваш Telegram ID. Пожалуйста, добавьте его в своем профиле на сайте https://qbit-meetup.web.app/profile")
+                                    else:
+                                        await bot.send_message(chat_id=update.message.chat.id,
+                                                               text=f"❌ Ошибка при проверке подписки: {http_err}")
+                                except Exception as e:
                                 await bot.send_message(chat_id=update.message.chat.id,
                                                        text=f"❌ Ошибка при проверке подписки: {e}")
 
@@ -409,13 +416,16 @@ async def webhook(request: Request):
                                                text=f"❌ Ошибка при проверке подписки: {e}")
 
                     keyboard = InlineKeyboardMarkup(keyboard_buttons)
-                    await bot.edit_message_caption(
-                        chat_id=update.callback_query.message.chat.id,
-                        message_id=update.callback_query.message.message_id,
-                        caption=caption,
-                        reply_markup=keyboard,
-                        parse_mode="Markdown"
-                    )
+                    # Проверка на необходимость обновления сообщения
+                    if update.callback_query.message.caption != caption or update.callback_query.message.reply_markup != keyboard:
+                        await bot.edit_message_caption(
+                            chat_id=update.callback_query.message.chat.id,
+                            message_id=update.callback_query.message.message_id,
+                            caption=caption,
+                            reply_markup=keyboard,
+                            parse_mode="Markdown"
+                        )
+
                 except Exception as e:
                     await bot.send_message(chat_id=update.callback_query.message.chat.id,
                                            text=f"❌ Ошибка при выполнении операции: {e}")
