@@ -15,7 +15,7 @@ from rest_framework.pagination import PageNumberPagination
 from .filters import MeetingFilter
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
-from .cache_control import clear_meetings_cache, clear_users_cache
+from .cache_control import clear_all_cache
 from .permissions import IsAuthor, IsStaff
 
 
@@ -90,7 +90,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
 
-    @method_decorator(cache_page(60 * 15))
+    @method_decorator(cache_page(60 * 5))
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
@@ -103,14 +103,14 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return Response({"error": "Размер файла не должен превышать 5 MB"}, status=status.HTTP_400_BAD_REQUEST)
 
         self.perform_create(serializer)
-        clear_meetings_cache()
+        clear_all_cache()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
     def destroy(self, request, *args, **kwargs):
         meeting = self.get_object()
         meeting.delete()
-        clear_meetings_cache()
+        clear_all_cache()
         return Response({"message": "Встреча успешно удалена"}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -120,7 +120,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        clear_meetings_cache()
+        clear_all_cache()
         return Response(serializer.data)
     
 
@@ -251,22 +251,27 @@ class UserViewSet(ModelViewSet):
             return MeetingSerializer
         return super().get_serializer_class()
 
-    @method_decorator(cache_page(60 * 15))
+    @method_decorator(cache_page(60 * 5))
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
     
-    @method_decorator(cache_page(60 * 15))
+    @method_decorator(cache_page(60 * 5))
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
-        clear_users_cache()
+        clear_all_cache()
+        return response
+    
+    def partial_update(self, request, *args, **kwargs):
+        response = super().partial_update(request, *args, **kwargs)
+        clear_all_cache()
         return response
 
     def destroy(self, request, *args, **kwargs):
         response = super().destroy(request, *args, **kwargs)
-        clear_users_cache()
+        clear_all_cache()
         return response
 
     @action(detail=False, methods=["post"])

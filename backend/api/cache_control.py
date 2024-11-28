@@ -13,3 +13,6 @@ def clear_meetings_cache():
     Очистка кэша для всех путей, связанных со встречами.
     """
     cache.delete('meetings_list')
+
+def clear_all_cache():
+    cache.clear()
