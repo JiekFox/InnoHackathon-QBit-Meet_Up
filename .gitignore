@@ -107,7 +107,7 @@ backend/Telegram bot/supabase/functions/telegram-bot/.env
 frontend\.env
 
 .venv
-frontend/.env
+.env
 env/
 venv/
 ENV/

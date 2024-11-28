@@ -4,6 +4,17 @@ import os
 
 app = FastAPI()
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Или укажите конкретные домены, например: ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],  # Разрешить все методы (GET, POST, OPTIONS и т.д.)
+    allow_headers=["*"],  # Разрешить все заголовки
+)
+
+
 # Получаем API ключ OpenAI из переменных окружения
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
