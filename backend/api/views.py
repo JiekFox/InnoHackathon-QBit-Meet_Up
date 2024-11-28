@@ -209,7 +209,7 @@ class UserViewSet(ModelViewSet):
         user = self.request.user
         if user.is_staff:
             return super().get_queryset()
-        return super().get_queryset().filter(author=user)
+        return super().get_queryset().filter(user=user)
 
     def get_permissions(self):
         """
