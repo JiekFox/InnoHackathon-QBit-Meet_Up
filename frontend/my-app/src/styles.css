@@ -854,6 +854,26 @@ h3 {
     }
 }
 
+
+.password-container {
+    position: relative;
+    width: 105%;
+}
+
+.password-input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 15px;
+}
+
 .profile-edit-form .form-fields .info-button {
     background: var(--background);
     height: 18px;
@@ -870,3 +890,4 @@ h3 {
 .profile-edit-form .form-fields .info-popup {
     height: 90px;
 }
+
