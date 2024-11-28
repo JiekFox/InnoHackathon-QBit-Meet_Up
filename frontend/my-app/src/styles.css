@@ -212,6 +212,15 @@ button {
     border-radius: 8px;
     cursor: pointer;
 }
+
+.filter-bar .AI-buttons {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: 2px solid var(--button-border);
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 12px 20px;
+}
 .sign-button {
     margin-top: 8px;
 }
