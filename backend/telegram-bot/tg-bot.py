@@ -241,6 +241,96 @@ async def webhook(request: Request):
                     except Exception as e:
                         await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при поиске митапа: {e}")
 
+            # Команда "Мои митапы (созданные)"
+            elif text == "Мои митапы (созданные)":
+                try:
+                    response = requests.get(f"{BACKEND_URL}/users/meetings_authored_active/?tg_id={user_id}")
+                    response.raise_for_status()
+                    meetings = response.json()
+
+                    if not meetings:
+                        await bot.send_message(chat_id=update.message.chat.id, text="❌ У вас нет созданных митапов.")
+                    else:
+                        message = "*Ваши созданные митапы:*\n" + "\n".join(
+                            [
+                                f'• {meeting["title"]} (Дата: {datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y")}, время: {datetime.fromisoformat(meeting["datetime_beg"]).strftime("%H:%M")}) id:{meeting["id"]}'
+                                for meeting in meetings
+                            ]
+                        )
+                        await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown")
+                except Exception as e:
+                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
+
+            # Команда "Мои митапы (подписки)"
+            elif text == "Мои митапы (подписки)":
+                try:
+                    response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}")
+                    response.raise_for_status()
+                    meetings = response.json()
+
+                    if not meetings:
+                        await bot.send_message(chat_id=update.message.chat.id, text="❌ Вы не подписаны на митапы.")
+                    else:
+                        message = "*Ваши подписки на митапы:*\n" + "\n".join(
+                            [
+                                f'• {meeting["title"]} (Дата: {datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y")}, время: {datetime.fromisoformat(meeting["datetime_beg"]).strftime("%H:%M")}) id:{meeting["id"]}'
+                                for meeting in meetings
+                            ]
+                        )
+                        await bot.send_message(chat_id=update.message.chat.id, text=message, parse_mode="Markdown")
+                except Exception as e:
+                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
+
+            # Добавление кнопок "Записаться" и "Отписаться" при просмотре митапа
+            if meeting:
+                found = True
+                formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y")
+                formatted_time = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%H:%M")
+                caption = (
+                    f"Информация о митапе:\n"
+                    f"Название: *{meeting['title']}*\n"
+                    f"Описание: _{meeting['description']}_\n"
+                    f"Дата: {formatted_date}, время: {formatted_time}\n"
+                    f"ID: {meeting['id']}"
+                )
+                website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
+                keyboard_buttons = [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
+
+                # Проверка подписки
+                try:
+                    response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}")
+                    response.raise_for_status()
+                    signed_meetings = response.json()
+                    is_signed = any(m["id"] == meeting["id"] for m in signed_meetings)
+
+                    if is_signed:
+                        keyboard_buttons.append(
+                            [InlineKeyboardButton("Отписаться", callback_data=f"unsubscribe:{meeting['id']}")])
+                    else:
+                        keyboard_buttons.append(
+                            [InlineKeyboardButton("Записаться", callback_data=f"subscribe:{meeting['id']}")])
+
+                except Exception as e:
+                    await bot.send_message(chat_id=update.message.chat.id, text=f"❌ Ошибка при проверке подписки: {e}")
+
+                keyboard = InlineKeyboardMarkup(keyboard_buttons)
+
+                if "image" in meeting and meeting["image"]:
+                    await bot.send_photo(
+                        chat_id=update.message.chat.id,
+                        photo=meeting["image"],
+                        caption=caption,
+                        reply_markup=keyboard,
+                        parse_mode="Markdown"
+                    )
+                else:
+                    await bot.send_message(
+                        chat_id=update.message.chat.id,
+                        text=caption,
+                        reply_markup=keyboard,
+                        parse_mode="Markdown"
+                    )
+
         # Обработка CallbackQuery для переключения страниц
         elif update.callback_query:
             callback_data = update.callback_query.data
@@ -292,6 +382,30 @@ async def webhook(request: Request):
 
                 except Exception as e:
                     await bot.send_message(chat_id=update.callback_query.message.chat.id, text=f"❌ Ошибка при получении митапов: {e}")
+
+            if callback_data.startswith("subscribe") or callback_data.startswith("unsubscribe"):
+                try:
+                    _, meeting_id = callback_data.split(":")
+                    if callback_data.startswith("subscribe"):
+                        response = requests.post(
+                            f"{BACKEND_URL}/meetings/{meeting_id}/subscribe_by_id/?tg_id={user_id}")
+                    elif callback_data.startswith("unsubscribe"):
+                        response = requests.delete(
+                            f"{BACKEND_URL}/meetings/{meeting_id}/unsubscribe_by_id/?tg_id={user_id}")
+
+                    response.raise_for_status()
+                    if response.status_code in [200, 201]:
+                        await bot.answer_callback_query(update.callback_query.id, text="Операция выполнена успешно.",
+                                                        show_alert=True)
+                    elif response.status_code == 204:
+                        await bot.answer_callback_query(update.callback_query.id, text="Вы успешно отписались.",
+                                                        show_alert=True)
+                    else:
+                        await bot.answer_callback_query(update.callback_query.id, text="Не удалось выполнить операцию.",
+                                                        show_alert=True)
+                except Exception as e:
+                    await bot.send_message(chat_id=update.callback_query.message.chat.id,
+                                           text=f"❌ Ошибка при выполнении операции: {e}")
 
     except Exception as e:
         logging.error(f"❌ Ошибка обработки: {e}")
