@@ -1,6 +1,14 @@
+import React, { useCallback } from 'react';
 import DebounceInput from '../DebounceInput';
 
-export default function FilterBar({ onSearchChange }) {
+const FilterBar = React.memo(({ onSearchChange }) => {
+    const handleSearchChange = useCallback(
+        query => {
+            onSearchChange(query);
+        },
+        [onSearchChange]
+    );
+
     return (
         <div className="filter-bar">
             <DebounceInput
@@ -9,7 +17,7 @@ export default function FilterBar({ onSearchChange }) {
                 name="search"
                 placeholder="Search meetups..."
                 className="search-input"
-                onChange={onSearchChange}
+                onChange={handleSearchChange}
                 delay={500}
             />
             <button
@@ -23,4 +31,6 @@ export default function FilterBar({ onSearchChange }) {
             </button>
         </div>
     );
-}
+});
+
+export default FilterBar;

@@ -1,55 +1,21 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { SIGN_IN } from '../constant/router';
-import { REGISTER_API_URL } from '../constant/apiURL';
-import { useAuth } from '../utils/AuthContext';
+import { useSignUp } from '../utils/hooks/useSignUp';
 
 export default function SignUp() {
-    const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        password: ''
-    });
-    const [errorMessage, setErrorMessage] = useState('');
-    const { saveDate } = useAuth();
-    const navigate = useNavigate();
-    const [showPassword, setShowPassword] = useState(false);
-
-    const togglePasswordVisibility = () => setShowPassword(!showPassword);
-    const handleInputChange = e => {
-        const { name, value } = e.target;
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = async e => {
-        e.preventDefault();
-
-        try {
-            const response = await axios.post(REGISTER_API_URL, formData);
-            console.log('Registration successful:', response.data);
-
-            saveDate(response.data);
-            navigate('/');
-        } catch (error) {
-            console.error(
-                'Registration failed:',
-                error.response?.data || error.message
-            );
-            setErrorMessage(
-                error.response?.data?.username[0] ||
-                    'Registration failed. Please try again.'
-            );
-        }
-    };
+    const {
+        formData,
+        errorMessage,
+        showPassword,
+        togglePasswordVisibility,
+        handleInputChange,
+        handleSubmit
+    } = useSignUp();
 
     return (
         <main className="main-content">
             <h1 className="sign-title">Sign Up</h1>
-
             <form className="sign-form" onSubmit={handleSubmit}>
                 <div className="input-group">
                     <label htmlFor="username">Username</label>
@@ -77,7 +43,7 @@ export default function SignUp() {
                     <label htmlFor="password">Password</label>
                     <div className="password-container">
                         <input
-                            type={showPassword ? 'text' : 'password'} // Меняем тип в зависимости от состояния
+                            type={showPassword ? 'text' : 'password'}
                             id="password"
                             name="password"
                             value={formData.password}
@@ -89,9 +55,11 @@ export default function SignUp() {
                             className="toggle-password"
                             onClick={togglePasswordVisibility}
                             role="button"
-                            aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
+                            aria-label={
+                                showPassword ? 'Скрыть пароль' : 'Показать пароль'
+                            }
                         >
-                        {showPassword ? '🔓' : '🔒'}
+                            {showPassword ? '🔓' : '🔒'}
                         </span>
                     </div>
                 </div>

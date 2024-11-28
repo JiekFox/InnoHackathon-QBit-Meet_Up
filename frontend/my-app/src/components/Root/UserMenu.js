@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import DropdownItem from './DropdownItem';
 import LogoutModal from '../LogoutModal';
 import icon from '../../assets/img/icon.png';
-import { useAuth } from '../../utils/AuthContext'; // Подключаем AuthContext
+import { useAuth } from '../../utils/AuthContext';
 import {
     MY_MEETUPS_OWNER,
     MY_MEETUPS_SUBSCRIBER,
-    PROFILE
+    PROFILE,
+    SIGN_IN
 } from '../../constant/router';
-import { useNavigate } from 'react-router-dom'; // Для навигации
+import { useNavigate } from 'react-router-dom';
 
-export default function UserMenu({ userName }) {
+const UserMenu = React.memo(({ userName }) => {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const { removeToken } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogoutClick = () => {
+    const handleLogoutClick = useCallback(() => {
         setShowLogoutModal(true);
-    };
+    }, []);
 
-    const handleCloseModal = () => {
+    const handleCloseModal = useCallback(() => {
         setShowLogoutModal(false);
-    };
+    }, []);
 
-    const handleConfirmLogout = () => {
+    const handleConfirmLogout = useCallback(() => {
         removeToken();
-        navigate('/');
-    };
+        navigate(SIGN_IN);
+    }, [removeToken, navigate]);
 
     return (
         <div className="user-info">
@@ -65,4 +66,6 @@ export default function UserMenu({ userName }) {
             )}
         </div>
     );
-}
+});
+
+export default UserMenu;
