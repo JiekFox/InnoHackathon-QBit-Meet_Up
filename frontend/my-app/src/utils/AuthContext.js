@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('name');
         localStorage.removeItem('ID');
     }, []);
+    console.log(userID);
 
     useEffect(() => {
         const savedToken = localStorage.getItem('authToken');

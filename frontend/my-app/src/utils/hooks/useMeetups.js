@@ -3,7 +3,7 @@ import useFetchMeetings from '../../api/useFetchMeetings';
 import { MEETINGS_API_URL } from '../../constant/apiURL';
 import icon from '../../assets/img/icon.png';
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 12;
 
 export const useMeetups = () => {
     const [searchQuery, setSearchQuery] = useState('');

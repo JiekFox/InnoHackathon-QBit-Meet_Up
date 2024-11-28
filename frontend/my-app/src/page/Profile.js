@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../utils/AuthContext';
 import { useProfileActions } from '../utils/hooks/useProfileActions';
 import PhotoUpload from '../components/PhotoUpload';
+import Loader from '../components/Loader';
 
 export default function Profile() {
     const [formData, setFormData] = useState({
@@ -52,7 +53,7 @@ export default function Profile() {
     return (
         <div className="profile-edit-form">
             {loading ? (
-                <div className="loading">Loading...</div>
+                <Loader />
             ) : (
                 <form onSubmit={handleSubmit} className="profile-form">
                     <div className="form-fields">

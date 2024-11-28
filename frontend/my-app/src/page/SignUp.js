@@ -10,7 +10,8 @@ export default function SignUp() {
         showPassword,
         togglePasswordVisibility,
         handleInputChange,
-        handleSubmit
+        handleSubmit,
+        isPending
     } = useSignUp();
 
     return (
@@ -65,7 +66,7 @@ export default function SignUp() {
                 </div>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
                 <button type="submit" className="sign-button">
-                    Submit
+                    {isPending ? 'Pending...' : 'Submit'}
                 </button>
                 <p>
                     Already registered?{' '}
