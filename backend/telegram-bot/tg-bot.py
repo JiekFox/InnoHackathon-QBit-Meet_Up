@@ -82,15 +82,17 @@ async def webhook(request: Request):
                                 signed_meetings = response.json()
                                 is_signed = any(m["id"] == meeting["id"] for m in signed_meetings)
                                 if is_signed:
-                                    keyboard_buttons.append(InlineKeyboardButton("Отписаться ❌",
-                                                                                 callback_data=f"unsubscribe:{meeting['id']}"))
+                                    keyboard_buttons[0].append(InlineKeyboardButton("Отписаться ❌",
+                                                                                    callback_data=f"unsubscribe:{meeting['id']}"))
                                 else:
-                                    keyboard_buttons.append(InlineKeyboardButton("Записаться ✅",
-                                                                                 callback_data=f"subscribe:{meeting['id']}"))
+                                    keyboard_buttons[0].append(InlineKeyboardButton("Записаться ✅",
+                                                                                    callback_data=f"subscribe:{meeting['id']}"))
                             except Exception as e:
                                 await bot.send_message(chat_id=update.message.chat.id,
                                                        text=f"❌ Ошибка при проверке подписки: {e}")
-                            keyboard = InlineKeyboardMarkup([keyboard_buttons])
+
+                            keyboard = InlineKeyboardMarkup(keyboard_buttons)
+
                             keyboard = InlineKeyboardMarkup(
                                 [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
                             )
