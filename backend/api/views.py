@@ -16,7 +16,7 @@ from .filters import MeetingFilter
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 from .cache_control import clear_all_cache
-from .permissions import IsAuthor, IsStaff
+from .permissions import IsAuthorOrStaff
 
 
 class MeetingPagination(PageNumberPagination):
@@ -73,7 +73,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         if self.action in ["list", "retrieve"]:  
             return [AllowAny()]
         if self.action in ["update", "partial_update", "destroy"]:
-            return [IsAuthenticated(), IsAuthor(), IsStaff()]
+            return [IsAuthenticated(), IsAuthorOrStaff()]
         return super().get_permissions()
 
     @method_decorator(cache_page(60 * 15))
@@ -232,7 +232,7 @@ class UserViewSet(ModelViewSet):
                 "destroy", 
                 "meetings_owned"
             ]:
-            return [IsAuthenticated(), IsStaff()]
+            return [IsAuthenticated()]
         return super().get_permissions()
 
 
