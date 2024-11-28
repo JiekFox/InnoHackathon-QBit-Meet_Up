@@ -3,9 +3,6 @@ import DebounceInput from '../DebounceInput';
 export default function FilterBar({ onSearchChange }) {
     return (
         <div className="filter-bar">
-            <select id="filter" name="filter" className="select">
-                <option value="value">Value</option>
-            </select>
             <DebounceInput
                 type="text"
                 id="search"
@@ -15,6 +12,15 @@ export default function FilterBar({ onSearchChange }) {
                 onChange={onSearchChange}
                 delay={500}
             />
+            <button
+                className="AI-buttons"
+                onClick={() => {
+                    console.log(1);
+                }}
+            >
+                {' '}
+                Recommended by AI✨{' '}
+            </button>
         </div>
     );
 }

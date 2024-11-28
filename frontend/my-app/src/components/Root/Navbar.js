@@ -1,9 +1,10 @@
 import UserMenu from './UserMenu';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { BASE, SIGN_IN } from '../../constant/router';
 import { useAuth } from '../../utils/AuthContext';
 
-export default function Navbar({ onThemeToggle }) {
+export default function Navbar({ onThemeToggle, theme }) {
+    const navigate = useNavigate();
     const { name } = useAuth();
     return (
         <header className="header">
@@ -13,17 +14,17 @@ export default function Navbar({ onThemeToggle }) {
                 </NavLink>
                 <div className="controls">
                     <button onClick={onThemeToggle} className="control-button">
-                        Change Theme
+                        Change Theme{theme === 'dark' ? ' 🌜' : ' 🌞'}
                     </button>
                     {name ? (
                         <UserMenu userName={name} />
                     ) : (
-                        <NavLink
-                            className="navbar-sign-in sign-in-link"
-                            to={SIGN_IN}
+                        <button
+                            onClick={() => navigate(SIGN_IN)}
+                            className="control-button"
                         >
-                            <p>Sign in.</p>
-                        </NavLink>
+                            Sign in.
+                        </button>
                     )}
                 </div>
             </div>

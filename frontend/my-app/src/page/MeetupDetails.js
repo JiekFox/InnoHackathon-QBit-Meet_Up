@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router';
 import { SIGN_IN } from '../constant/router';
-import { giveConfig } from "../utils/giveConfig";
+import { giveConfig } from '../utils/giveConfig';
 
 export default function MeetupDetails() {
     const navigate = useNavigate();
@@ -30,6 +30,8 @@ export default function MeetupDetails() {
                 {},
                 giveConfig(token)
             );
+            console.log(response);
+            alert('Success subscribe');
         } catch (error) {
             console.error(
                 'Error signing for meeting:',
@@ -55,7 +57,7 @@ export default function MeetupDetails() {
                         {`Author: ${meetup.author || 'Unknown'}`}
                     </h2>
                     <p className="meetup-details-date">
-                        {`Date begin: ${meetup.date || 'Not specified'}`}
+                        {`Date begin: ${new Date(meetup.datetime_beg).toString() || 'Not specified'}`}
                     </p>
                     <p className="meetup-details-signed">
                         {`Already signed: ${meetup.signed || 0}`}

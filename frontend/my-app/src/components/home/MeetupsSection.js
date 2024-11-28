@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import useFetchMeetings from '../../api/useFetchMeetings';
 import { MEETINGS_API_URL } from '../../constant/apiURL';
 
-// Константа для количества элементов на странице
 const ITEMS_PER_PAGE = 5;
 
 export default function MeetupsSection() {
@@ -22,12 +21,14 @@ export default function MeetupsSection() {
 
     useEffect(() => {
         if (data.results) {
+            console.log(data.results);
             setMeetups(
                 data.results.map(item => ({
                     id: item.id,
                     title: item.title,
                     description: item.description,
-                    image: item.image ? item.image : icon
+                    image: item.image ? item.image : icon,
+                    dateTime: item.datetime_beg
                 }))
             );
 
@@ -65,7 +66,6 @@ export default function MeetupsSection() {
                 )}
             </div>
 
-            {/* Пагинация */}
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

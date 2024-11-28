@@ -10,37 +10,76 @@ export default function Profile() {
         surname: '',
         email: '',
         about: '',
+        username: '',
+        tg_id: '',
+        teams_id: '',
         photo: null
     });
+    const [showTgInfo, setShowTgInfo] = useState(false);
     const { token, userID } = useAuth();
+    const [errors, setErrors] = useState({});
 
     const userId = userID;
 
     const fetchUserData = async () => {
         if (!token || !token.access) {
-            console.error('No access token found');
             return;
         }
         const config = giveConfig(token);
 
         try {
-            //console.log(`${USER_API_URL}${userId}`, config, token, userID);
-            const response = await axios.get(`${USER_API_URL}${userId}/`, config); // Получаем данные пользователя с авторизацией
+            console.log(`${USER_API_URL}${userId}/`, config);
+            const response = await axios.get(`${USER_API_URL}${userId}/`, config);
             const userData = response.data;
-            console.log(userData);
-
             setFormData({
                 name: userData.first_name || '',
                 surname: userData.last_name || '',
                 email: userData.email || '',
                 about: userData.user_description || '',
+                username: userData.username || '',
+                tg_id: userData.tg_id || '',
+                teams_id: userData.teams_id || '',
                 photo: userData.photo || null
             });
         } catch (error) {
-            console.error(
-                'Error fetching user data:',
-                error.response?.data || error.message
+            console.error(error.response?.data || error.message);
+        }
+    };
+    const handleSave = async () => {
+        if (!token || !token.access) return;
+
+        const config = giveConfig(token);
+
+        const formDataToSend = new FormData();
+        formDataToSend.append('first_name', formData.name);
+        formDataToSend.append('last_name', formData.surname);
+        formDataToSend.append('email', formData.email);
+        formDataToSend.append('user_description', formData.about);
+        formDataToSend.append('username', formData.username);
+        formDataToSend.append('tg_id', formData.tg_id);
+        formDataToSend.append('teams_id', formData.teams_id);
+
+        // Если фото есть, добавляем его
+        if (formData.photo) {
+            formDataToSend.append('photo', formData.photo);
+        }
+
+        try {
+            const response = await axios.put(
+                `${USER_API_URL}${userId}/`,
+                formDataToSend,
+                config
             );
+            console.log(response);
+            setErrors({});
+            alert('Profile updated successfully!');
+        } catch (error) {
+            console.log(error);
+            if (error.response?.data) {
+                setErrors(error.response.data);
+            } else {
+                console.error(error.message);
+            }
         }
     };
 
@@ -50,26 +89,29 @@ export default function Profile() {
         }
     }, [token]);
 
-    const onSave = data => {
-        console.log(data);
-    };
-
     const handleChange = e => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
     const handlePhotoUpload = e => {
-        const file = e.target.files[0];
+        /*const file = e.target.files[0];
         if (file) {
-            setFormData({ ...formData, photo: URL.createObjectURL(file) });
+            setFormData(prev => ({ ...prev, image: file }));
+             URL.createObjectURL(file)
+        }*/
+        const file = e.target.files[0];
+        console.log(typeof file);
+        if (file) {
+            setFormData({ ...formData, photo: file });
         }
     };
 
     const handleSubmit = e => {
         e.preventDefault();
-        onSave(formData);
+        handleSave();
     };
+    console.log(formData);
 
     return (
         <div className="profile-edit-form">
@@ -109,7 +151,26 @@ export default function Profile() {
                             onChange={handleChange}
                             placeholder="Value"
                         />
+                        {errors.email && (
+                            <div className="error-message">{errors.email[0]}</div>
+                        )}
                     </div>
+
+                    <div className="input-group">
+                        <label htmlFor="username">Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
+                            placeholder="Username"
+                        />
+                        {errors.username && (
+                            <div className="error-message">{errors.username[0]}</div>
+                        )}
+                    </div>
+
                     <div className="input-group">
                         <label htmlFor="about">About myself</label>
                         <textarea
@@ -120,6 +181,55 @@ export default function Profile() {
                             placeholder="Value"
                         />
                     </div>
+
+                    <div className="input-row">
+                        <div className="input-group">
+                            <label htmlFor="tg_id" className="info-label">
+                                Telegram ID
+                                <div
+                                    className="info-button"
+                                    onClick={() => setShowTgInfo(!showTgInfo)}
+                                >
+                                    🛈
+                                </div>
+                            </label>
+                            <input
+                                type="text"
+                                id="tg_id"
+                                name="tg_id"
+                                value={formData.tg_id}
+                                onChange={handleChange}
+                                placeholder="Telegram ID"
+                            />
+                            {/*не лучшее решение но как есть */}
+                            {showTgInfo ? (
+                                <div className="info-popup">
+                                    To get your Telegram ID, message this bot:{' '}
+                                    <a
+                                        href="https://t.me/userinfobot"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        @userinfobot
+                                    </a>
+                                </div>
+                            ) : (
+                                <div className="info-popup" />
+                            )}
+                        </div>
+                        <div className="input-group">
+                            <label htmlFor="teams_id">Teams ID</label>
+                            <input
+                                type="text"
+                                id="teams_id"
+                                name="teams_id"
+                                value={formData.teams_id}
+                                onChange={handleChange}
+                                placeholder="Teams ID"
+                            />
+                        </div>
+                    </div>
+
                     <button type="submit" className="save-button">
                         Save Changes
                     </button>
@@ -128,7 +238,14 @@ export default function Profile() {
                 <div className="photo-upload">
                     <div className="photo-preview">
                         {formData.photo ? (
-                            <img src={formData.photo} alt="Uploaded" />
+                            typeof formData.photo === 'object' ? (
+                                <img
+                                    src={URL.createObjectURL(formData.photo)}
+                                    alt="Uploaded"
+                                />
+                            ) : (
+                                <img src={formData.photo} alt="Uploaded" />
+                            )
                         ) : (
                             <div className="placeholder">Upload photo</div>
                         )}
