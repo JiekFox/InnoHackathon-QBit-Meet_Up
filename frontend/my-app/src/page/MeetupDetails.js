@@ -1,44 +1,14 @@
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import useFetchMeetings from '../api/useFetchMeetings';
+import { useMeetupDetails } from '../utils/hooks/useMeetupDetails';
 import icon from '../assets/img/icon.png';
-import { MEETINGS_API_URL } from '../constant/apiURL';
-import axios from 'axios';
 import { useAuth } from '../utils/AuthContext';
-import { useNavigate } from 'react-router';
-import { SIGN_IN } from '../constant/router';
-import { giveConfig } from '../utils/giveConfig';
 
 export default function MeetupDetails() {
-    const navigate = useNavigate();
-    const { id } = useParams();
     const { token } = useAuth();
-    const {
-        data: meetup,
-        loading,
-        error
-    } = useFetchMeetings(`${MEETINGS_API_URL}${id}/`);
-
-    const handleSignForMeeting = async () => {
-        if (!token) {
-            navigate(SIGN_IN);
-            return;
-        }
-
-        try {
-            const response = await axios.post(
-                `${MEETINGS_API_URL}${id}/subscribe/`,
-                {},
-                giveConfig(token)
-            );
-            console.log(response);
-            alert('Success subscribe');
-        } catch (error) {
-            console.error(
-                'Error signing for meeting:',
-                error.response?.data || error.message
-            );
-        }
-    };
+    const { id } = useParams();
+    const { meetup, loading, error, handleSignForMeeting, formattedDate } =
+        useMeetupDetails(id);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -57,7 +27,7 @@ export default function MeetupDetails() {
                         {`Author: ${meetup.author || 'Unknown'}`}
                     </h2>
                     <p className="meetup-details-date">
-                        {`Date begin: ${new Date(meetup.datetime_beg).toString() || 'Not specified'}`}
+                        {`Date begin: ${formattedDate}`}
                     </p>
                     <p className="meetup-details-signed">
                         {`Already signed: ${meetup.signed || 0}`}

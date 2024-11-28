@@ -1,12 +1,12 @@
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-export default function MeetupCard({ title, description, image, dateTime, to }) {
+const MeetupCard = React.memo(({ title, description, image, dateTime, to }) => {
     const date = new Date(dateTime);
-
     const day = date.getUTCDate();
     const month = date.getUTCMonth() + 1;
     const year = date.getUTCFullYear();
-    console.log(image);
+
     return (
         <NavLink to={to}>
             <div className="meetup-card">
@@ -17,4 +17,6 @@ export default function MeetupCard({ title, description, image, dateTime, to }) 
             </div>
         </NavLink>
     );
-}
+});
+
+export default MeetupCard;

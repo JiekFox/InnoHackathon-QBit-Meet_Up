@@ -1,71 +1,8 @@
-import React, { useState } from 'react';
-import { useAuth } from '../utils/AuthContext';
-import axios from 'axios';
-import { MEETINGS_API_URL } from '../constant/apiURL';
-import { useNavigate } from 'react-router';
-import { MEETUP_DETAILS, SIGN_IN } from '../constant/router';
-import { giveConfig } from '../utils/giveConfig';
+import { useMeetupForm } from '../utils/hooks/useMeetupForm'; // Импортируем хук
 
 export function CreateMeetup() {
-    const navigate = useNavigate();
-    const { token, userID } = useAuth();
-    const [formData, setFormData] = useState({
-        title: '',
-        datetime_beg: '',
-        link: '',
-        description: '',
-        image: null
-    });
-    const [error, setError] = useState(null);
-
-    const handleChange = e => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleImageUpload = e => {
-        const file = e.target.files[0];
-        if (file) {
-            setFormData(prev => ({ ...prev, image: file }));
-        }
-    };
-
-    const handleSubmit = async e => {
-        e.preventDefault();
-
-        if (!token) {
-            navigate(SIGN_IN);
-            return;
-        }
-
-        const meetingData = new FormData();
-        meetingData.append('title', formData.title);
-        meetingData.append('author_id', userID); // ID автора
-        meetingData.append('datetime_beg', formData.datetime_beg);
-        meetingData.append('link', formData.link);
-        meetingData.append('description', formData.description);
-        if (formData.image) {
-            meetingData.append('image', formData.image);
-        }
-
-        console.log(formData);
-
-        try {
-            const response = await axios.post(
-                MEETINGS_API_URL,
-                meetingData,
-                giveConfig(token)
-            );
-            console.log('Successfully created meeting:', response.data);
-            navigate(`${MEETUP_DETAILS}/${response.data.id}`);
-        } catch (error) {
-            console.error(
-                'Error creating meeting:',
-                error.response?.data || error.message
-            );
-            setError(error.response?.data || 'An error occurred');
-        }
-    };
+    const { formData, error, handleChange, handleImageUpload, handleSubmit } =
+        useMeetupForm();
 
     return (
         <main className="create-meetup">

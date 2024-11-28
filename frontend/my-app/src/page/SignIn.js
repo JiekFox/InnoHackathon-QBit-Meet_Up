@@ -1,53 +1,18 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom'; // Добавляем useNavigate
-import axios from 'axios';
-import { useAuth } from '../utils/AuthContext';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { SIGN_UP } from '../constant/router';
-import { TOKEN_API_URL } from '../constant/apiURL';
+import { useSignIn } from '../utils/hooks/useSignIn';
 
 export default function SignIn() {
-    const { saveDate } = useAuth();
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        username: '',
-        password: ''
-    });
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isPending, setIsPending] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-
-    const togglePasswordVisibility = () => setShowPassword(!showPassword);
-    const handleInputChange = e => {
-        const { name, value } = e.target;
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = async e => {
-        e.preventDefault();
-        setIsPending(true);
-        try {
-            const response = await axios.post(TOKEN_API_URL, {
-                username: formData.username,
-                password: formData.password
-            });
-            console.log('Login successful:', response.data);
-            saveDate(response.data);
-            /*saveToken({
-                refresh: response.refresh_token,
-                access: response.access_token
-            }); */
-
-            navigate('/');
-        } catch (error) {
-            console.error('Login failed:', error.response?.data || error.message);
-            setErrorMessage('Invalid username or password. Please try again.');
-        } finally {
-            setIsPending(false);
-        }
-    };
+    const {
+        formData,
+        errorMessage,
+        isPending,
+        showPassword,
+        togglePasswordVisibility,
+        handleInputChange,
+        handleSubmit
+    } = useSignIn();
 
     return (
         <main className="main-content">
@@ -68,7 +33,7 @@ export default function SignIn() {
                     <label htmlFor="password">Password</label>
                     <div className="password-container">
                         <input
-                            type={showPassword ? 'text' : 'password'} // Меняем тип в зависимости от состояния
+                            type={showPassword ? 'text' : 'password'}
                             id="password"
                             name="password"
                             value={formData.password}
@@ -80,9 +45,11 @@ export default function SignIn() {
                             className="toggle-password"
                             onClick={togglePasswordVisibility}
                             role="button"
-                            aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
+                            aria-label={
+                                showPassword ? 'Скрыть пароль' : 'Показать пароль'
+                            }
                         >
-                        {showPassword ? '🔓' : '🔒'}
+                            {showPassword ? '🔓' : '🔒'}
                         </span>
                     </div>
                 </div>

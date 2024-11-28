@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
-export default function Pagination({ currentPage, totalPages, onPageChange }) {
-    const handlePageClick = page => {
-        if (page >= 1 && page <= totalPages) {
-            onPageChange(page);
-        }
-    };
+const Pagination = React.memo(({ currentPage, totalPages, onPageChange }) => {
+    const handlePageClick = useCallback(
+        page => {
+            if (page >= 1 && page <= totalPages) {
+                onPageChange(page);
+            }
+        },
+        [totalPages, onPageChange]
+    );
 
-    const renderPages = () => {
+    const renderPages = useCallback(() => {
         const pages = [];
         if (totalPages <= 7) {
             for (let i = 1; i <= totalPages; i++) {
@@ -23,7 +26,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
             pages.push(totalPages);
         }
         return pages;
-    };
+    }, [currentPage, totalPages]);
 
     return (
         <nav className="pagination">
@@ -42,9 +45,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
                 ) : (
                     <button
                         key={index}
-                        className={`pagination-btn ${
-                            page === currentPage ? 'active' : ''
-                        }`}
+                        className={`pagination-btn ${page === currentPage ? 'active' : ''}`}
                         onClick={() => handlePageClick(page)}
                     >
                         {page}
@@ -52,9 +53,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
                 )
             )}
             <button
-                className={`pagination-btn ${
-                    currentPage === totalPages ? 'disabled' : ''
-                }`}
+                className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
                 onClick={() => handlePageClick(currentPage + 1)}
                 disabled={currentPage === totalPages}
             >
@@ -62,4 +61,6 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
             </button>
         </nav>
     );
-}
+});
+
+export default Pagination;

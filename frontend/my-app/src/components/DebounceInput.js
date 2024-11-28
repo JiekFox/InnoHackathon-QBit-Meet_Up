@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-export default function DebounceInput({ value, onChange, delay = 300, ...props }) {
+const DebounceInput = React.memo(({ value, onChange, delay = 300, ...props }) => {
     const [inputValue, setInputValue] = useState(value || '');
 
     useEffect(() => {
@@ -11,9 +11,11 @@ export default function DebounceInput({ value, onChange, delay = 300, ...props }
         return () => clearTimeout(handler);
     }, [inputValue, onChange, delay]);
 
-    const handleInputChange = e => {
+    const handleInputChange = useCallback(e => {
         setInputValue(e.target.value);
-    };
+    }, []);
 
     return <input {...props} value={inputValue} onChange={handleInputChange} />;
-}
+});
+
+export default DebounceInput;

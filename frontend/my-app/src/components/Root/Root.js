@@ -1,12 +1,15 @@
+import React, { useState, useCallback } from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import { useState } from 'react';
 import { AuthProvider } from '../../utils/AuthContext';
 
-export default function Root() {
+const Root = React.memo(() => {
     const [theme, setTheme] = useState('dark');
-    const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+
+    const toggleTheme = useCallback(() => {
+        setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+    }, []);
 
     return (
         <AuthProvider>
@@ -22,4 +25,6 @@ export default function Root() {
             </div>
         </AuthProvider>
     );
-}
+});
+
+export default Root;
