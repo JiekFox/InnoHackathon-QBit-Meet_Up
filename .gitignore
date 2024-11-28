@@ -1,3 +1,4 @@
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -102,9 +103,11 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-backend/Telegram bot/supabase/functions/telegram-bot/.env
+
 .env
+
 .venv
+.env
 env/
 venv/
 ENV/
@@ -129,6 +132,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+
 # Additional
 backend/api/migrations
+
 frontend/deploy.cmd
