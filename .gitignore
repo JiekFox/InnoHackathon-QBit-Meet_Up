@@ -134,5 +134,6 @@ dmypy.json
 
 # Additional
 backend/api/migrations
+test/
 
 frontend/deploy.cmd

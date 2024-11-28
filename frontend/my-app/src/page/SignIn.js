@@ -55,7 +55,7 @@ export default function SignIn() {
                 </div>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
                 <button type="submit" className="sign-button" disabled={isPending}>
-                    Sign In
+                    {isPending ? 'Pending...' : 'Sign In'}
                 </button>
                 <p>
                     You’re not with us yet?{' '}

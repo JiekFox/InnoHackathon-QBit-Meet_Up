@@ -14,16 +14,22 @@ function PhotoUpload({ photo, onPhotoUpload, classVisible }) {
                     <div className="placeholder">Upload photo</div>
                 )}
             </div>
-            <label htmlFor="photo-upload" className="photo-upload-label">
-                Upload photo
-            </label>
-            <input
-                type="file"
-                id="photo-upload"
-                accept="image/*"
-                onChange={onPhotoUpload}
-                className="photo-input"
-            />
+            {onPhotoUpload ? (
+                <>
+                    <label htmlFor="photo-upload" className="photo-upload-label">
+                        Upload photo
+                    </label>
+                    <input
+                        type="file"
+                        id="photo-upload"
+                        accept="image/*"
+                        onChange={onPhotoUpload}
+                        className="photo-input"
+                    />
+                </>
+            ) : (
+                ''
+            )}
         </div>
     );
 }

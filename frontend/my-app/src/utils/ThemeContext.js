@@ -13,19 +13,23 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState('dark');
+    const [theme, setTheme] = useState('');
 
     useEffect(() => {
         const storedTheme = localStorage.getItem('appTheme');
         console.log(storedTheme);
         if (storedTheme) {
             setTheme(storedTheme);
+        } else {
+            setTheme('dark');
         }
     }, []);
 
     useEffect(() => {
-        console.log('set', theme);
-        localStorage.setItem('appTheme', theme);
+        if (theme !== '') {
+            console.log('set', theme);
+            localStorage.setItem('appTheme', theme);
+        }
     }, [theme]);
 
     const toggleTheme = useCallback(() => {

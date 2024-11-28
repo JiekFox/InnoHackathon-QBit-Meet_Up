@@ -17,6 +17,7 @@ export const useMeetupForm = () => {
         image: null
     });
     const [error, setError] = useState(null);
+    const [isPending, setIsPending] = useState(false);
 
     const handleChange = useCallback(e => {
         const { name, value } = e.target;
@@ -50,6 +51,7 @@ export const useMeetupForm = () => {
             }
 
             try {
+                setIsPending(true);
                 const response = await axios.post(
                     MEETINGS_API_URL,
                     meetingData,
@@ -63,10 +65,19 @@ export const useMeetupForm = () => {
                     error.response?.data || error.message
                 );
                 setError(error.response?.data || 'An error occurred');
+            } finally {
+                setIsPending(false);
             }
         },
         [formData, token, userID, navigate]
     );
 
-    return { formData, error, handleChange, handleImageUpload, handleSubmit };
+    return {
+        formData,
+        error,
+        handleChange,
+        handleImageUpload,
+        handleSubmit,
+        isPending
+    };
 };
