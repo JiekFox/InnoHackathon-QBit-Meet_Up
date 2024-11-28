@@ -23,6 +23,7 @@ export default function MeetupsSection() {
         console.log('Filtered meetups updated:', filteredMeetups);
     }, [filteredMeetups]);
 
+    console.log(filteredMeetups)
     return (
         <section className="home">
             <FilterBar
