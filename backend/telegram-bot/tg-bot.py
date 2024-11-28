@@ -154,7 +154,7 @@ async def webhook(request: Request):
             # Команда "Все митапы" с постраничным выводом
             elif text == "Все митапы" or text == "📜 Все митапы" or text == "/meetups":
                 page = 1
-                page_size = 20
+                page_size = 10
                 try:
                     response = requests.get(f"{BACKEND_URL}/meetings/?page={page}&page_size={page_size}")
                     response.raise_for_status()
