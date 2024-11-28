@@ -87,13 +87,6 @@ async def webhook(request: Request):
                                 else:
                                     keyboard_buttons[0].append(InlineKeyboardButton("Записаться ✅",
                                                                                     callback_data=f"subscribe:{meeting['id']}"))
-                            except requests.exceptions.HTTPError as http_err:
-                                    if http_err.response.status_code == 404:
-                                        await bot.send_message(chat_id=update.message.chat.id,
-                                                               text="❌ В системе не найден ваш Telegram ID. Пожалуйста, добавьте его в своем профиле на сайте https://qbit-meetup.web.app/profile")
-                                    else:
-                                        await bot.send_message(chat_id=update.message.chat.id,
-                                                               text=f"❌ Ошибка при проверке подписки: {http_err}")
                             except Exception as e:
                                 await bot.send_message(chat_id=update.message.chat.id,
                                                        text=f"❌ Ошибка при проверке подписки: {e}")
@@ -364,6 +357,8 @@ async def webhook(request: Request):
                 try:
                     user_id = update.callback_query.from_user.id
                     _, meeting_id = callback_data.split(":")
+
+                    # Выполняем запрос на подписку/отписку
                     if callback_data.startswith("subscribe"):
                         response = requests.post(
                             f"{BACKEND_URL}/meetings/{meeting_id}/subscribe_by_id/?tg_id={user_id}", headers=headers)
@@ -372,22 +367,21 @@ async def webhook(request: Request):
                             f"{BACKEND_URL}/meetings/{meeting_id}/unsubscribe_by_id/?tg_id={user_id}", headers=headers)
 
                     response.raise_for_status()
-                    if response.status_code in [200, 201]:
+
+                    # Если подписка/отписка успешна
+                    if response.status_code in [200, 201, 204]:
                         await bot.answer_callback_query(update.callback_query.id, text="Операция выполнена успешно.",
                                                         show_alert=True)
-                    elif response.status_code == 204:
-                        await bot.answer_callback_query(update.callback_query.id, text="Вы успешно отписались.",
-                                                        show_alert=True)
-                    else:
-                        await bot.answer_callback_query(update.callback_query.id, text="Не удалось выполнить операцию.",
-                                                        show_alert=True)
 
-                    # Обновление сообщения после изменения состояния подписки
+                    # Получаем информацию о митапе
                     meeting_response = requests.get(f"{BACKEND_URL}/meetings/{meeting_id}")
                     meeting_response.raise_for_status()
                     meeting = meeting_response.json()
+
                     formatted_date = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%d.%m.%Y")
                     formatted_time = datetime.fromisoformat(meeting["datetime_beg"]).strftime("%H:%M")
+
+                    # Формируем новый текст и клавиатуру
                     caption = (
                         f"Информация о митапе:\n"
                         f"Название: *{meeting['title']}*\n"
@@ -398,37 +392,41 @@ async def webhook(request: Request):
                     website_link = f"https://qbit-meetup.web.app/meetup-details/{meeting['id']}"
                     keyboard_buttons = [[InlineKeyboardButton("Перейти на сайт", url=website_link)]]
 
-                    # Добавление кнопок подписки/отписки
-                    try:
-                        response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}",
-                                                headers=headers)
-                        response.raise_for_status()
-                        signed_meetings = response.json()
-                        is_signed = any(m["id"] == meeting["id"] for m in signed_meetings)
-                        if is_signed:
-                            keyboard_buttons[0].append(
-                                InlineKeyboardButton("Отписаться ❌", callback_data=f"unsubscribe:{meeting['id']}"))
-                        else:
-                            keyboard_buttons[0].append(
-                                InlineKeyboardButton("Записаться ✅", callback_data=f"subscribe:{meeting['id']}"))
-                    except Exception as e:
-                        await bot.send_message(chat_id=update.callback_query.message.chat.id,
-                                               text=f"❌ Ошибка при проверке подписки: {e}")
+                    # Проверяем состояние подписки
+                    response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}",
+                                            headers=headers)
+                    response.raise_for_status()
+                    signed_meetings = response.json()
+                    is_signed = any(m["id"] == meeting["id"] for m in signed_meetings)
 
-                    keyboard = InlineKeyboardMarkup(keyboard_buttons)
-                    # Проверка на необходимость обновления сообщения
-                    if update.callback_query.message.caption != caption or update.callback_query.message.reply_markup != keyboard:
-                        await bot.edit_message_caption(
-                            chat_id=update.callback_query.message.chat.id,
-                            message_id=update.callback_query.message.message_id,
-                            caption=caption,
-                            reply_markup=keyboard,
-                            parse_mode="Markdown"
-                        )
+                    if is_signed:
+                        keyboard_buttons[0].append(
+                            InlineKeyboardButton("Отписаться ❌", callback_data=f"unsubscribe:{meeting['id']}"))
+                    else:
+                        keyboard_buttons[0].append(
+                            InlineKeyboardButton("Записаться ✅", callback_data=f"subscribe:{meeting['id']}"))
 
+                    new_reply_markup = InlineKeyboardMarkup(keyboard_buttons)
+
+                    # Проверяем, отличается ли новая разметка от текущей
+                    current_reply_markup = update.callback_query.message.reply_markup
+                    if current_reply_markup and current_reply_markup.to_dict() == new_reply_markup.to_dict():
+                        await bot.answer_callback_query(update.callback_query.id, text="Данные уже обновлены.",
+                                                        show_alert=True)
+                        return
+
+                    # Обновляем сообщение
+                    await bot.edit_message_caption(
+                        chat_id=update.callback_query.message.chat.id,
+                        message_id=update.callback_query.message.message_id,
+                        caption=caption,
+                        reply_markup=new_reply_markup,
+                        parse_mode="Markdown"
+                    )
                 except Exception as e:
-                    await bot.send_message(chat_id=update.callback_query.message.chat.id,
-                                           text=f"❌ Ошибка при выполнении операции: {e}")
+                    logging.error(f"Ошибка при обновлении сообщения: {e}")
+                    await bot.answer_callback_query(update.callback_query.id, text=f"Ошибка: {e}", show_alert=True)
+
 
 
 
