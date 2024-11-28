@@ -1,9 +1,9 @@
-import {useState, useEffect, useCallback, useMemo} from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import useFetchMeetings from '../../api/useFetchMeetings';
-import {BASE_API_URL, GPT_URL, MEETINGS_API_URL} from '../../constant/apiURL';
+import { BASE_API_URL, GPT_URL, MEETINGS_API_URL } from '../../constant/apiURL';
 import icon from '../../assets/img/icon.png';
-import axios from "axios";
-import {useAuth} from "../AuthContext.js";
+import axios from 'axios';
+import { useAuth } from '../AuthContext.js';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -14,7 +14,7 @@ export const useMeetups = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [dateFilter, setDateFilter] = useState({ startDate: '', endDate: '' });
     //const [aiMeetups, setAiMeetups] = useState({});
-    const {userID,token} = useAuth();
+    const { userID, token } = useAuth();
     const buildApiUrl = () => {
         let url = `${MEETINGS_API_URL}?page=${currentPage}&page_size=${ITEMS_PER_PAGE}`;
         if (searchQuery) {
@@ -28,7 +28,7 @@ export const useMeetups = () => {
         }
         return url;
     };
-
+    //const data =[],  loading = false, error = undefined;
     const { data, loading, error } = useFetchMeetings(buildApiUrl());
 
     useEffect(() => {
@@ -43,8 +43,7 @@ export const useMeetups = () => {
                 }))
             );
             setTotalPages(Math.ceil(data.count / ITEMS_PER_PAGE));
-            console.log("Установлены gpt митапы 1");
-
+            console.log('Установлены gpt митапы 1');
         }
     }, [data]);
 
@@ -61,27 +60,29 @@ export const useMeetups = () => {
     }, [searchQuery, dateFilter]);
 
     const filteredMeetups = useMemo(() => {
+        console.log('update filtered', meetups);
         return meetups.filter(meetup =>
             meetup.title.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [meetups, searchQuery]);
-useState()
+
     const handleRecommendedByAI = async () => {
         try {
             if (!userID) {
-                console.error("User ID not set. Please login first.");
+                console.error('User ID not set. Please login first.');
                 return;
             }
 
             const BACKEND_URL = BASE_API_URL;
-            console.log("GPT_URL new:", GPT_URL);
+            console.log('GPT_URL new:', GPT_URL);
             // Шаг 1: Получаем описание пользователя
             const userResponse = await axios.get(`${BACKEND_URL}users/${userID}/`, {
-                headers: { Authorization: `Bearer ${token.access}` },
+                headers: { Authorization: `Bearer ${token.access}` }
             });
-            console.log("User response:", userResponse.data);
+            console.log('User response:', userResponse.data);
 
-            const userDescription = userResponse.data?.user_description || "No description provided";
+            const userDescription =
+                userResponse.data?.user_description || 'No description provided';
 
             // Шаг 2: Получаем 50 последних митапов
             const page = 1;
@@ -89,15 +90,15 @@ useState()
             const meetupsResponse = await axios.get(
                 `${BACKEND_URL}meetings/?page=${page}&page_size=${pageSize}`,
                 {
-                    headers: { Authorization: `Bearer ${token.access}` },
+                    headers: { Authorization: `Bearer ${token.access}` }
                 }
             );
             const meetups = meetupsResponse.data?.results || [];
 
             // Формируем данные для GPT
             const formattedMeetups = meetups
-                .map((meetup) => `${meetup.id}+${meetup.description}`)
-                .join(", ");
+                .map(meetup => `${meetup.id}+${meetup.description}`)
+                .join(', ');
 
             const gptPrompt = `Тебе дано описание интересов пользователя: ${userDescription}. И список существующих митапов в формате ${formattedMeetups}. Твоя задача: подумать, какие митапы, исходя из их описания, были бы интересны пользователю, и дать мне ответ строго в таком формате "Success, id:[массив из id, которые ты считаешь, были бы интересны пользователю]" Если ты не смог найти ничего подходящего, возвращаешь мне строго такой ответ: "Fail, 'nothing interesting was found'"`;
 
@@ -106,41 +107,48 @@ useState()
                 `${GPT_URL}/chatgpt`,
                 { message: gptPrompt },
                 {
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 'Content-Type': 'application/json' }
                 }
             );
 
             const gptMessage = gptResponse.data.choices[0].message.content;
 
-            if (gptMessage.startsWith("Success")) {
+            if (gptMessage.startsWith('Success')) {
                 // Извлекаем ID, которые GPT считает подходящими
                 const ids = JSON.parse(gptMessage.match(/\[.*?\]/)[0]); // Преобразуем ID из строки в массив
-                console.log("Filtered IDs:", ids);
+                console.log('Filtered IDs:', ids);
 
                 // Фильтруем митапы по этим ID
-                const filteredMeetupsV2 = meetups.filter((meetup) =>
+                const filteredMeetupsV2 = meetups.filter(meetup =>
                     ids.includes(meetup.id)
                 );
 
-                console.log("Filtered Meetups:", filteredMeetupsV2);
+                console.log('Filtered Meetups:', filteredMeetupsV2);
 
                 //// Сохраняем отфильтрованные митапы в контексте
                 //setAiMeetups({ meetups: filteredMeetups });
-                console.log("new Ai card",filteredMeetupsV2);
+                console.log('new Ai card', filteredMeetupsV2);
                 setMeetups(filteredMeetupsV2);
                 setTotalPages(1);
                 setCurrentPage(1);
+                // Проверяем состояние после обновления
+                console.log('Updated meetups state:', filteredMeetupsV2);
             } else {
-                console.error("GPT returned a Fail response or no relevant IDs.");
+                console.error('GPT returned a Fail response or no relevant IDs.');
                 //setAiMeetups({ meetups: [] }); // Сбрасываем список, если ничего не найдено
             }
         } catch (error) {
-            console.error("Error occurred while processing AI recommendation:", error);
-        }
-        finally {
-            console.log('finally',meetups);
+            console.error(
+                'Error occurred while processing AI recommendation:',
+                error
+            );
         }
     };
+    useEffect(() => {
+        if (meetups.length > 0) {
+            console.log('Meetups updated:', meetups);
+        }
+    }, [meetups]);
 
     /*useEffect(() => {
 
