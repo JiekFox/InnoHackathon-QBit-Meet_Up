@@ -13,9 +13,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 from .filters import MeetingFilter
-from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django.core.cache import cache
+from django.utils.decorators import method_decorator
 from .cache_control import clear_meetings_cache
 from .permissions import IsAuthor, IsStaff
 
@@ -77,31 +76,19 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return [IsAuthenticated(), IsAuthor(), IsStaff()]
         return super().get_permissions()
 
-
+    @method_decorator(cache_page(60 * 5))
     def list(self, request, *args, **kwargs):
-            """
-            Получение списка мероприятий с кэшированием.
-            """
-
-            cache_key = 'meetings_list'
-            cached_data = cache.get(cache_key)
-            
-            if cached_data:
-                return Response(cached_data)
-
-            queryset = self.filter_queryset(self.get_queryset())
-            page = self.paginate_queryset(queryset)
-            
-            if page is not None:
-
-                serializer = self.get_serializer(page, many=True)
-                response_data = self.get_paginated_response(serializer.data)
-            else:
-                serializer = self.get_serializer(queryset, many=True)
-                response_data = Response(serializer.data)
-            
-            cache.set(cache_key, response_data.data, timeout=60 * 5)
-            return response_data
+        """
+        Получение списка мероприятий с кэшированием.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        else:
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
 
 
     def create(self, request, *args, **kwargs):
