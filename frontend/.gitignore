@@ -63,5 +63,7 @@ node_modules/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+../backend/gpt-integration/.env
 /temp_html_development/
+
+.env

@@ -104,9 +104,10 @@ celerybeat.pid
 
 # Environments
 backend/Telegram bot/supabase/functions/telegram-bot/.env
+frontend\.env
 
 .venv
-.env
+frontend/.env
 env/
 venv/
 ENV/
