@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action
 from .serializers import MeetingSerializer, UserRegistrationSerializer, ObtainTokenSerializer, UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .utils import send_email
+from .utils import send_email, get_user_by_param
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import PageNumberPagination
@@ -45,7 +45,7 @@ class MeetingViewSet(ModelViewSet):
         """
         if self.action in ["list", "retrieve"]:  
             return [AllowAny()]
-        return [IsAuthenticated()]
+        return super().get_permissions()
 
 
     def list(self, request, *args, **kwargs):
@@ -109,6 +109,42 @@ class MeetingViewSet(ModelViewSet):
             return Response({"error": "Meeting not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["post", "get"])
+    def subscribe_by_id(self, request, pk=None):
+        """
+        Записывает пользователя на мероприятие по tg_id или teams_id через query параметры.
+        """
+
+        tg_id = request.query_params.get('tg_id')
+        teams_id = request.query_params.get('teams_id')
+
+        if not tg_id and not teams_id:
+            return Response(
+                {"error": "tg_id or teams_id is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+        user, error = None, None
+        if tg_id:
+            user, error = get_user_by_param(request, 'tg_id')
+        elif teams_id:
+            user, error = get_user_by_param(request, 'teams_id')
+
+        if user is None:
+            return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
+
+
+        try:
+            meeting = Meeting.objects.get(pk=pk)
+        except Meeting.DoesNotExist:
+            return Response({"error": "Meeting not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        subscription, created = SignedToMeeting.objects.get_or_create(user=user, meeting=meeting)
+        if created:
+            return Response({"message": "Subscribed successfully"}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Already subscribed"}, status=status.HTTP_200_OK)
 
 
     @action(detail=True, methods=["delete"])
@@ -210,30 +246,6 @@ class UserViewSet(ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def create(self, request, *args, **kwargs):
-        """
-        Создание нового пользователя (доступно только админам).
-        """
-        if not request.user.is_staff:
-            return Response(
-                {"error": "Only staff can create new users."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        return super().create(request, *args, **kwargs)
-
-
-    def destroy(self, request, *args, **kwargs):
-        """
-        Удаление пользователя (только для администраторов).
-        """
-        if not request.user.is_staff:
-            return Response(
-                {"error": "Only staff can delete users."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        return super().destroy(request, *args, **kwargs)
-    
-
     @action(detail=True, methods=["get"])
     def meetings_owned(self, request, pk=None):
         """
@@ -264,24 +276,6 @@ class UserViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-    @staticmethod
-    def get_user_by_param(request, param):
-        param_value = request.query_params.get(param, None)
-
-        if not param_value:
-            return None, f"{param} is required"
-
-        try:
-            if param == "tg_id":
-                return UserProfile.objects.get(tg_id=param_value), None
-            elif param == "teams_id":
-                return UserProfile.objects.get(teams_id=param_value), None
-            else:
-                return None, f"Invalid parameter {param}"
-        except UserProfile.DoesNotExist:
-            return None, "User not found"
-
-    
     @action(detail=False, methods=["get"])
     def meetings_signed_active(self, request):
         """
@@ -323,9 +317,9 @@ class UserViewSet(ModelViewSet):
 
         user = None
         if tg_id:
-            user, error = self.get_user_by_param(request, 'tg_id')
+            user, error = get_user_by_param(request, 'tg_id')
         elif teams_id:
-            user, error = self.get_user_by_param(request, 'teams_id')
+            user, error = get_user_by_param(request, 'teams_id')
         else:
             return Response({"error": "tg_id or teams_id is required"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -342,6 +336,6 @@ class UserViewSet(ModelViewSet):
         serializer = self.get_serializer(meetings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    
+
 class ObtainTokenView(TokenObtainPairView):
     serializer_class = ObtainTokenSerializer
