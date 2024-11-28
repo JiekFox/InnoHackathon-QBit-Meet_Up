@@ -23,4 +23,5 @@ const MeetupCard = React.memo(
     }
 );
 
+
 export default MeetupCard;

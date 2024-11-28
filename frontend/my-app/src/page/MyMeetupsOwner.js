@@ -1,11 +1,21 @@
 import Pagination from '../components/Pagination';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useUserMeetups } from '../utils/hooks/useUserMeetups';
 import FilterBar from '../components/FilterBar';
 import Loader from '../components/Loader';
 import MeetupCard from '../components/MeetupCard';
+import { useAuth } from '../utils/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { MEETUP_DETAILS, SIGN_IN } from '../constant/router';
 
 export default function MyMeetups() {
+    const { token } = useAuth();
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (!token) {
+            navigate(SIGN_IN);
+        }
+    }, []);
     const {
         paginatedMeetups,
         currentPage,
@@ -13,17 +23,12 @@ export default function MyMeetups() {
         loading,
         error,
         setCurrentPage,
-        handleSearchChange,
-        handleDateFilter
+        handleSearchChange
     } = useUserMeetups('meetings_owned');
 
-    console.log(handleDateFilter);
     return (
         <section className="home">
-            <FilterBar
-                onSearchChange={handleSearchChange}
-                onDateFilter={handleDateFilter}
-            />
+            <FilterBar onSearchChange={handleSearchChange} />
 
             <div className="meetup-grid">
                 {loading ? (
@@ -32,7 +37,11 @@ export default function MyMeetups() {
                     <h1>Error: {error}</h1>
                 ) : paginatedMeetups.length > 0 ? (
                     paginatedMeetups.map(meetup => (
-                        <MeetupCard key={meetup.id} {...meetup} />
+                        <MeetupCard
+                            key={meetup.id}
+                            to={`${MEETUP_DETAILS}/${meetup.id}`}
+                            {...meetup}
+                        />
                     ))
                 ) : (
                     <h2>No meetups found.</h2>

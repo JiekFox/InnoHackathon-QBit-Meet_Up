@@ -7,6 +7,7 @@ const FilterBar = React.memo(
         const [startDate, setStartDate] = useState('');
         const [endDate, setEndDate] = useState('');
 
+
         const handleSearchChange = useCallback(
             query => {
                 onSearchChange(query);
@@ -20,35 +21,39 @@ const FilterBar = React.memo(
 
         return (
             <div className="filter-bar">
-                <button
-                    className="filter-button"
-                    onClick={() => setShowDateFilters(!showDateFilters)}
-                >
-                    Filter by Date 🗓️
-                </button>
-
-                {showDateFilters && (
-                    <div className="date-filters">
-                        <input
-                            type="date"
-                            value={startDate}
-                            onChange={e => setStartDate(e.target.value)}
-                            placeholder="Start Date"
-                        />
-                        <input
-                            type="date"
-                            value={endDate}
-                            onChange={e => setEndDate(e.target.value)}
-                            placeholder="End Date"
-                        />
-                        <button
-                            onClick={handleDateFilterApply}
-                            className="apply-button"
-                        >
-                            Apply
-                        </button>
-                    </div>
-                )}
+                {onDateFilter && (
+                <>
+                    {' '}
+                    <button
+                        className="filter-button"
+                        onClick={() => setShowDateFilters(!showDateFilters)}
+                    >
+                        Filter by Date 🗓️
+                    </button>
+                    {showDateFilters && (
+                        <div className="date-filters">
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={e => setStartDate(e.target.value)}
+                                placeholder="Start Date"
+                            />
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={e => setEndDate(e.target.value)}
+                                placeholder="End Date"
+                            />
+                            <button
+                                onClick={handleDateFilterApply}
+                                className="apply-button"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
                 <DebounceInput
                     type="text"
                     id="search"
@@ -78,5 +83,4 @@ const FilterBar = React.memo(
         );
     }
 );
-
 export default FilterBar;

@@ -8,3 +8,5 @@ export const SIGN_IN = BASE + '/sign-in';
 export const SIGN_UP = BASE + '/sign-up';
 export const CREATE_MEETUPS = BASE + '/create';
 export const USERS_DETAIL = BASE + '/users';
+
+export const EDIT_MEETUP = BASE + '/edit-meetup';

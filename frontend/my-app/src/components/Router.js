@@ -4,6 +4,7 @@ import Root from './Root/Root';
 import Home from '../page/Home';
 import {
     CREATE_MEETUPS,
+    EDIT_MEETUP,
     MEETUP_DETAILS,
     MY_MEETUPS,
     MY_MEETUPS_OWNER,
@@ -22,6 +23,7 @@ import SignIn from '../page/SignIn';
 import SignUp from '../page/SignUp';
 import { CreateMeetup } from '../page/CreateMeetup';
 import ProfileViewer from '../page/ProfileViewer';
+import { EditMeetup } from '../page/EditMeetup';
 
 function Router() {
     const router = createBrowserRouter([
@@ -76,6 +78,10 @@ function Router() {
                 {
                     path: `${USERS_DETAIL}/:id`,
                     element: <ProfileViewer />
+                },
+                {
+                    path: `${EDIT_MEETUP}/:id`,
+                    element: <EditMeetup />
                 }
             ]
         }
