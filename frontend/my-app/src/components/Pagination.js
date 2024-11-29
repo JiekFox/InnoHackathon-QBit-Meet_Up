@@ -39,13 +39,16 @@ const Pagination = React.memo(({ currentPage, totalPages, onPageChange }) => {
             </button>
             {renderPages().map((page, index) =>
                 page === '...' ? (
-                    <span key={index} className="pagination-ellipsis">
+                    <span
+                        key={index}
+                        className="pagination-ellipsis pagination-digit"
+                    >
                         {page}
                     </span>
                 ) : (
                     <button
                         key={index}
-                        className={`pagination-btn ${page === currentPage ? 'active' : ''}`}
+                        className={`pagination-btn pagination-digit ${page === currentPage ? 'active' : ''}`}
                         onClick={() => handlePageClick(page)}
                     >
                         {page}

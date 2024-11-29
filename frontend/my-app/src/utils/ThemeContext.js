@@ -17,7 +17,7 @@ export const ThemeProvider = ({ children }) => {
 
     useEffect(() => {
         const storedTheme = localStorage.getItem('appTheme');
-        console.log(storedTheme);
+
         if (storedTheme) {
             setTheme(storedTheme);
         } else {
@@ -27,7 +27,6 @@ export const ThemeProvider = ({ children }) => {
 
     useEffect(() => {
         if (theme !== '') {
-            console.log('set', theme);
             localStorage.setItem('appTheme', theme);
         }
     }, [theme]);

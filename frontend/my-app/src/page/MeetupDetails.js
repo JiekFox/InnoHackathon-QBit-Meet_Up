@@ -41,6 +41,12 @@ export default function MeetupDetails() {
                         )}
                     </h2>
                     <p className="meetup-details-date">
+                        Link:{' '}
+                        <a href={meetup.link} className="link">
+                            {meetup.link}
+                        </a>
+                    </p>
+                    <p className="meetup-details-date">
                         {`Date begin: ${formattedDate}`}
                     </p>
                     <p className="meetup-details-signed">

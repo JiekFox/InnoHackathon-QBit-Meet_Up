@@ -48,11 +48,11 @@ export const AuthProvider = ({ children }) => {
         setToken(null);
         setUserID(null);
         setName(null);
+        setImg(null);
         localStorage.removeItem('authToken');
         localStorage.removeItem('name');
         localStorage.removeItem('ID');
     }, []);
-    console.log(userID);
 
     useEffect(() => {
         const savedToken = localStorage.getItem('authToken');
@@ -86,23 +86,17 @@ export const AuthProvider = ({ children }) => {
     }, []);
     useEffect(() => {
         async function giveImg() {
-            console.log(userID);
             try {
                 const response = await axios.get(`${USER_API_URL}${userID}/`);
-                //console.log(response.data);
                 setImg(response.data.photo);
             } catch (err) {
-                console.log(err);
+                console.error(err.message);
             }
         }
         if (userID) {
             giveImg();
         }
-        console.log(img);
-        //console.log(data);
-        //setImg(data)
     }, [userID]);
-    console.log(token);
     const value = {
         token,
         userID,

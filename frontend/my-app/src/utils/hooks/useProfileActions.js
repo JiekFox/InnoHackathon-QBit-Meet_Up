@@ -61,11 +61,9 @@ export const useProfileActions = (
                 formDataToSend,
                 config
             );
-            console.log(response);
             setErrors({});
             alert('Profile updated successfully!');
         } catch (error) {
-            console.log(error);
             if (error.response?.data) {
                 setErrors(error.response.data);
             } else {

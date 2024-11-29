@@ -16,15 +16,10 @@ export default function MeetupsSection() {
         setCurrentPage,
         handleSearchChange,
         handleDateFilter,
-        handleRecommendedByAI, // Добавляем функцию из useMeetups
+        handleRecommendedByAI,
         handleSearchByAI
     } = useMeetups();
 
-    useEffect(() => {
-        console.log('Filtered meetups updated:', filteredMeetups);
-    }, [filteredMeetups]);
-
-    console.log(filteredMeetups);
     return (
         <section className="home">
             <FilterBar

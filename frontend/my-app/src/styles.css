@@ -95,14 +95,76 @@ button {
     width: 100%;
     justify-content: space-between;
 }
+
 .header .container .logo-title {
     display: flex;
     align-items: center;
+    cursor: pointer;
 }
+
 .header .container .logo-title img {
     height: 60px;
     width: 60px;
 }
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+    font-size: 14px;
+    color: white;
+}
+
+.slider:before {
+    position: absolute;
+    content: '';
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 5px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4caf50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(30px);
+}
+
+.slider .icon {
+    position: relative;
+    z-index: 1;
+    font-size: 16px;
+    color: #fff;
+    transition: 0.4s;
+}
+
 .header .container .navbar-sign-in {
     display: contents;
 }
@@ -110,13 +172,17 @@ button {
 .header .container .navbar-sign-in p {
     text-decoration: underline;
 }
-
+.link {
+    text-decoration: underline;
+    cursor: pointer;
+    word-break: break-word;
+}
 .header .controls {
     display: flex;
     align-items: center;
     gap: 16px;
     margin-left: auto;
-    /*position: absolute;*/
+
     right: 48px;
 }
 
@@ -176,7 +242,7 @@ button {
         transform 0.3s ease;
     transform: translateY(10px);
     opacity: 0;
-    z-index: 1000;
+    z-index: 2000;
 }
 
 .user-info:hover .user-dropdown {
@@ -298,6 +364,8 @@ button {
 
 .meetup-grid .meetup-card .description {
     color: var(--description);
+    text-wrap: pretty;
+    word-break: break-word;
 }
 
 .meetup-card > * {
@@ -354,7 +422,6 @@ button {
 }
 
 .logout-modal {
-    /*display: none;*/
     position: fixed;
     z-index: 1001;
     left: 0;
@@ -422,7 +489,7 @@ button {
 
 .profile-edit-form .profile-form {
     display: flex;
-    /*flex: 1;*/
+
     gap: 32px;
     width: 100%;
     justify-content: space-around;
@@ -711,10 +778,8 @@ textarea {
 }
 
 .meetup-details .meetup-details-image img {
-    /*width: 100%;
-    height: auto;*/
     height: 400px;
-    width: 600px;
+    width: 400px;
     object-fit: cover;
 }
 
@@ -745,14 +810,17 @@ textarea {
 h3 {
     font-size: 24px;
 }
+
 .meetup-details .meetup-details-author a {
     text-decoration: underline;
     cursor: pointer;
 }
+
 .meetup-details .meetup-details-description {
     margin-top: 15px;
     font-size: 1rem;
-    text-wrap: auto;
+    text-wrap: pretty;
+    word-break: break-word;
 }
 
 .meetup-details .meetup-details-button {
@@ -828,10 +896,11 @@ h3 {
     box-sizing: border-box;
     background: var(--background);
 }
+
 .create-meetup-form .input-group textarea {
-    resize: none; /* Отключаем ручное изменение размера */
-    overflow: hidden; /* Скрываем прокрутку, чтобы выглядело аккуратно */
-    min-height: 50px; /* Минимальная высота */
+    resize: none;
+    overflow: hidden;
+    min-height: 50px;
 }
 
 .create-meetup-form .input-group textarea {
@@ -896,6 +965,7 @@ h3 {
 .profile-edit-form .form-fields .info-popup {
     height: 90px;
 }
+
 .profile-edit-form .photo-upload-unvisible {
     display: none;
 }
@@ -953,6 +1023,53 @@ h3 {
     background-color: var(--button-bg-hover);
 }
 
+.ai-button {
+    background-color: #6c757d;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+    max-width: 220px;
+    transition:
+        background-color 0.5s ease,
+        transform 0.2s ease,
+        background-image 1s ease;
+}
+
+.ai-button:hover {
+    background-color: #5a6268;
+    transform: scale(1.05);
+    background-image: linear-gradient(45deg, #fd7f84, #efcc7d, #cd52f5, #892de8);
+    background-size: 400% 400%;
+    animation: gradientAnimation 3s infinite;
+}
+
+.ai-button:active {
+    background-color: #343a40;
+    transform: scale(0.95);
+}
+
+.ai-button-meetups-section {
+    margin: 0px;
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
 @keyframes rotate {
     0% {
         transform: rotate(0deg);
@@ -972,13 +1089,16 @@ h3 {
     .filter-bar > .search-input {
         width: 150px;
     }
+
     .main-content {
         padding: 12px 24px;
     }
+
     .meetup-details .meetup-details-image img {
         height: 300px;
-        width: 400px;
+        width: 300px;
     }
+
     .meetup-card {
         width: calc(50% - 42px);
     }
@@ -987,20 +1107,41 @@ h3 {
         width: 200px;
         height: 200px;
     }
-
+    .meetup-card img {
+        width: 200px;
+        height: 200px;
+    }
     #detail {
         margin: 80px 8%;
     }
 }
 
 @media (max-width: 700px) {
+    .home {
+        padding: 20px 5px;
+    }
+    .meetup-details {
+        padding: 0;
+    }
+
+    .pagination-digit {
+        display: none;
+    }
+
+    .header,
+    .footer {
+        padding: 10px 5px;
+    }
+
     .filter-bar {
         flex-direction: column;
     }
+
     .profile-edit-form .photo-upload-unvisible {
         display: flex;
         width: 100%;
     }
+
     .profile-edit-form .photo-upload-visible {
         display: none;
     }
@@ -1008,13 +1149,11 @@ h3 {
     .main-content {
         padding: 0;
     }
-    .meetup-details .meetup-details-image img {
-        height: 200px;
-        width: 300px;
-    }
+
     .meetup-card {
         width: calc(100% - 2px);
     }
+
     .profile-edit-form .photo-preview {
         width: 100px;
         height: 100px;
@@ -1023,6 +1162,7 @@ h3 {
     #detail {
         margin: 40px 4%;
     }
+
     .create-meetup {
         padding: 10px;
     }
@@ -1036,55 +1176,12 @@ h3 {
         padding: 8px 15px;
     }
 }
-
-.ai-button {
-    background-color: #6c757d;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 0 auto;
-    display: block;
-    max-width: 220px;
-    transition:
-        background-color 0.5s ease,
-        transform 0.2s ease,
-        background-image 1s ease; /* Плавные эффекты */
-}
-
-.ai-button:hover {
-    background-color: #5a6268; /* Темный оттенок при наведении */
-    transform: scale(1.05); /* Легкое увеличение */
-    background-image: linear-gradient(
-        45deg,
-        #fd7f84,
-        #efcc7d,
-        #cd52f5,
-        #892de8
-    ); /* Переливка цветами */
-    background-size: 400% 400%; /* Расширение фона для переливов */
-    animation: gradientAnimation 3s infinite; /* Добавление анимации перелива */
-}
-
-.ai-button:active {
-    background-color: #343a40; /* Темно-серый при нажатии */
-    transform: scale(0.95); /* Легкое уменьшение */
-}
-
-.ai-button-meetups-section {
-    margin: 0px;
-}
-@keyframes gradientAnimation {
-    0% {
-        background-position: 0% 50%;
+@media (max-width: 450px) {
+    .header .container .logo-title .title {
+        display: none;
     }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
+    .meetup-details .meetup-details-image img {
+        height: 200px;
+        width: 200px;
     }
 }

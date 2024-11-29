@@ -181,33 +181,7 @@ export default function Profile() {
                             Save Changes
                         </button>
                     </div>
-                    {/*
-                    <div className="photo-upload">
-                        <div className="photo-preview">
-                            {formData.photo ? (
-                                typeof formData.photo === 'object' ? (
-                                    <img
-                                        src={URL.createObjectURL(formData.photo)}
-                                        alt="Uploaded"
-                                    />
-                                ) : (
-                                    <img src={formData.photo} alt="Uploaded" />
-                                )
-                            ) : (
-                                <div className="placeholder">Upload photo</div>
-                            )}
-                        </div>
-                        <label htmlFor="photo-upload" className="photo-upload-label">
-                            Upload photo
-                        </label>
-                        <input
-                            type="file"
-                            id="photo-upload"
-                            accept="image/*"
-                            onChange={handlePhotoUpload}
-                            className="photo-input"
-                        />
-                    </div>*/}
+
                     <PhotoUpload
                         photo={formData.photo}
                         onPhotoUpload={handlePhotoUpload}

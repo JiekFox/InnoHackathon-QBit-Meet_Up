@@ -4,7 +4,6 @@ import icon from '../assets/img/icon.png';
 
 const MeetupCard = React.memo(
     ({ title, description, image, dateTime, datetime_beg, to }) => {
-        console.log(title, description, image, dateTime, to);
         const date = new Date(dateTime ? dateTime : datetime_beg);
         const day = date.getUTCDate();
         const month = date.getUTCMonth() + 1;
@@ -22,6 +21,5 @@ const MeetupCard = React.memo(
         );
     }
 );
-
 
 export default MeetupCard;

@@ -8,7 +8,7 @@ const getUserIdFromToken = accessToken => {
 
     try {
         const decodedToken = jwtDecode(accessToken);
-        //console.log("Decoded token:", decodedToken);
+
         return decodedToken.user_id;
     } catch (error) {
         console.error('Error decoding token:', error);
