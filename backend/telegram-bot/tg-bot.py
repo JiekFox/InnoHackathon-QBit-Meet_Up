@@ -290,8 +290,8 @@ async def webhook(request: Request):
                 logging.info("Запрос на митапы, созданные пользователем")
                 try:
                     response = requests.get(f"{BACKEND_URL}/users/meetings_authored_active/?tg_id={user_id}", headers=headers)
-                    response_text = response.content.decode('utf-8')
-                    meetings = json.loads(response_text)
+                    response.raise_for_status()  # Добавляем эту строку, чтобы проконтролировать возможные ошибки
+                    meetings = response.json()  # Directly use json() to avoid charset issues
 
                     if not meetings:
                         await bot.send_message(chat_id=update.message.chat.id, text="❌ У вас нет созданных митапов.")
@@ -316,9 +316,8 @@ async def webhook(request: Request):
                 logging.info("Запрос на митапы, на которые подписан пользователь")
                 try:
                     response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}", headers=headers)
-                    response.raise_for_status()
-                    response_text = response.content.decode('utf-8')
-                    meetings = json.loads(response_text)
+                    response.raise_for_status()  # Добавляем эту строку, чтобы проконтролировать возможные ошибки
+                    meetings = response.json()  # Directly use json() to avoid charset issues
 
                     if not meetings:
                         await bot.send_message(chat_id=update.message.chat.id, text="❌ Вы не подписаны на митапы.")
