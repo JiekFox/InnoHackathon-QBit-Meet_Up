@@ -1,0 +1,12 @@
+fastapi==0.95.2
+uvicorn==0.23.0
+python-telegram-bot==20.5
+requests==2.31.0
+python-dotenv==1.0.0
+flask
+botbuilder-core
+botbuilder-schema
+botbuilder-integration-aiohttp
+azure-identity
+requests
+python-dotenv
