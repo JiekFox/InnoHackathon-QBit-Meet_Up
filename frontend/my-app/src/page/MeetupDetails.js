@@ -9,9 +9,17 @@ import Loader from '../components/Loader';
 export default function MeetupDetails() {
     const { token, userID } = useAuth();
     const { id } = useParams();
-    const { meetup, loading, error, handleSignForMeeting, formattedDate } =
-        useMeetupDetails(id);
+    const {
+        meetup,
+        loading,
+        error,
+        handleSignForMeeting,
+        handleUnsubscribe,
+        isFavorite,
+        formattedDate
+    } = useMeetupDetails(id);
     const navigate = useNavigate();
+
     if (loading) return <Loader />;
     if (error) return <p>Error: {error}</p>;
 
@@ -63,13 +71,24 @@ export default function MeetupDetails() {
                     >
                         Edit Meetup
                     </button>
+                ) : isFavorite !== null ? (
+                    isFavorite ? (
+                        <button
+                            className="meetup-details-button"
+                            onClick={handleUnsubscribe}
+                        >
+                            Unsubscribe
+                        </button>
+                    ) : (
+                        <button
+                            className="meetup-details-button"
+                            onClick={handleSignForMeeting}
+                        >
+                            Subscribe
+                        </button>
+                    )
                 ) : (
-                    <button
-                        className="meetup-details-button"
-                        onClick={handleSignForMeeting}
-                    >
-                        {token ? 'Subscribe' : 'Sign for meeting'}
-                    </button>
+                    <div> loading...</div>
                 )}
             </div>
         </main>
