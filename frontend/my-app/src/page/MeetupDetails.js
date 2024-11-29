@@ -12,7 +12,6 @@ export default function MeetupDetails() {
     const { meetup, loading, error, handleSignForMeeting, formattedDate } =
         useMeetupDetails(id);
     const navigate = useNavigate();
-
     if (loading) return <Loader />;
     if (error) return <p>Error: {error}</p>;
 

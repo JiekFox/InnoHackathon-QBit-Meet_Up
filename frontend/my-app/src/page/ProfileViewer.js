@@ -12,7 +12,6 @@ export default function ProfileViewer() {
         loading,
         error
     } = useFetchMeetings(`${USER_API_URL}${id}/`);
-
     if (loading) return <Loader />;
     if (error) return <div className="error-message">{error}</div>;
 
@@ -27,7 +26,7 @@ export default function ProfileViewer() {
                                 type="text"
                                 id="name"
                                 name="name"
-                                value={formData.name}
+                                value={formData.first_name}
                                 readOnly
                                 placeholder="Value"
                             />
@@ -38,7 +37,7 @@ export default function ProfileViewer() {
                                 type="text"
                                 id="surname"
                                 name="surname"
-                                value={formData.surname || ''}
+                                value={formData.last_name || ''}
                                 readOnly
                                 placeholder="Value"
                             />
@@ -71,7 +70,7 @@ export default function ProfileViewer() {
                         <textarea
                             id="about"
                             name="about"
-                            value={formData.about}
+                            value={formData.user_description}
                             readOnly
                             placeholder="Value"
                         />
