@@ -315,6 +315,7 @@ async def webhook(request: Request):
                 )
                 logging.info("Запрос на митапы, на которые подписан пользователь")
                 try:
+                    logging.info(f"server answer: {response.content})
                     response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}", headers=headers)
                     response.raise_for_status()  # Добавляем эту строку, чтобы проконтролировать возможные ошибки
                     meetings = response.json()  # Directly use json() to avoid charset issues
