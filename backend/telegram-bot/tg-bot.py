@@ -426,6 +426,7 @@ async def webhook(request: Request):
                     response = requests.get(f"{BACKEND_URL}/users/meetings_signed_active/?tg_id={user_id}",
                                             headers=headers)
                     response.raise_for_status()
+                    response.encoding('utf-8')
                     signed_meetings = response.json()
                     is_signed = any(m["id"] == meeting["id"] for m in signed_meetings)
 
