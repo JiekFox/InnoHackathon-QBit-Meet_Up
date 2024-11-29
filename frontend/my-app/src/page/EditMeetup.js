@@ -45,7 +45,7 @@ export function EditMeetup() {
                     `${MEETINGS_API_URL}${id}/`,
                     giveConfig(token)
                 );
-                console.log(response);
+
                 setFormData({
                     title: response.data.title || '',
                     datetime_beg:
@@ -68,7 +68,6 @@ export function EditMeetup() {
         e.preventDefault();
         setIsPending(true);
 
-        // Создаем объект FormData
         const formDataToSend = new FormData();
         formDataToSend.append('title', formData.title);
         formDataToSend.append('datetime_beg', formData.datetime_beg);
@@ -80,7 +79,6 @@ export function EditMeetup() {
         }
 
         try {
-            // Отправляем запрос с FormData
             await axios.put(
                 `${MEETINGS_API_URL}${id}/`,
                 formDataToSend,

@@ -57,7 +57,6 @@ export const useMeetupForm = () => {
                     meetingData,
                     giveConfig(token)
                 );
-                console.log('Successfully created meeting:', response.data);
                 navigate(`${MEETUP_DETAILS}/${response.data.id}`);
             } catch (error) {
                 console.error(

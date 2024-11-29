@@ -24,7 +24,7 @@ const useFetchMeetings = url => {
         fetchData();
     }, [url]);
 
-    return { data, loading, error };
+    return { data, loading, error, setLoading };
 };
 
 export default useFetchMeetings;

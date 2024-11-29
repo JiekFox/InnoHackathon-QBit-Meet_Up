@@ -31,7 +31,7 @@ export const useSignUp = () => {
             e.preventDefault();
             try {
                 const response = await axios.post(REGISTER_API_URL, formData);
-                console.log(response);
+
                 saveDate(response.data);
                 navigate('/');
             } catch (error) {
