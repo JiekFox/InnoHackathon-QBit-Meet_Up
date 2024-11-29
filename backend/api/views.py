@@ -222,7 +222,7 @@ class UserViewSet(ModelViewSet):
                 "destroy", 
                 "meetings_owned"
             ]:
-            return [IsAuthenticated(), IsStaff()]
+            return [IsAuthenticated()]
         return super().get_permissions()
 
 
