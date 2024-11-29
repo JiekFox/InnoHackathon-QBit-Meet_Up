@@ -8,14 +8,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Или укажите конкретные домены, например: ["http://localhost:3000"]
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],  # Разрешить все методы (GET, POST, OPTIONS и т.д.)
     allow_headers=["*"],  # Разрешить все заголовки
 )
 
 
-# Получаем API ключ OpenAI из переменных окружения
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY is not set")
@@ -45,7 +44,7 @@ async def chatgpt_endpoint(request: Request):
         )
 
         response_data = response.json()
-        print("OpenAI API Response:", response_data)  # Логируем ответ
+        print("OpenAI API Response:", response_data)
         if response.status_code != 200:
             return {"error": response_data.get("error", {}).get("message", "Unknown error")}
         return response_data

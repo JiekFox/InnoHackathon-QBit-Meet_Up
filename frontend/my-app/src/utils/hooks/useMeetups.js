@@ -42,7 +42,7 @@ export const useMeetups = () => {
                 }))
             );
             setTotalPages(Math.ceil(data.count / ITEMS_PER_PAGE));
-            console.log('Установлены gpt митапы 1');
+            // console.log('Установлены gpt митапы 1');
         }
     }, [data]);
 
@@ -59,7 +59,7 @@ export const useMeetups = () => {
     }, [searchQuery, dateFilter]);
 
     const filteredMeetups = useMemo(() => {
-        console.log('update filtered', meetups);
+        // console.log('update filtered', meetups);
         return meetups;
     }, [meetups, searchQuery]);
 
@@ -68,7 +68,7 @@ export const useMeetups = () => {
         handleSearchByAIF(searchQuery);
     }
     const handleSearchByAIF = async search => {
-        console.log('start');
+        // console.log('start');
         try {
             if (!userID) {
                 console.error('User ID not set. Please login first.');
@@ -107,23 +107,23 @@ export const useMeetups = () => {
             if (gptMessage.startsWith('Success')) {
                 // Извлекаем ID, которые GPT считает подходящими
                 const ids = JSON.parse(gptMessage.match(/\[.*?\]/)[0]); // Преобразуем ID из строки в массив
-                console.log('Filtered IDs:', ids);
+                // console.log('Filtered IDs:', ids);
 
                 // Фильтруем митапы по этим ID
                 const filteredMeetupsV2 = meetups.filter(meetup =>
                     ids.includes(meetup.id)
                 );
 
-                console.log('Filtered Meetups:', filteredMeetupsV2);
+                // console.log('Filtered Meetups:', filteredMeetupsV2);
 
                 //// Сохраняем отфильтрованные митапы в контексте
                 //setAiMeetups({ meetups: filteredMeetups });
-                console.log('new Ai card', filteredMeetupsV2);
+                // console.log('new Ai card', filteredMeetupsV2);
                 setMeetups(filteredMeetupsV2);
                 setTotalPages(1);
                 setCurrentPage(1);
                 // Проверяем состояние после обновления
-                console.log('Updated meetups state:', filteredMeetupsV2);
+                // console.log('Updated meetups state:', filteredMeetupsV2);
             } else {
                 console.error('GPT returned a Fail response or no relevant IDs.');
                 //setAiMeetups({ meetups: [] }); // Сбрасываем список, если ничего не найдено
@@ -142,12 +142,12 @@ export const useMeetups = () => {
                 return;
             }
 
-            console.log('GPT_URL new:', GPT_URL);
+            // console.log('GPT_URL new:', GPT_URL);
             // Шаг 1: Получаем описание пользователя
             const userResponse = await axios.get(`${BACKEND_URL}users/${userID}/`, {
                 headers: { Authorization: `Bearer ${token.access}` }
             });
-            console.log('User response:', userResponse.data);
+            // console.log('User response:', userResponse.data);
 
             const userDescription =
                 userResponse.data?.user_description || 'No description provided';
@@ -184,23 +184,23 @@ export const useMeetups = () => {
             if (gptMessage.startsWith('Success')) {
                 // Извлекаем ID, которые GPT считает подходящими
                 const ids = JSON.parse(gptMessage.match(/\[.*?\]/)[0]); // Преобразуем ID из строки в массив
-                console.log('Filtered IDs:', ids);
+                // console.log('Filtered IDs:', ids);
 
                 // Фильтруем митапы по этим ID
                 const filteredMeetupsV2 = meetups.filter(meetup =>
                     ids.includes(meetup.id)
                 );
 
-                console.log('Filtered Meetups:', filteredMeetupsV2);
+                // console.log('Filtered Meetups:', filteredMeetupsV2);
 
                 //// Сохраняем отфильтрованные митапы в контексте
                 //setAiMeetups({ meetups: filteredMeetups });
-                console.log('new Ai card', filteredMeetupsV2);
+                // console.log('new Ai card', filteredMeetupsV2);
                 setMeetups(filteredMeetupsV2);
                 setTotalPages(1);
                 setCurrentPage(1);
                 // Проверяем состояние после обновления
-                console.log('Updated meetups state:', filteredMeetupsV2);
+                // console.log('Updated meetups state:', filteredMeetupsV2);
             } else {
                 console.error('GPT returned a Fail response or no relevant IDs.');
                 //setAiMeetups({ meetups: [] }); // Сбрасываем список, если ничего не найдено
