@@ -79,7 +79,7 @@ export default function ProfileViewer() {
                         photo={formData.photo}
                         classVisible="photo-upload-unvisible"
                     />
-                    <div className="input-row">
+                    {/*<div className="input-row">*/}
                         <div className="input-group">
                             <label htmlFor="tg_id" className="info-label">
                                 Telegram ID
@@ -93,7 +93,7 @@ export default function ProfileViewer() {
                                 placeholder="Telegram ID"
                             />
                         </div>
-                        <div className="input-group">
+                        {/*<div className="input-group">
                             <label htmlFor="teams_id">Teams ID</label>
                             <input
                                 type="text"
@@ -104,7 +104,7 @@ export default function ProfileViewer() {
                                 placeholder="Teams ID"
                             />
                         </div>
-                    </div>
+                    </div>*/}
                 </div>
                 <PhotoUpload
                     photo={formData.photo}

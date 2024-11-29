@@ -130,7 +130,7 @@ export default function Profile() {
                             onPhotoUpload={handlePhotoUpload}
                             classVisible="photo-upload-unvisible"
                         />
-                        <div className="input-row">
+                        {/*<div className="input-row">*/}
                             <div className="input-group">
                                 <label htmlFor="tg_id" className="info-label">
                                     Telegram ID
@@ -164,7 +164,7 @@ export default function Profile() {
                                     <div className="info-popup" />
                                 )}
                             </div>
-                            <div className="input-group">
+                            {/*<div className="input-group">
                                 <label htmlFor="teams_id">Teams ID</label>
                                 <input
                                     type="text"
@@ -175,7 +175,7 @@ export default function Profile() {
                                     placeholder="Teams ID"
                                 />
                             </div>
-                        </div>
+                        </div>*/}
 
                         <button type="submit" className="save-button">
                             Save Changes
