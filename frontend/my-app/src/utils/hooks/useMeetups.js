@@ -61,6 +61,7 @@ export const useMeetups = () => {
     }, [searchQuery, dateFilter]);
 
     const filteredMeetups = useMemo(() => {
+
         return meetups;
     }, [meetups, searchQuery]);
 
@@ -97,7 +98,6 @@ export const useMeetups = () => {
 
             if (gptMessage.startsWith('Success')) {
                 const ids = JSON.parse(gptMessage.match(/\[.*?\]/)[0]);
-
                 const filteredMeetupsV2 = meetups.filter(meetup =>
                     ids.includes(meetup.id)
                 );
@@ -105,6 +105,7 @@ export const useMeetups = () => {
                 setMeetups(filteredMeetupsV2);
                 setTotalPages(1);
                 setCurrentPage(1);
+
             } else {
                 console.error('GPT returned a Fail response or no relevant IDs.');
             }
@@ -129,6 +130,7 @@ export const useMeetups = () => {
             const userResponse = await axios.get(`${BACKEND_URL}users/${userID}/`, {
                 headers: { Authorization: `Bearer ${token.access}` }
             });
+
 
             const userDescription =
                 userResponse.data?.user_description || 'No description provided';
@@ -160,7 +162,9 @@ export const useMeetups = () => {
             const gptMessage = gptResponse.data.choices[0].message.content;
 
             if (gptMessage.startsWith('Success')) {
+
                 const ids = JSON.parse(gptMessage.match(/\[.*?\]/)[0]);
+
 
                 const filteredMeetupsV2 = meetups.filter(meetup =>
                     ids.includes(meetup.id)
@@ -169,6 +173,7 @@ export const useMeetups = () => {
                 setMeetups(filteredMeetupsV2);
                 setTotalPages(1);
                 setCurrentPage(1);
+
             } else {
                 console.error('GPT returned a Fail response or no relevant IDs.');
             }

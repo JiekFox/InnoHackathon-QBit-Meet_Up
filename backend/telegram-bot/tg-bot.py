@@ -6,16 +6,12 @@ import logging
 import requests
 from datetime import datetime
 
-# Настройка логирования
 logging.basicConfig(level=logging.INFO)
 
-# Загрузка переменных окружения
 load_dotenv()
 
-# Создание FastAPI приложения
 app = FastAPI()
 
-# Инициализация Telegram Bot
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 BACKEND_URL = os.getenv("BACKEND_URL")
 if not BOT_TOKEN:
