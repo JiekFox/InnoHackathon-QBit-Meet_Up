@@ -76,7 +76,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return [IsAuthenticated(), IsAuthorOrStaff()]
         return super().get_permissions()
 
-    @method_decorator(cache_page(60 * 15))
+    #@method_decorator(cache_page(60 * 15))
     def list(self, request, *args, **kwargs):
         """
         Получение списка мероприятий с кэшированием.
@@ -90,7 +90,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
 
-    @method_decorator(cache_page(60 * 5))
+    #@method_decorator(cache_page(60 * 5))
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
@@ -103,14 +103,14 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return Response({"error": "Размер файла не должен превышать 5 MB"}, status=status.HTTP_400_BAD_REQUEST)
 
         self.perform_create(serializer)
-        clear_all_cache()
+        #clear_all_cache()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
     def destroy(self, request, *args, **kwargs):
         meeting = self.get_object()
         meeting.delete()
-        clear_all_cache()
+        #clear_all_cache()
         return Response({"message": "Встреча успешно удалена"}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -120,7 +120,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        clear_all_cache()
+        #clear_all_cache()
         return Response(serializer.data)
     
 
@@ -135,15 +135,15 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return error_response
         
         response_data, status_code = self.manage_subscription(request.user, meeting, action="subscribe")
-        if status_code == status.HTTP_201_CREATED:
-            EmailService.send_signed_email(
-                request.user.email,
-                request.user.username,
-                meeting.title,
-                meeting.datetime_beg.strftime("%Y-%m-%d %H:%M:%S %z"),
-                meeting.link
-            )
-            EmailService.process_queue()
+        # if status_code == status.HTTP_201_CREATED:
+        #     EmailService.send_signed_email(
+        #         request.user.email,
+        #         request.user.username,
+        #         meeting.title,
+        #         meeting.datetime_beg.strftime("%Y-%m-%d %H:%M:%S %z"),
+        #         meeting.link
+        #     )
+        #     EmailService.process_queue()
         return Response(response_data, status=status_code)
 
     @action(detail=True, methods=["delete"])
@@ -241,27 +241,27 @@ class UserViewSet(ModelViewSet):
             return MeetingSerializer
         return super().get_serializer_class()
 
-    @method_decorator(cache_page(60 * 5))
+    #@method_decorator(cache_page(60 * 5))
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
     
-    @method_decorator(cache_page(60 * 5))
+    #@method_decorator(cache_page(60 * 5))
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
-        clear_all_cache()
+        #clear_all_cache()
         return response
     
     def partial_update(self, request, *args, **kwargs):
         response = super().partial_update(request, *args, **kwargs)
-        clear_all_cache()
+        #clear_all_cache()
         return response
 
     def destroy(self, request, *args, **kwargs):
         response = super().destroy(request, *args, **kwargs)
-        clear_all_cache()
+        #clear_all_cache()
         return response
 
     @action(detail=False, methods=["post"])
@@ -270,8 +270,8 @@ class UserViewSet(ModelViewSet):
         if serializer.is_valid():
             user = serializer.save()
 
-            EmailService.send_welcome_email(user.email, user.username)
-            EmailService.process_queue()
+            # EmailService.send_welcome_email(user.email, user.username)
+            # EmailService.process_queue()
 
             token_serializer = ObtainTokenSerializer(data={
                 "username": user.username,
