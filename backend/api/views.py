@@ -208,7 +208,12 @@ class UserViewSet(ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
-
+    pagination_class = MeetingPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]  
+    filterset_class = MeetingFilter
+    search_fields = ["title", "description"]
+    ordering_fields = ["datetime_beg", "location"]
+    ordering = ["-datetime_beg"]
 
     def get_permissions(self):
         """
