@@ -307,9 +307,12 @@ class UserViewSet(ModelViewSet):
         except UserProfile.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
+        paginator = MeetingPagination()
         meetings = Meeting.objects.filter(author=user)
-        serializer = self.get_serializer(meetings, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginated_meetings = paginator.paginate_queryset(meetings, request)
+        serializer = self.get_serializer(paginated_meetings, many=True)
+        
+        return paginator.get_paginated_response(serializer.data)
 
 
     @action(detail=True, methods=["get"])
@@ -323,8 +326,10 @@ class UserViewSet(ModelViewSet):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
         meetings = Meeting.objects.filter(attendees__user=user).exclude(author=user)
-        serializer = self.get_serializer(meetings, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = MeetingPagination()
+        paginated_meetings = paginator.paginate_queryset(meetings, request)
+        serializer = self.get_serializer(paginated_meetings, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
     @action(detail=False, methods=["get"])
@@ -354,9 +359,11 @@ class UserViewSet(ModelViewSet):
         ).exclude(
             author=user
         )
-
-        serializer = self.get_serializer(meetings, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        paginator = MeetingPagination()
+        paginated_meetings = paginator.paginate_queryset(meetings, request)
+        serializer = self.get_serializer(paginated_meetings, many=True)
+        return paginator.get_paginated_response(serializer.data)
     
     @action(detail=False, methods=["get"])
     def meetings_authored_active(self, request):
@@ -384,8 +391,10 @@ class UserViewSet(ModelViewSet):
             datetime_beg__gt=now
         )
 
-        serializer = self.get_serializer(meetings, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = MeetingPagination()
+        paginated_meetings = paginator.paginate_queryset(meetings, request)
+        serializer = self.get_serializer(paginated_meetings, many=True)
+        return paginator.get_paginated_response(serializer.data)
     
 
 class ObtainTokenView(TokenObtainPairView):
