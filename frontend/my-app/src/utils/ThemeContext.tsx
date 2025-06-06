@@ -3,26 +3,35 @@ import React, {
     useContext,
     useEffect,
     useState,
-    useCallback
+    useCallback,
+    ReactNode
 } from 'react';
 
-const ThemeContext = createContext();
+export interface ThemeContextValue {
+    theme: string;
+    toggleTheme: () => void;
+}
 
-export const useTheme = () => {
-    return useContext(ThemeContext);
+const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+
+export const useTheme = (): ThemeContextValue => {
+    const context = useContext(ThemeContext);
+    if (!context) {
+        throw new Error('useTheme must be used within a ThemeProvider');
+    }
+    return context;
 };
 
-export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState('');
+interface ThemeProviderProps {
+    children: ReactNode;
+}
+
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+    const [theme, setTheme] = useState<string>('');
 
     useEffect(() => {
         const storedTheme = localStorage.getItem('appTheme');
-
-        if (storedTheme) {
-            setTheme(storedTheme);
-        } else {
-            setTheme('dark');
-        }
+        setTheme(storedTheme || 'dark');
     }, []);
 
     useEffect(() => {
@@ -35,7 +44,7 @@ export const ThemeProvider = ({ children }) => {
         setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
     }, []);
 
-    const value = {
+    const value: ThemeContextValue = {
         theme,
         toggleTheme
     };

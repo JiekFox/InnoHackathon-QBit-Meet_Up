@@ -21,7 +21,7 @@
     "build": "vite build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "format": "prettier --write \\\"./src/**/*.{js,css}\\\"",
+    "format": "prettier --write \\\"./src/**/*.{js,css,ts,tsx}\\\"",
     "dev": "vite"
   },
   "eslintConfig": {
@@ -45,6 +45,8 @@
   "devDependencies": {
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.5",
     "@vitejs/plugin-react": "^4.5.0",
     "debug": "^4.4.1",
     "ms": "^2.1.3",

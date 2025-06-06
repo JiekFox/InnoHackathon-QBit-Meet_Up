@@ -1,28 +1,37 @@
 import React, { useState, useCallback } from 'react';
 import DebounceInput from './DebounceInput';
 
-const FilterBar = React.memo(
+// Типизация пропсов
+interface FilterBarProps {
+    onSearchChange: (query: string) => void;
+    onDateFilter?: (startDate: string, endDate: string) => void;
+    onRecommendByAI?: () => void;
+    onQueryTuchUseAI?: () => void;
+}
+
+const FilterBar: React.FC<FilterBarProps> = React.memo(
     ({ onSearchChange, onDateFilter, onRecommendByAI, onQueryTuchUseAI }) => {
-        const [showDateFilters, setShowDateFilters] = useState(false);
-        const [startDate, setStartDate] = useState('');
-        const [endDate, setEndDate] = useState('');
+        const [showDateFilters, setShowDateFilters] = useState<boolean>(false);
+        const [startDate, setStartDate] = useState<string>('');
+        const [endDate, setEndDate] = useState<string>('');
 
         const handleSearchChange = useCallback(
-            query => {
+            (query: string) => {
                 onSearchChange(query);
             },
             [onSearchChange]
         );
 
         const handleDateFilterApply = () => {
-            onDateFilter(startDate, endDate);
+            if (onDateFilter) {
+                onDateFilter(startDate, endDate);
+            }
         };
 
         return (
             <div className="filter-bar">
                 {onDateFilter && (
                     <>
-                        {' '}
                         <button
                             className="filter-button"
                             onClick={() => setShowDateFilters(!showDateFilters)}
@@ -82,4 +91,5 @@ const FilterBar = React.memo(
         );
     }
 );
+
 export default FilterBar;

@@ -11,17 +11,22 @@ import {
 } from '../../constant/router';
 import { useNavigate } from 'react-router-dom';
 
-const UserMenu = React.memo(({ userName }) => {
+interface UserMenuProps {
+    userName: string;
+}
+
+const UserMenu: React.FC<UserMenuProps> = React.memo(({ userName }) => {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
-    const { removeToken } = useAuth();
+    const { removeToken, img } = useAuth();
     const navigate = useNavigate();
-    const [logo, setLogo] = useState(icon);
-    const { img } = useAuth();
+    const [logo, setLogo] = useState<string>(icon);
+
     useEffect(() => {
         if (img) {
             setLogo(img);
         }
     }, [img]);
+
     const handleLogoutClick = useCallback(() => {
         setShowLogoutModal(true);
     }, []);

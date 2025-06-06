@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { NavLink, useParams, useNavigate } from 'react-router-dom';
 import { useMeetupDetails } from '../utils/hooks/useMeetupDetails';
 import icon from '../assets/img/icon.png';
 import { useAuth } from '../utils/AuthContext';
-import { USERS_DETAIL, EDIT_MEETUP } from '../constant/router';
+import { USERS_DETAIL, EDIT_MEETUP, SIGN_IN } from '../constant/router';
 import Loader from '../components/Loader';
 
-export default function MeetupDetails() {
+export default function MeetupDetails(): JSX.Element {
     const { token, userID } = useAuth();
-    const { id } = useParams();
+    const { id } = useParams<{ id: string }>();
     const {
         meetup,
         loading,
@@ -22,6 +22,7 @@ export default function MeetupDetails() {
 
     if (loading) return <Loader />;
     if (error) return <p>Error: {error}</p>;
+    if (!meetup) return <p>No meetup data.</p>;
 
     const handleEditClick = () => {
         navigate(`${EDIT_MEETUP}/${id}`);
@@ -53,12 +54,8 @@ export default function MeetupDetails() {
                             {meetup.link}
                         </a>
                     </p>
-                    <p className="meetup-details-date">
-                        {`Date begin: ${formattedDate}`}
-                    </p>
-                    <p className="meetup-details-signed">
-                        {`Already signed: ${meetup.attendees_count || 0}`}
-                    </p>
+                    <p className="meetup-details-date">{`Date begin: ${formattedDate}`}</p>
+                    <p className="meetup-details-signed">{`Already signed: ${meetup.attendees_count || 0}`}</p>
                     <h3>Description:</h3>
                     <pre className="meetup-details-description">
                         {meetup.description || 'No description available.'}
@@ -87,8 +84,15 @@ export default function MeetupDetails() {
                             Subscribe
                         </button>
                     )
+                ) : !token ? (
+                    <button
+                        onClick={() => navigate(SIGN_IN)}
+                        className="control-button"
+                    >
+                        Sign in to subscribe
+                    </button>
                 ) : (
-                    <div> loading...</div>
+                    <div>loading... </div>
                 )}
             </div>
         </main>

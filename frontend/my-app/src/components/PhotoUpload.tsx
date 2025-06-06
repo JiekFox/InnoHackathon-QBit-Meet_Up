@@ -1,6 +1,16 @@
 import React from 'react';
 
-function PhotoUpload({ photo, onPhotoUpload, classVisible }) {
+interface PhotoUploadProps {
+    photo: File | string | null;
+    onPhotoUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    classVisible?: string;
+}
+
+const PhotoUpload: React.FC<PhotoUploadProps> = ({
+    photo,
+    onPhotoUpload,
+    classVisible = ''
+}) => {
     return (
         <div className={`photo-upload ${classVisible}`}>
             <div className="photo-preview">
@@ -14,7 +24,7 @@ function PhotoUpload({ photo, onPhotoUpload, classVisible }) {
                     <div className="placeholder">Upload photo</div>
                 )}
             </div>
-            {onPhotoUpload ? (
+            {onPhotoUpload && (
                 <>
                     <label htmlFor="photo-upload" className="photo-upload-label">
                         Upload photo
@@ -27,11 +37,9 @@ function PhotoUpload({ photo, onPhotoUpload, classVisible }) {
                         className="photo-input"
                     />
                 </>
-            ) : (
-                ''
             )}
         </div>
     );
-}
+};
 
 export default PhotoUpload;

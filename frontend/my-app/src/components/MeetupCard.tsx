@@ -2,11 +2,20 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import icon from '../assets/img/icon.png';
 
-const MeetupCard = React.memo(
+interface MeetupCardProps {
+    title: string;
+    description: string;
+    image?: string | null;
+    dateTime?: string;
+    datetime_beg?: string;
+    to: string;
+}
+
+const MeetupCard: React.FC<MeetupCardProps> = React.memo(
     ({ title, description, image, dateTime, datetime_beg, to }) => {
-        const date = new Date(dateTime ? dateTime : datetime_beg);
-        const day = date.getUTCDate();
-        const month = date.getUTCMonth() + 1;
+        const date = new Date(dateTime || datetime_beg || '');
+        const day = date.getUTCDate().toString().padStart(2, '0');
+        const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
         const year = date.getUTCFullYear();
 
         return (

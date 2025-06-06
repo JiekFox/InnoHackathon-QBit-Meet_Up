@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { SIGN_UP } from '../constant/router';
 import { useSignIn } from '../utils/hooks/useSignIn';
 
-export default function SignIn() {
+const SignIn: React.FC = () => {
     const {
         formData,
         errorMessage,
@@ -66,4 +66,6 @@ export default function SignIn() {
             </form>
         </main>
     );
-}
+};
+
+export default SignIn;

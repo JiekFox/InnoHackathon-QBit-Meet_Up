@@ -1,11 +1,25 @@
-import { useState, useCallback } from 'react';
-import axios from 'axios';
+import { useState, useCallback, ChangeEvent, FormEvent } from 'react';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { REGISTER_API_URL } from '../../constant/apiURL';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router';
+import { AuthResponseData } from '../../constant/types';
+
+export interface RegisterRequest {
+    username: string;
+    email: string;
+    password: string;
+}
+
+export interface RegisterErrorResponse {
+    username?: string[];
+    email?: string[];
+    password?: string[];
+    detail?: string;
+}
 
 export const useSignUp = () => {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<RegisterRequest>({
         username: '',
         email: '',
         password: ''
@@ -20,25 +34,39 @@ export const useSignUp = () => {
         () => setShowPassword(prev => !prev),
         []
     );
-    const handleInputChange = useCallback(e => {
+
+    const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prevData => ({ ...prevData, [name]: value }));
     }, []);
 
     const handleSubmit = useCallback(
-        async e => {
-            setIsPending(true);
+        async (e: FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            try {
-                const response = await axios.post(REGISTER_API_URL, formData);
+            setIsPending(true);
 
+            try {
+                const response: AxiosResponse<AuthResponseData> = await axios.post(
+                    REGISTER_API_URL,
+                    formData
+                );
+                console.log(response);
                 saveDate(response.data);
                 navigate('/');
             } catch (error) {
-                setErrorMessage(
-                    error.response?.data?.username[0] ||
-                        'Registration failed. Please try again.'
-                );
+                console.log(error);
+                const axiosError = error as AxiosError<RegisterErrorResponse>;
+                const errorData = axiosError.response?.data;
+
+                if (errorData?.username?.[0]) {
+                    setErrorMessage(errorData.username[0]);
+                } else if (errorData?.email?.[0]) {
+                    setErrorMessage(errorData.email[0]);
+                } else if (errorData?.password?.[0]) {
+                    setErrorMessage(errorData.password[0]);
+                } else {
+                    setErrorMessage('Registration failed. Please try again.');
+                }
             } finally {
                 setIsPending(false);
             }

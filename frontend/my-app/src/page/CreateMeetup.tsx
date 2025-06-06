@@ -2,22 +2,22 @@ import { useMeetupForm } from '../utils/hooks/useMeetupForm';
 import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { SIGN_IN } from '../constant/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ChangeEvent, JSX } from 'react';
 import axios from 'axios';
 import { GPT_URL } from '../constant/apiURL';
 
-export function CreateMeetup() {
+export function CreateMeetup(): JSX.Element {
     const { token } = useAuth();
     const navigate = useNavigate();
-    const [aiResponse, setAiResponse] = useState('');
-    const [isAiResponseVisible, setIsAiResponseVisible] = useState(false);
-    const [isPendingAI, setIsPendingAI] = useState(false);
+    const [aiResponse, setAiResponse] = useState<string>('');
+    const [isAiResponseVisible, setIsAiResponseVisible] = useState<boolean>(false);
+    const [isPendingAI, setIsPendingAI] = useState<boolean>(false);
 
     useEffect(() => {
         if (!token) {
             navigate(SIGN_IN);
         }
-    }, []);
+    }, [token, navigate]);
 
     const {
         formData,
@@ -28,7 +28,7 @@ export function CreateMeetup() {
         isPending
     } = useMeetupForm();
 
-    const handleImproveWithAI = async () => {
+    const handleImproveWithAI = async (): Promise<void> => {
         if (!formData.description) {
             alert('Please provide a description first.');
             return;
@@ -51,7 +51,8 @@ export function CreateMeetup() {
                 { headers: { 'Content-Type': 'application/json' } }
             );
 
-            const gptMessage = gptResponse.data.choices[0]?.message?.content;
+            const gptMessage: string | undefined =
+                gptResponse.data.choices[0]?.message?.content;
 
             if (!gptMessage) {
                 throw new Error('No content received from GPT.');
@@ -67,9 +68,11 @@ export function CreateMeetup() {
         }
     };
 
-    const handleAcceptAiSuggestion = () => {
+    const handleAcceptAiSuggestion = (): void => {
         if (aiResponse) {
-            handleChange({ target: { name: 'description', value: aiResponse } });
+            handleChange({
+                target: { name: 'description', value: aiResponse }
+            } as ChangeEvent<HTMLInputElement>);
             setAiResponse('');
             setIsAiResponseVisible(false);
         }
@@ -78,7 +81,7 @@ export function CreateMeetup() {
     return (
         <main className="create-meetup">
             <h1>Create New Meetup</h1>
-            {error && <p className="error">{error}</p>}
+            {error && <p className="error">{error.toString()}</p>}
             <form onSubmit={handleSubmit} className="create-meetup-form">
                 <div className="input-group">
                     <label htmlFor="title">Title:</label>

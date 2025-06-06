@@ -5,15 +5,31 @@ import Loader from '../components/Loader';
 import PhotoUpload from '../components/PhotoUpload';
 import { USER_API_URL } from '../constant/apiURL';
 
+// Описание структуры данных пользователя
+interface UserProfile {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    username: string;
+    user_description: string;
+    tg_id: string;
+    teams_id: string;
+    photo: string | null; // предполагается URL строки. Если приходит `null`, можно указать `string | null`
+}
+
 export default function ProfileViewer() {
-    const { id } = useParams();
+    const { id } = useParams<{ id: string }>();
+
     const {
         data: formData,
         loading,
         error
-    } = useFetchMeetings(`${USER_API_URL}${id}/`);
+    } = useFetchMeetings<UserProfile>(`${USER_API_URL}${id}/`);
+
     if (loading) return <Loader />;
     if (error) return <div className="error-message">{error}</div>;
+    if (!formData) return <div className="error-message">User not found.</div>;
 
     return (
         <div className="profile-edit-form">
@@ -43,6 +59,7 @@ export default function ProfileViewer() {
                             />
                         </div>
                     </div>
+
                     <div className="input-group">
                         <label htmlFor="email">Email</label>
                         <input
@@ -54,6 +71,7 @@ export default function ProfileViewer() {
                             placeholder="Value"
                         />
                     </div>
+
                     <div className="input-group">
                         <label htmlFor="username">Username</label>
                         <input
@@ -65,6 +83,7 @@ export default function ProfileViewer() {
                             placeholder="Username"
                         />
                     </div>
+
                     <div className="input-group">
                         <label htmlFor="about">About myself</label>
                         <textarea
@@ -75,37 +94,27 @@ export default function ProfileViewer() {
                             placeholder="Value"
                         />
                     </div>
+
                     <PhotoUpload
                         photo={formData.photo}
                         classVisible="photo-upload-unvisible"
                     />
-                    {/*<div className="input-row">*/}
-                        <div className="input-group">
-                            <label htmlFor="tg_id" className="info-label">
-                                Telegram ID
-                            </label>
-                            <input
-                                type="text"
-                                id="tg_id"
-                                name="tg_id"
-                                value={formData.tg_id}
-                                readOnly
-                                placeholder="Telegram ID"
-                            />
-                        </div>
-                        {/*<div className="input-group">
-                            <label htmlFor="teams_id">Teams ID</label>
-                            <input
-                                type="text"
-                                id="teams_id"
-                                name="teams_id"
-                                value={formData.teams_id}
-                                readOnly
-                                placeholder="Teams ID"
-                            />
-                        </div>
-                    </div>*/}
+
+                    <div className="input-group">
+                        <label htmlFor="tg_id" className="info-label">
+                            Telegram ID
+                        </label>
+                        <input
+                            type="text"
+                            id="tg_id"
+                            name="tg_id"
+                            value={formData.tg_id}
+                            readOnly
+                            placeholder="Telegram ID"
+                        />
+                    </div>
                 </div>
+
                 <PhotoUpload
                     photo={formData.photo}
                     classVisible="photo-upload-visible"

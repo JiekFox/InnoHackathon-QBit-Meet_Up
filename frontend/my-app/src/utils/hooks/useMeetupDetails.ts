@@ -1,26 +1,43 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import axios from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { MEETINGS_API_URL } from '../../constant/apiURL';
 import { useAuth } from '../AuthContext';
 import { giveConfig } from '../giveConfig';
 import { useNavigate } from 'react-router';
 import { SIGN_IN } from '../../constant/router';
-export const useMeetupDetails = id => {
+import { Config, Meetup } from '../../constant/types';
+
+// Типизация для Meetup (адаптируй под свою модель данных)
+
+interface UseMeetupDetailsReturn {
+    meetup: Meetup | null;
+    loading: boolean;
+    error: string | null;
+    isFavorite: boolean | null;
+    handleSignForMeeting: () => Promise<void>;
+    handleUnsubscribe: () => Promise<void>;
+    formattedDate: string;
+}
+
+export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn => {
     const navigate = useNavigate();
     const { token } = useAuth();
-    const [meetup, setMeetup] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [isFavorite, setIsFavorite] = useState(null);
+    const [meetup, setMeetup] = useState<Meetup | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [isFavorite, setIsFavorite] = useState<boolean | null>(null);
 
     useEffect(() => {
         const fetchMeetupData = async () => {
             try {
-                const response = await axios.get(`${MEETINGS_API_URL}${id}/`);
+                const response = await axios.get<Meetup>(
+                    `${MEETINGS_API_URL}${id}/`
+                );
                 setMeetup(response.data);
-                setLoading(false);
             } catch (err) {
-                setError(err.response?.data || err.message);
+                const axiosErr = err as AxiosError;
+                setError((axiosErr.response?.data as string) || axiosErr.message);
+            } finally {
                 setLoading(false);
             }
         };
@@ -29,13 +46,20 @@ export const useMeetupDetails = id => {
             if (!token) return;
 
             try {
-                const response = await axios.get(
-                    `${MEETINGS_API_URL}${id}/is_subscribed/`,
-                    giveConfig(token)
-                );
-                setIsFavorite(response.data?.message || false);
+                const config: Config | null = giveConfig(token);
+                if (!config) return;
+                const response: AxiosResponse<{ message: boolean }> =
+                    await axios.get(
+                        `${MEETINGS_API_URL}${id}/is_subscribed/`,
+                        config
+                    );
+                console.log(response);
+                setIsFavorite(response.data.message);
             } catch (err) {
-                console.error('Error checking subscription:', err.message);
+                console.error(
+                    'Error checking subscription:',
+                    (err as Error).message
+                );
             }
         };
 
@@ -52,17 +76,14 @@ export const useMeetupDetails = id => {
         }
 
         try {
-            await axios.post(
-                `${MEETINGS_API_URL}${id}/subscribe/`,
-                {},
-                giveConfig(token)
-            );
-
+            const config: Config | null = giveConfig(token);
+            if (!config) return;
+            await axios.post(`${MEETINGS_API_URL}${id}/subscribe/`, {}, config);
             window.location.reload();
         } catch (error) {
             console.error(
                 'Error signing for meeting:',
-                error.response?.data || error.message
+                (error as AxiosError).message
             );
         }
     }, [token, id, navigate]);
@@ -74,16 +95,14 @@ export const useMeetupDetails = id => {
         }
 
         try {
-            await axios.delete(
-                `${MEETINGS_API_URL}${id}/unsubscribe/`,
-                giveConfig(token)
-            );
-
+            const config: Config | null = giveConfig(token);
+            if (!config) return;
+            await axios.delete(`${MEETINGS_API_URL}${id}/unsubscribe/`, config);
             window.location.reload();
         } catch (error) {
             console.error(
                 'Error unsubscribing from meeting:',
-                error.response?.data || error.message
+                (error as AxiosError).message
             );
         }
     }, [token, id, navigate]);

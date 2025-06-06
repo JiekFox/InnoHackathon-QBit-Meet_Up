@@ -1,32 +1,53 @@
-import { useState, useCallback } from 'react';
-import axios from 'axios';
+import { useState, useCallback, ChangeEvent, FormEvent } from 'react';
+import axios, { AxiosResponse } from 'axios';
 import { TOKEN_API_URL } from '../../constant/apiURL';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router';
+import { AuthResponseData } from '../../constant/types';
 
-export const useSignIn = () => {
-    const [formData, setFormData] = useState({ username: '', password: '' });
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isPending, setIsPending] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+interface UseSignInReturn {
+    formData: SignInFormData;
+    errorMessage: string;
+    isPending: boolean;
+    showPassword: boolean;
+    togglePasswordVisibility: () => void;
+    handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+}
+
+interface SignInFormData {
+    username: string;
+    password: string;
+}
+export const useSignIn = (): UseSignInReturn => {
+    const [formData, setFormData] = useState<SignInFormData>({
+        username: '',
+        password: ''
+    });
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [isPending, setIsPending] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
     const { saveDate } = useAuth();
     const navigate = useNavigate();
 
-    const togglePasswordVisibility = useCallback(
-        () => setShowPassword(prev => !prev),
-        []
-    );
-    const handleInputChange = useCallback(e => {
+    const togglePasswordVisibility = useCallback(() => {
+        setShowPassword(prev => !prev);
+    }, []);
+
+    const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prevData => ({ ...prevData, [name]: value }));
     }, []);
 
     const handleSubmit = useCallback(
-        async e => {
+        async (e: FormEvent<HTMLFormElement>) => {
             e.preventDefault();
             setIsPending(true);
             try {
-                const response = await axios.post(TOKEN_API_URL, formData);
+                const response: AxiosResponse<AuthResponseData> = await axios.post(
+                    TOKEN_API_URL,
+                    formData
+                );
                 saveDate(response.data);
                 navigate('/');
             } catch (error) {

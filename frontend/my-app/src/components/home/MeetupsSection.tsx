@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import FilterBar from '../FilterBar';
 import MeetupCard from '../MeetupCard';
 import Pagination from '../Pagination';
@@ -19,7 +18,7 @@ export default function MeetupsSection() {
         handleRecommendedByAI,
         handleSearchByAI
     } = useMeetups();
-
+    if (error) console.log(error);
     return (
         <section className="home">
             <FilterBar

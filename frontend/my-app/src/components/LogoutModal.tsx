@@ -1,6 +1,11 @@
 import React from 'react';
 
-export default function LogoutModal({ onClose, onConfirm }) {
+interface LogoutModalProps {
+    onClose: () => void;
+    onConfirm: () => void;
+}
+
+const LogoutModal: React.FC<LogoutModalProps> = ({ onClose, onConfirm }) => {
     return (
         <div className="logout-modal">
             <div className="modal-content">
@@ -20,4 +25,6 @@ export default function LogoutModal({ onClose, onConfirm }) {
             </div>
         </div>
     );
-}
+};
+
+export default LogoutModal;

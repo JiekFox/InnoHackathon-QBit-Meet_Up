@@ -1,23 +1,35 @@
+import React from 'react';
 import { useNavigate } from 'react-router';
 import { CREATE_MEETUPS } from '../../constant/router';
 
-export default function IntroSection() {
+interface IntroSectionProps {
+    styleClass: string;
+    title: string;
+    description: string;
+    isButton?: boolean;
+}
+const IntroSection: React.FC<IntroSectionProps> = ({
+    styleClass,
+    title,
+    description,
+    isButton = false
+}) => {
     const navigate = useNavigate();
+
     return (
-        <section className="intro">
-            <h2 className="title">Public MeetUps!</h2>
-            <p className="description">
-                Here you can find Meetings available to everyone that you can make an
-                assignment for
-            </p>
-            <button
-                className="create-meeting-button"
-                onClick={() => {
-                    navigate(CREATE_MEETUPS);
-                }}
-            >
-                Create
-            </button>
+        <section className={styleClass}>
+            <h2 className="title">{title}</h2>
+            <p className="description"> {description}</p>
+            {isButton && (
+                <button
+                    className="create-meeting-button"
+                    onClick={() => navigate(CREATE_MEETUPS)}
+                >
+                    Create
+                </button>
+            )}
         </section>
     );
-}
+};
+
+export default IntroSection;

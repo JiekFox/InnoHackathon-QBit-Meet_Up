@@ -1,21 +1,36 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useCallback,
+    ChangeEvent,
+    InputHTMLAttributes
+} from 'react';
 
-const DebounceInput = React.memo(({ value, onChange, delay = 300, ...props }) => {
-    const [inputValue, setInputValue] = useState(value || '');
+interface DebounceInputProps
+    extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+    value?: string;
+    onChange: (value: string) => void;
+    delay?: number;
+}
 
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            onChange(inputValue);
-        }, delay);
+const DebounceInput: React.FC<DebounceInputProps> = React.memo(
+    ({ value, onChange, delay = 300, ...props }) => {
+        const [inputValue, setInputValue] = useState<string>(value || '');
 
-        return () => clearTimeout(handler);
-    }, [inputValue, onChange, delay]);
+        useEffect(() => {
+            const handler = setTimeout(() => {
+                onChange(inputValue);
+            }, delay);
 
-    const handleInputChange = useCallback(e => {
-        setInputValue(e.target.value);
-    }, []);
+            return () => clearTimeout(handler);
+        }, [inputValue, onChange, delay]);
 
-    return <input {...props} value={inputValue} onChange={handleInputChange} />;
-});
+        const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+            setInputValue(e.target.value);
+        }, []);
+
+        return <input {...props} value={inputValue} onChange={handleInputChange} />;
+    }
+);
 
 export default DebounceInput;

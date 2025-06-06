@@ -34,7 +34,7 @@ export const useMeetups = () => {
     const { data, loading, error, setLoading } = useFetchMeetings(buildApiUrl());
 
     useEffect(() => {
-        if (data.results) {
+        if (data && Array.isArray(data.results)) {
             setMeetups(
                 data.results.map(item => ({
                     id: item.id,
@@ -44,7 +44,7 @@ export const useMeetups = () => {
                     dateTime: item.datetime_beg
                 }))
             );
-            setTotalPages(Math.ceil(data.count / ITEMS_PER_PAGE));
+            setTotalPages(Math.ceil((data.count || 0) / ITEMS_PER_PAGE));
         }
     }, [data]);
 
