@@ -11,45 +11,14 @@ from .utils import get_user_by_param
 from .email_service import EmailService
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.pagination import PageNumberPagination
 from .filters import MeetingFilter
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 from .cache_control import clear_all_cache
 from .permissions import IsStaff, IsAuthorOrStaff
+from .mixins import SubscriptionMixin, MeetingQueryMixin, UserMeetingQueryMixin, MeetingPagination
 
 
-class MeetingPagination(PageNumberPagination):
-    """
-    Класс для настройки пагинации.
-    """
-    page_size = 10
-    page_size_query_param = "page_size"
-    max_page_size = 50
-
-class SubscriptionMixin:
-    @staticmethod
-    def get_meeting(pk):
-        try:
-            return Meeting.objects.get(pk=pk), None
-        except Meeting.DoesNotExist:
-            return None, Response({"error": "Meeting not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    @staticmethod
-    def manage_subscription(user, meeting, action="subscribe"):
-        if action == "subscribe":
-            subscription, created = SignedToMeeting.objects.get_or_create(user=user, meeting=meeting)
-            return (
-                {"message": "Subscribed successfully"} if created else {"message": "Already subscribed"},
-                status.HTTP_201_CREATED if created else status.HTTP_200_OK,
-            )
-        if action == "unsubscribe":
-            try:
-                subscription = SignedToMeeting.objects.get(user=user, meeting=meeting)
-                subscription.delete()
-                return {"message": "Unsubscribed successfully"}, status.HTTP_204_NO_CONTENT
-            except SignedToMeeting.DoesNotExist:
-                return {"error": "Subscription not found"}, status.HTTP_404_NOT_FOUND
 
 class MeetingViewSet(ModelViewSet, SubscriptionMixin):
     """
@@ -59,7 +28,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
     serializer_class = MeetingSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = MeetingPagination
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]  
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = MeetingFilter
     search_fields = ["title", "description"]
     ordering_fields = ["datetime_beg", "location"]
@@ -201,7 +170,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return Response({"message": False}, status=status.HTTP_200_OK)
            
        
-class UserViewSet(ModelViewSet):
+class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
     """
     ViewSet для управления пользователями и регистрации.
     """
@@ -209,6 +178,18 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     # permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
+    search_fields = ["title", "description"]
+    
+    
+    def get_filter_backends(self):
+        if self.action in [
+                "meetings_owned",
+                "meetings_signed",
+                "meetings_signed_active",
+                "meetings_authored_active"
+            ]:
+            return [SearchFilter]
+        return [DjangoFilterBackend]
 
     def get_permissions(self):
         """
@@ -301,49 +282,23 @@ class UserViewSet(ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def meetings_owned(self, request, pk=None):
-        """
-        Возвращает список встреч, созданных пользователем с заданным id.
-        """
-        try:
-            user = UserProfile.objects.get(id=pk)
-        except UserProfile.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        paginator = MeetingPagination()
-        
-        meetings = Meeting.objects.filter(author=user)
-        meeting_filter = MeetingFilter(request.query_params, queryset=meetings)
-        if not meeting_filter.is_valid():
-            return Response(meeting_filter.errors, status=status.HTTP_400_BAD_REQUEST)
-        filtered_meetings = meeting_filter.qs
-        
-        paginator = MeetingPagination()
-        paginated_meetings = paginator.paginate_queryset(filtered_meetings, request)
-        serializer = self.get_serializer(paginated_meetings, many=True)
-        
-        return paginator.get_paginated_response(serializer.data)
+        user, error = self.get_user_by_id(pk)
+        if error:
+            return error
+        return self.get_filtered_paginated_meetings(self.get_authored_meetings(user), request)
 
 
     @action(detail=True, methods=["get"])
     def meetings_signed(self, request, pk=None):
-        """
-        Возвращает список встреч, подписанных пользователем с заданным id.
-        """
-        try:
-            user = UserProfile.objects.get(id=pk)
-        except UserProfile.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        user, error = self.get_user_by_id(pk)
+        if error:
+            return error
 
-        meetings = Meeting.objects.filter(attendees__user=user).exclude(author=user)
-
-        meeting_filter = MeetingFilter(request.query_params, queryset=meetings)
-        if not meeting_filter.is_valid():
-            return Response(meeting_filter.errors, status=status.HTTP_400_BAD_REQUEST)
-        filtered_meetings = meeting_filter.qs
-        
+        qs = self.get_signed_meetings(user).order_by("-datetime_beg")
+        qs = self.filter_queryset(qs)
         paginator = MeetingPagination()
-        paginated_meetings = paginator.paginate_queryset(filtered_meetings, request)
-        serializer = self.get_serializer(paginated_meetings, many=True)
+        page = paginator.paginate_queryset(qs, request)
+        serializer = self.get_serializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
 
