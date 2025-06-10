@@ -1,5 +1,5 @@
 import UserMenu from './UserMenu';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { BASE, SIGN_IN } from '../../constant/router';
 import { useAuth } from '../../utils/AuthContext';
 import { useTheme } from '../../utils/ThemeContext';
@@ -39,7 +39,6 @@ export default function Navbar() {
                             </span>
                         </label>
                     </div>
-
                     {name ? (
                         <UserMenu userName={name} />
                     ) : (

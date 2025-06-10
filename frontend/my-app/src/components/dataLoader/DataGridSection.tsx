@@ -46,7 +46,6 @@ export function DataGridSection<T extends Meetup>({
         setItems,
         setTotalPages
     } = useDataGrid<Meetup>(fetchFunction);
-    console.log(items);
     if (error) console.error('Error in DataGridSection:', error);
 
     // Создаем объект с контролами для передачи в AI функции

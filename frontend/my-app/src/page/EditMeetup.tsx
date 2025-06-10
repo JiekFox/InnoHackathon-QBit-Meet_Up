@@ -10,9 +10,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import { MEETUP_DETAILS, SIGN_IN } from '../constant/router';
 import Loader from '../components/Loader';
-import axios from 'axios';
 import { MEETINGS_API_URL } from '../constant/apiURL';
-import { giveConfig } from '../utils/giveConfig';
+import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 
 interface FormDataState {
     title: string;
@@ -26,6 +25,8 @@ export function EditMeetup(): JSX.Element {
     const { token } = useAuth();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const axios = useAxiosWithAuth();
+
     const [formData, setFormData] = useState<FormDataState>({
         title: '',
         datetime_beg: '',
@@ -70,12 +71,7 @@ export function EditMeetup(): JSX.Element {
         const fetchMeetupDetails = async () => {
             setIsPending(true);
             try {
-                const config = giveConfig(token);
-                if (!config) return;
-                const response = await axios.get(
-                    `${MEETINGS_API_URL}${id}/`,
-                    config
-                );
+                const response = await axios.get(`${MEETINGS_API_URL}${id}/`);
                 console.log(response);
                 setFormData({
                     title: response.data.title || '',
@@ -115,9 +111,8 @@ export function EditMeetup(): JSX.Element {
         }
 
         try {
-            const config = giveConfig(token);
-            if (!config) return;
-            await axios.put(`${MEETINGS_API_URL}${id}/`, formDataToSend, config);
+            await axios.put(`${MEETINGS_API_URL}${id}/`, formDataToSend);
+            //await axios.put(`${MEETINGS_API_URL}${id}/`, formDataToSend, config);
             alert('Meetup updated successfully');
             navigate(`${MEETUP_DETAILS}/${id}`);
         } catch (error: any) {

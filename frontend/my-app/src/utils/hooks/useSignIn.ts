@@ -1,9 +1,10 @@
 import { useState, useCallback, ChangeEvent, FormEvent } from 'react';
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { TOKEN_API_URL } from '../../constant/apiURL';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router';
 import { AuthResponseData } from '../../constant/types';
+import { useAxiosWithAuth } from './useAxiosWithAuth';
 
 interface UseSignInReturn {
     formData: SignInFormData;
@@ -29,6 +30,7 @@ export const useSignIn = (): UseSignInReturn => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const { saveDate } = useAuth();
     const navigate = useNavigate();
+    const axios = useAxiosWithAuth();
 
     const togglePasswordVisibility = useCallback(() => {
         setShowPassword(prev => !prev);

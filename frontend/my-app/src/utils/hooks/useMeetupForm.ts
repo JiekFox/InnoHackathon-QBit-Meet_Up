@@ -1,11 +1,11 @@
 import { useState, useCallback, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { MEETINGS_API_URL } from '../../constant/apiURL';
 import { MEETUP_DETAILS, SIGN_IN } from '../../constant/router';
-import { giveConfig } from '../giveConfig';
 import { useAuth } from '../AuthContext';
-import { Config, Meetup } from '../../constant/types';
+import { Meetup } from '../../constant/types';
+import { useAxiosWithAuth } from './useAxiosWithAuth';
 
 export interface MeetupFormData {
     title: string;
@@ -22,6 +22,7 @@ export interface ApiError {
 export const useMeetupForm = () => {
     const { token, userID } = useAuth();
     const navigate = useNavigate();
+    const axios = useAxiosWithAuth();
     const [formData, setFormData] = useState<MeetupFormData>({
         title: '',
         datetime_beg: '',
@@ -68,12 +69,9 @@ export const useMeetupForm = () => {
 
             try {
                 setIsPending(true);
-                const config: Config | null = giveConfig(token);
-                if (!config) return;
                 const response: AxiosResponse<Meetup> = await axios.post(
                     MEETINGS_API_URL,
-                    meetingData,
-                    config
+                    meetingData
                 );
                 console.log(response);
                 navigate(`${MEETUP_DETAILS}/${response.data.id}`);

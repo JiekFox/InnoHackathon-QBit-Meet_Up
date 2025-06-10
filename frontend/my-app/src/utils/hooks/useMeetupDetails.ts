@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { MEETINGS_API_URL } from '../../constant/apiURL';
 import { useAuth } from '../AuthContext';
-import { giveConfig } from '../giveConfig';
 import { useNavigate } from 'react-router';
 import { SIGN_IN } from '../../constant/router';
-import { Config, Meetup } from '../../constant/types';
+import { Meetup } from '../../constant/types';
+import { useAxiosWithAuth } from './useAxiosWithAuth';
 
 // Типизация для Meetup (адаптируй под свою модель данных)
 
@@ -22,6 +22,7 @@ interface UseMeetupDetailsReturn {
 export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn => {
     const navigate = useNavigate();
     const { token } = useAuth();
+    const axios = useAxiosWithAuth();
     const [meetup, setMeetup] = useState<Meetup | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -46,13 +47,8 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
             if (!token) return;
 
             try {
-                const config: Config | null = giveConfig(token);
-                if (!config) return;
                 const response: AxiosResponse<{ message: boolean }> =
-                    await axios.get(
-                        `${MEETINGS_API_URL}${id}/is_subscribed/`,
-                        config
-                    );
+                    await axios.get(`${MEETINGS_API_URL}${id}/is_subscribed/`);
                 console.log(response);
                 setIsFavorite(response.data.message);
             } catch (err) {
@@ -76,9 +72,7 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
         }
 
         try {
-            const config: Config | null = giveConfig(token);
-            if (!config) return;
-            await axios.post(`${MEETINGS_API_URL}${id}/subscribe/`, {}, config);
+            await axios.post(`${MEETINGS_API_URL}${id}/subscribe/`, {});
             window.location.reload();
         } catch (error) {
             console.error(
@@ -95,9 +89,7 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
         }
 
         try {
-            const config: Config | null = giveConfig(token);
-            if (!config) return;
-            await axios.delete(`${MEETINGS_API_URL}${id}/unsubscribe/`, config);
+            await axios.delete(`${MEETINGS_API_URL}${id}/unsubscribe/`);
             window.location.reload();
         } catch (error) {
             console.error(

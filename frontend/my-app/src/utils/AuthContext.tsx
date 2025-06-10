@@ -114,7 +114,99 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             giveImg();
         }
     }, [userID]);
-    console.log(token);
+
+    /*
+    const isAccessTokenValid = (accessToken: string): boolean => {
+        try {
+            const decoded: DecodedToken  = jwtDecode(accessToken);
+
+            const now = Math.floor(Date.now() / 1000);
+            console.log("decoded:",decoded, now);
+            console.log(decoded.exp - now)
+            return decoded.exp > now;
+        } catch (err) {
+            console.error('Error decoding access token:', err);
+            return false;
+        }
+    };
+
+    // ---- Функция для обновления Access-токена через Refresh-токен ----
+    const refreshAccessToken = useCallback(async (refreshToken: string) => {
+        console.log("start refresh");
+        const decoded: DecodedToken  = jwtDecode(refreshToken);
+        console.log(decoded)
+        try {
+            const response = await axios.post<AuthResponseData>(
+                TOKEN_REFRESH_URL,
+                { refresh: refreshToken },
+                { headers: { 'Content-Type': 'application/json' } }
+            );
+
+            // Предполагаем, что сервер возвращает новые пары: { access, refresh, user_id, username, ... }
+            saveDate(response.data);
+            console.log(response.data)
+            console.log("end refresh");
+        } catch (err) {
+            const axiosErr = err as AxiosError;
+            console.error('Error refreshing token:', axiosErr.response?.data || axiosErr.message);
+            //removeToken(); // Если не получилось обновить, сбрасываем всё
+        }
+    }, [removeToken, saveDate]);
+
+
+    async function initializeFromStorage() {
+        const savedToken = localStorage.getItem('authToken');
+        const savedName = localStorage.getItem('name');
+        const savedID = localStorage.getItem('ID');
+
+        if (savedToken) {
+            try {
+                const parsedToken: AuthToken = JSON.parse(savedToken);
+                console.log(parsedToken)
+                // Если Access не валиден, пробуем обновить
+                if (!parsedToken.access || !isAccessTokenValid(parsedToken.access)) {
+                    if (parsedToken.refresh) {
+                        await refreshAccessToken(parsedToken.refresh);
+                    } else {
+                        removeToken();
+                    }
+                } else {
+                    // Access валиден, сохраняем в state
+                    setToken(parsedToken);
+                }
+            } catch (error) {
+                console.error('Failed to parse token from localStorage:', error);
+                removeToken();
+            }
+        }
+
+        if (savedName) {
+            try {
+                const parsedName: string = JSON.parse(savedName);
+                setName(parsedName);
+            } catch {
+                console.error('Failed to parse name from localStorage');
+            }
+        }
+
+        if (savedID) {
+            try {
+                const parsedID: number = JSON.parse(savedID);
+                setUserID(parsedID);
+            } catch {
+                console.error('Failed to parse ID from localStorage');
+            }
+        }
+        setLoading(false);
+    }
+
+    // ---- При монтировании компонента: пробуем загрузить из localStorage и при необходимости обновить Access ----
+    useEffect(() => {
+
+        initializeFromStorage();
+    }, [refreshAccessToken, removeToken]);*/
+
+    console.log(name, userID, token);
     const value: AuthContextType = {
         token,
         userID,

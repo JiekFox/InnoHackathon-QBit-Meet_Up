@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { SIGN_IN } from '../constant/router';
-import axios from 'axios';
 import { BASE_API_URL, USER_API_URL } from '../constant/apiURL';
 import {
     AIControls,
@@ -10,21 +9,19 @@ import {
 } from '../components/dataLoader/DataGridSection';
 import IntroSection from '../components/home/IntroSection';
 import { Meetup, ParamsForFetch } from '../constant/types';
-import { giveConfig } from '../utils/giveConfig';
 import { paramsToQuery } from '../utils/paramsToQuery';
+import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 
 export default function MyMeetups() {
     const navigate = useNavigate();
-    const { userID, token } = useAuth();
+    const { userID } = useAuth();
+    const axios = useAxiosWithAuth();
     // 1. Определяем ОСНОВНУЮ функцию для получения данных
     const fetchMeetups = useCallback(async (params: ParamsForFetch) => {
         const query = paramsToQuery(params);
-        console.log(fetch);
-        const config = giveConfig(token);
-        if (!config) return { results: [], count: 0 };
+        console.log(`${USER_API_URL}${userID}/meetings_owned/?${query}`);
         const response = await axios.get(
-            `${USER_API_URL}${userID}/meetings_owned/?${query}`,
-            config
+            `${USER_API_URL}${userID}/meetings_owned/?${query}`
         );
         return {
             results: response.data.results.map((item: any) => ({

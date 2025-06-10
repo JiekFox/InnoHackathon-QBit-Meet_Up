@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 
 interface UseFetchMeetingsResult<T> {
     data: T | undefined;
@@ -12,7 +12,7 @@ function useFetchMeetings<T = any>(url: string): UseFetchMeetingsResult<T> {
     const [data, setData] = useState<T>();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
+    const axios = useAxiosWithAuth();
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);

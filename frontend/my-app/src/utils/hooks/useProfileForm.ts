@@ -1,10 +1,9 @@
 // src/hooks/useProfileForm.ts
 import { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
 import { USER_API_URL } from '../../constant/apiURL';
-import { giveConfig } from '../giveConfig';
 import { useAuth } from '../AuthContext';
-import { Config, ProfileFormData } from '../../constant/types';
+import { ProfileFormData } from '../../constant/types';
+import { useAxiosWithAuth } from './useAxiosWithAuth';
 
 export interface ProfileFormErrors {
     [key: string]: string[];
@@ -13,6 +12,7 @@ export interface ProfileFormErrors {
 
 export const useProfileForm = () => {
     const { token, userID } = useAuth();
+    const axios = useAxiosWithAuth();
 
     const [formData, setFormData] = useState<ProfileFormData>({
         name: '',
@@ -24,18 +24,17 @@ export const useProfileForm = () => {
         teams_id: '',
         photo: null
     });
-    console.log(formData);
+    //console.log(formData);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const [errors, setErrors] = useState<ProfileFormErrors>({});
     const [loading, setLoading] = useState(false);
 
-    const fetchUserData = useCallback(async () => {
+    const fetchUserData = useCallback(async (): Promise<void> => {
         if (!token?.access) return;
         setLoading(true);
         try {
-            const config: Config | null = giveConfig(token);
-            if (!config) return;
-            const { data } = await axios.get(`${USER_API_URL}${userID}/`, config);
+            const { data } = await axios.get(`${USER_API_URL}${userID}/`);
+            console.log(data);
             setFormData({
                 name: data.first_name || '',
                 surname: data.last_name || '',
@@ -90,9 +89,7 @@ export const useProfileForm = () => {
         }
 
         try {
-            const config = giveConfig(token);
-            if (!config) return;
-            await axios.put(`${USER_API_URL}${userID}/`, formDataToSend, config);
+            await axios.put(`${USER_API_URL}${userID}/`, formDataToSend);
             setErrors({});
             alert('Profile updated successfully!');
         } catch (error: any) {

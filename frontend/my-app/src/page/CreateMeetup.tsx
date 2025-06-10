@@ -3,8 +3,8 @@ import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { SIGN_IN } from '../constant/router';
 import { useEffect, useState, ChangeEvent, JSX } from 'react';
-import axios from 'axios';
 import { GPT_URL } from '../constant/apiURL';
+import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 
 export function CreateMeetup(): JSX.Element {
     const { token } = useAuth();
@@ -12,7 +12,7 @@ export function CreateMeetup(): JSX.Element {
     const [aiResponse, setAiResponse] = useState<string>('');
     const [isAiResponseVisible, setIsAiResponseVisible] = useState<boolean>(false);
     const [isPendingAI, setIsPendingAI] = useState<boolean>(false);
-
+    const axios = useAxiosWithAuth();
     useEffect(() => {
         if (!token) {
             navigate(SIGN_IN);

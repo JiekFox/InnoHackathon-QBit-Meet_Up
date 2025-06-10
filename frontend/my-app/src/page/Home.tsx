@@ -12,17 +12,10 @@ import {
 
 import { SIGN_IN } from '../constant/router';
 import { BASE_API_URL /*, MEETINGS_API_URL */ } from '../constant/apiURL';
-import { ParamsForFetch } from '../constant/types';
+import { Meetup, ParamsForFetch } from '../constant/types';
 import { paramsToQuery } from '../utils/paramsToQuery';
 
 // Определяем тип для элемента Meetup
-interface Meetup {
-    id: number;
-    title: string;
-    description: string;
-    image: string;
-    dateTime: string;
-}
 
 export default function Home() {
     const navigate = useNavigate();
