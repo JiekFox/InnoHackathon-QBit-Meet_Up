@@ -1,8 +1,15 @@
 import React, { useCallback } from 'react';
 import { Link, useRouteError } from 'react-router-dom';
 
+// Тип ошибки, которую может вернуть useRouteError
+interface RouteError {
+    status?: number;
+    statusText?: string;
+    message?: string;
+}
+
 function ErrorPageComponent() {
-    const error = useRouteError();
+    const error = useRouteError() as RouteError;
 
     const handleError = useCallback(() => {
         console.error(error);
@@ -18,11 +25,12 @@ function ErrorPageComponent() {
                         <div className="not-found-container">
                             <h1>404 - Not Found</h1>
                             <p>The page you are looking for does not exist.</p>
-                            <Link to={'/'}>Go to Home</Link>
+                            <Link to="/">Go to Home</Link>
                         </div>
                     ) : (
                         <h1>
-                            {error?.status} - {error?.statusText}
+                            {error?.status ?? 'Unknown'} -{' '}
+                            {error?.statusText ?? 'Unexpected error'}
                         </h1>
                     )}
                 </div>

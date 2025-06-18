@@ -90,6 +90,7 @@ export const useAxiosWithAuth = (): AxiosInstance => {
             // если ошибка связана с timeout — пробрасываем как есть
             if (error.message === errorText) {
                 /*return Promise.reject(error);*/
+                console.log(error.message);
                 throw error;
             }
 

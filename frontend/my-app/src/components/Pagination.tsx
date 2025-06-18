@@ -18,7 +18,7 @@ const Pagination = React.memo(
         );
 
         const renderPages = useCallback(() => {
-            const pages = [];
+            const pages: (string | number)[] = [];
             if (totalPages <= 7) {
                 for (let i = 1; i <= totalPages; i++) {
                     pages.push(i);
@@ -27,14 +27,16 @@ const Pagination = React.memo(
                 pages.push(1);
                 if (currentPage > 3) pages.push('...');
                 if (currentPage > 2) pages.push(currentPage - 1);
-                pages.push(currentPage);
+                if (currentPage != 1 && currentPage != totalPages) {
+                    pages.push(currentPage);
+                }
                 if (currentPage < totalPages - 1) pages.push(currentPage + 1);
                 if (currentPage < totalPages - 2) pages.push('...');
                 pages.push(totalPages);
             }
             return pages;
         }, [currentPage, totalPages]);
-
+        console.log(renderPages());
         return (
             <nav className="pagination">
                 <button
@@ -45,7 +47,7 @@ const Pagination = React.memo(
                     « Previous
                 </button>
                 {renderPages().map((page, index) =>
-                    page === '...' ? (
+                    typeof page === 'string' /*=== '...'*/ ? (
                         <span
                             key={index}
                             className="pagination-ellipsis pagination-digit"

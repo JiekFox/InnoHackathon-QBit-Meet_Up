@@ -7,7 +7,7 @@ import {
     AIControls,
     DataGridSection
 } from '../components/dataLoader/DataGridSection';
-import IntroSection from '../components/home/IntroSection';
+import IntroSection from '../components/IntroSection';
 import { Meetup, ParamsForFetch } from '../constant/types';
 import { paramsToQuery } from '../utils/paramsToQuery';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';

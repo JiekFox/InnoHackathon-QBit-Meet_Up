@@ -1,12 +1,8 @@
-// src/hooks/useDataGrid.ts
-
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { ParamsForFetch } from '../../constant/types';
 
 const ITEMS_PER_PAGE = 12;
 
-// Тип для функции, которая будет загружать данные
-// Она принимает параметры и должна вернуть данные и их общее количество
 type Fetcher<T> = (
     params: ParamsForFetch
 ) => Promise<{ results: T[]; count: number }>;
@@ -17,50 +13,66 @@ export const useDataGrid = <T>(fetchFunction: Fetcher<T>) => {
     const [totalPages, setTotalPages] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [dateFilter, setDateFilter] = useState({ startDate: '', endDate: '' });
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
+    console.log(
+        items,
+        currentPage,
+        totalPages,
+        searchQuery,
+        dateFilter,
+        loading,
+        error
+    );
+    const loadData = async ({
+        page = currentPage,
+        search = searchQuery,
+        startDate = dateFilter.startDate,
+        endDate = dateFilter.endDate
+    }: Partial<ParamsForFetch> = {}) => {
+        console.log('loadData triggered with params:', page, search, startDate);
 
-    // Основной эффект для загрузки данных при изменении фильтров или страницы
-    useEffect(() => {
-        const loadData = async () => {
-            setLoading(true);
-            try {
-                const params: ParamsForFetch = {
-                    page: currentPage,
-                    pageSize: ITEMS_PER_PAGE,
-                    search: searchQuery,
-                    startDate: dateFilter.startDate,
-                    endDate: dateFilter.endDate
-                };
-                const response = await fetchFunction(params);
-                setItems(response.results);
-                setTotalPages(Math.ceil((response.count || 0) / ITEMS_PER_PAGE));
-            } catch (err) {
-                setError(
-                    err instanceof Error
-                        ? err
-                        : new Error('An unknown error occurred')
-                );
-            } finally {
-                setLoading(false);
-            }
-        };
+        setLoading(true);
+        try {
+            const params: ParamsForFetch = {
+                page,
+                pageSize: ITEMS_PER_PAGE,
+                search,
+                startDate,
+                endDate
+            };
+            const response = await fetchFunction(params);
+            setItems(response.results);
+            setTotalPages(Math.ceil((response.count || 0) / ITEMS_PER_PAGE));
+            setError(null);
+        } catch (err) {
+            setError(
+                err instanceof Error ? err : new Error('An unknown error occurred')
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        loadData();
-    }, [currentPage, searchQuery, dateFilter, fetchFunction]);
-
-    // Сбрасываем страницу на первую при изменении фильтров
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchQuery, dateFilter]);
-
-    // Обработчики для FilterBar
-    const handleSearchChange = useCallback((query: string) => {
+    const handleSearchChange = useCallback(async (query: string) => {
+        await loadData({ page: 1, search: query });
         setSearchQuery(query);
+        setCurrentPage(1);
     }, []);
 
-    const handleDateFilter = useCallback((startDate: string, endDate: string) => {
-        setDateFilter({ startDate, endDate });
+    const handleDateFilter = useCallback(
+        async (startDate: string, endDate: string) => {
+            await loadData({ page: 1, startDate, endDate });
+            const newFilter = { startDate, endDate };
+            setDateFilter(newFilter);
+            setCurrentPage(1);
+        },
+        []
+    );
+
+    const handlePageChange = useCallback(async (page: number) => {
+        await loadData({ page });
+        setCurrentPage(page);
     }, []);
 
     return {
@@ -71,7 +83,7 @@ export const useDataGrid = <T>(fetchFunction: Fetcher<T>) => {
         error,
         searchQuery, // Экспортируем для AI функций
         // Методы для управления состоянием
-        setCurrentPage,
+        setCurrentPage: handlePageChange,
         handleSearchChange,
         handleDateFilter,
         // Методы для прямого управления состоянием извне (для AI логики)

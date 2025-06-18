@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { CREATE_MEETUPS } from '../../constant/router';
+import { CREATE_MEETUPS } from '../constant/router';
 
 interface IntroSectionProps {
     styleClass: string;

@@ -1,6 +1,5 @@
-import IntroSection from '../components/home/IntroSection';
+import IntroSection from '../components/IntroSection';
 import { MEETINGS_API_URL } from '../constant/apiURL';
-import axios from 'axios';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
@@ -14,15 +13,15 @@ import { SIGN_IN } from '../constant/router';
 import { BASE_API_URL /*, MEETINGS_API_URL */ } from '../constant/apiURL';
 import { Meetup, ParamsForFetch } from '../constant/types';
 import { paramsToQuery } from '../utils/paramsToQuery';
-
-// Определяем тип для элемента Meetup
+import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 
 export default function Home() {
     const navigate = useNavigate();
     const { userID } = useAuth();
+    const axios = useAxiosWithAuth();
     const fetchMeetups = React.useCallback(async (params: ParamsForFetch) => {
         const query = paramsToQuery(params);
-        console.log(fetch);
+        console.log('fetch home');
         const response = await axios.get(`${MEETINGS_API_URL}?${query}`);
         return {
             results: response.data.results.map((item: any) => ({
