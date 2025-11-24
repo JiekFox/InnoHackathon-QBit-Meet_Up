@@ -181,6 +181,7 @@ STORAGES = {
             "bucket_name": config("BUCKET_NAME"),
             "region_name": config("REGION_NAME"),
             "endpoint_url": config("ENDPOINT_URL"),
+            "signature_version": "s3v4"
         },
     },
 }
@@ -192,7 +193,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
