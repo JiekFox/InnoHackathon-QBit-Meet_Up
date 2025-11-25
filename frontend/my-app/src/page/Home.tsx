@@ -25,7 +25,6 @@ export default function Home() {
         const response = await axios.get(`${MEETINGS_API_URL}?${query}`);
         return {
             results: response.data.results.map((item: any) => ({
-                // Маппинг данных
                 id: item.id,
                 title: item.title,
                 description: item.description,
@@ -35,25 +34,24 @@ export default function Home() {
             count: response.data.count
         };
     }, []);
+
     const handleSearchByAI = async (controls: AIControls<Meetup>) => {
         const { setLoading, setItems, setTotalPages, searchQuery } = controls;
-        // ... (вся логика из вашей handleSearchByAIF, используя searchQuery)
-        // Пример:
+
         setLoading(true);
         try {
             const meetupsResponse = await axios.get(
                 `${BASE_API_URL}meetings/?page_size=50`
             );
             const meetups = meetupsResponse.data?.results || [];
-            // ... остальная логика с gptPrompt ...
-            const gptMessage = 'Success, id:[76, 69, 38]'; // Mock response
+            const gptMessage = 'Success, id:[81, 69, 85]'; // Mock response
             if (gptMessage.startsWith('Success')) {
                 const ids = JSON.parse(gptMessage.match(/\[.*?\]/)?.[0] || '[]');
                 console.log(ids);
                 console.log(meetups);
                 const filtered = meetups.filter((m: Meetup) => ids.includes(m.id));
                 setItems(filtered);
-                setTotalPages(1); // AI поиск не использует пагинацию
+                setTotalPages(1);
             }
         } catch (error) {
             console.error('Error in AI search:', error);
@@ -68,11 +66,10 @@ export default function Home() {
             navigate(SIGN_IN);
             return;
         }
-        // ... (вся логика из вашей handleRecommendedByAI)
+
         setLoading(true);
         try {
-            // ... все ваши axios запросы и логика с GPT ...
-            setItems([]); // Установить результат
+            setItems([]);
             setTotalPages(1);
         } catch (e) {
             console.error(e);

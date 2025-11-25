@@ -3,16 +3,14 @@ export interface AuthToken {
     access: string;
 }
 
-// 2️⃣ Интерфейс данных для saveDate
 export interface AuthResponseData {
     refresh: string;
     access: string;
     username: string;
     user_id: number;
-    message?: string; //after registration
+    message?: string;
 }
 
-// 3️⃣ Интерфейс контекста
 export interface AuthContextType {
     token: AuthToken | null;
     userID: number | null;

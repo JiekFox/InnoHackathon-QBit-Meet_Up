@@ -7,8 +7,6 @@ import { SIGN_IN } from '../../constant/router';
 import { Meetup } from '../../constant/types';
 import { useAxiosWithAuth } from './useAxiosWithAuth';
 
-// Типизация для Meetup (адаптируй под свою модель данных)
-
 interface UseMeetupDetailsReturn {
     meetup: Meetup | null;
     loading: boolean;

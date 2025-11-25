@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import DebounceInput from './DebounceInput';
 
-// Типизация пропсов
 interface FilterBarProps {
     onSearchChange: (query: string) => void;
     onDateFilter?: (startDate: string, endDate: string) => void;

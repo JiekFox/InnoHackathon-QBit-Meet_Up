@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { Link, useRouteError } from 'react-router-dom';
 
-// Тип ошибки, которую может вернуть useRouteError
 interface RouteError {
     status?: number;
     statusText?: string;

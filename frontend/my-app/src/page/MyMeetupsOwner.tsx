@@ -16,7 +16,7 @@ export default function MyMeetups() {
     const navigate = useNavigate();
     const { userID } = useAuth();
     const axios = useAxiosWithAuth();
-    // 1. Определяем ОСНОВНУЮ функцию для получения данных
+
     const fetchMeetups = useCallback(async (params: ParamsForFetch) => {
         const query = paramsToQuery(params);
         console.log(`${USER_API_URL}${userID}/meetings_owned/?${query}`);
@@ -25,7 +25,6 @@ export default function MyMeetups() {
         );
         return {
             results: response.data.results.map((item: any) => ({
-                // Маппинг данных
                 id: item.id,
                 title: item.title,
                 description: item.description,
@@ -37,21 +36,20 @@ export default function MyMeetups() {
     }, []);
     const handleSearchByAI = async (controls: AIControls<Meetup>) => {
         const { setLoading, setItems, setTotalPages, searchQuery } = controls;
-        // ... (вся логика из вашей handleSearchByAIF, используя searchQuery)
-        // Пример:
+
         setLoading(true);
         try {
             const meetupsResponse = await axios.get(
                 `${BASE_API_URL}meetings/?page_size=50`
             );
             const meetups = meetupsResponse.data?.results || [];
-            // ... остальная логика с gptPrompt ...
-            const gptMessage = 'Success, id:[1, 2, 3]'; // Mock response
+
+            const gptMessage = 'Success, id:[81, 69, 85]';
             if (gptMessage.startsWith('Success')) {
                 const ids = JSON.parse(gptMessage.match(/\[.*?\]/)?.[0] || '[]');
                 const filtered = meetups.filter((m: Meetup) => ids.includes(m.id));
                 setItems(filtered);
-                setTotalPages(1); // AI поиск не использует пагинацию
+                setTotalPages(1);
             }
         } catch (error) {
             console.error('Error in AI search:', error);
@@ -66,11 +64,10 @@ export default function MyMeetups() {
             navigate(SIGN_IN);
             return;
         }
-        // ... (вся логика из вашей handleRecommendedByAI)
+        // TODO
         setLoading(true);
         try {
-            // ... все ваши axios запросы и логика с GPT ...
-            setItems([]); // Установить результат
+            setItems([]);
             setTotalPages(1);
         } catch (e) {
             console.error(e);

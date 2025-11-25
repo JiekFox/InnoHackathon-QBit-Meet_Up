@@ -18,7 +18,7 @@ const isTokenExpired = (token: string): boolean => {
     }
 };
 const errorText = 'The server is not responding. Try again later.';
-// ⏱️ Обёртка для тайм-аута любого Promise
+
 const withTimeout = <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
     return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
@@ -87,14 +87,11 @@ export const useAxiosWithAuth = (): AxiosInstance => {
     instance.interceptors.response.use(
         response => response,
         async error => {
-            // если ошибка связана с timeout — пробрасываем как есть
             if (error.message === errorText) {
                 /*return Promise.reject(error);*/
                 console.log(error.message);
                 throw error;
             }
-
-            // иначе пробуем заново с таймаутом
             try {
                 const config = error.config;
                 if (!config || config._retry) {

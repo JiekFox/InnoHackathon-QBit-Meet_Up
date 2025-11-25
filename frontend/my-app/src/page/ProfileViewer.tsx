@@ -5,7 +5,6 @@ import Loader from '../components/Loader';
 import PhotoUpload from '../components/PhotoUpload';
 import { USER_API_URL } from '../constant/apiURL';
 
-// Описание структуры данных пользователя
 interface UserProfile {
     id: number;
     first_name: string;
@@ -15,7 +14,7 @@ interface UserProfile {
     user_description: string;
     tg_id: string;
     teams_id: string;
-    photo: string | null; // предполагается URL строки. Если приходит `null`, можно указать `string | null`
+    photo: string | null;
 }
 
 export default function ProfileViewer() {

@@ -129,8 +129,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return false;
         }
     };
-
-    // ---- Функция для обновления Access-токена через Refresh-токен ----
     const refreshAccessToken = useCallback(async (refreshToken: string) => {
         console.log("start refresh");
         const decoded: DecodedToken  = jwtDecode(refreshToken);
@@ -141,15 +139,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 { refresh: refreshToken },
                 { headers: { 'Content-Type': 'application/json' } }
             );
-
-            // Предполагаем, что сервер возвращает новые пары: { access, refresh, user_id, username, ... }
-            saveDate(response.data);
+             saveDate(response.data);
             console.log(response.data)
             console.log("end refresh");
         } catch (err) {
             const axiosErr = err as AxiosError;
             console.error('Error refreshing token:', axiosErr.response?.data || axiosErr.message);
-            //removeToken(); // Если не получилось обновить, сбрасываем всё
+            //removeToken(); 
         }
     }, [removeToken, saveDate]);
 

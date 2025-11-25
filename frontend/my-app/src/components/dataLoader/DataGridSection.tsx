@@ -1,6 +1,3 @@
-// src/components/DataGridSection.tsx
-
-import React from 'react';
 import FilterBar from '../../components/FilterBar';
 import Pagination from '../../components/Pagination';
 import Loader from '../../components/Loader';
@@ -9,17 +6,14 @@ import { MEETUP_DETAILS } from '../../constant/router';
 import MeetupCard from '../MeetupCard';
 import { Meetup, ParamsForFetch } from '../../constant/types';
 
-// Типы для пропсов
 interface DataGridSectionProps<T extends Meetup> {
     fetchFunction: (
         params: ParamsForFetch
-    ) => Promise<{ results: Meetup[]; count: number }>; // Берем тип из хука
-    // AI функции теперь принимают объект с методами для управления состоянием
+    ) => Promise<{ results: Meetup[]; count: number }>;
     onRecommendByAI?: (controls: AIControls<T>) => Promise<void>;
     onSearchByAI?: (controls: AIControls<T>) => Promise<void>;
 }
 
-// Тип для контролов, передаваемых в AI функции
 export interface AIControls<T> {
     setLoading: (loading: boolean) => void;
     setItems: (items: T[]) => void;
@@ -48,7 +42,6 @@ export function DataGridSection<T extends Meetup>({
     } = useDataGrid<Meetup>(fetchFunction);
     if (error) console.error('Error in DataGridSection:', error);
 
-    // Создаем объект с контролами для передачи в AI функции
     const aiControls: AIControls<T> = {
         setLoading,
         setItems,
@@ -61,7 +54,6 @@ export function DataGridSection<T extends Meetup>({
             <FilterBar
                 onSearchChange={handleSearchChange}
                 onDateFilter={handleDateFilter}
-                // Вызываем AI функции, передавая им контролы
                 onRecommendByAI={
                     onRecommendByAI ? () => onRecommendByAI(aiControls) : undefined
                 }

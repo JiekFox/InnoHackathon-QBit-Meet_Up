@@ -16,7 +16,7 @@ export interface MeetupFormData {
 }
 
 export interface ApiError {
-    [key: string]: string[] | string; // Для гибкости
+    [key: string]: string[] | string;
 }
 
 export const useMeetupForm = () => {

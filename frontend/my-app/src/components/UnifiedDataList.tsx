@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import FilterBar from './FilterBar';
 import Pagination from './Pagination';
-import Loader from './Loader'; // Предполагается, что у вас есть компонент Loader
-
-// Определение типов для пропсов
+import Loader from './Loader';
 interface UnifiedDataListProps<T> {
     fetchFunction: (
         params: Record<string, string>
@@ -12,13 +10,12 @@ interface UnifiedDataListProps<T> {
     pageSize?: number;
     listContainerClassName?: string;
     itemContainerClassName?: string;
-    // Пропсы для FilterBar, которые будут переданы дальше
+
     onRecommendByAI?: () => void;
     onQueryTuchUseAI?: () => void;
     enableDateFilter?: boolean;
 }
 
-// Тип для элемента данных с обязательным полем id
 interface DataItem {
     id: number | string;
 }
@@ -31,23 +28,20 @@ export function UnifiedDataList<T extends DataItem>({
     itemContainerClassName = 'data-list-item',
     onRecommendByAI,
     onQueryTuchUseAI,
-    enableDateFilter = true // По умолчанию фильтр по дате включен
+    enableDateFilter = true
 }: UnifiedDataListProps<T>) {
-    // --- Состояние компонента ---
     const [data, setData] = useState<T[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(0);
 
-    // Состояние для всех фильтров
     const [filters, setFilters] = useState({
         query: '',
         startDate: '',
         endDate: ''
     });
 
-    // --- Логика загрузки данных ---
     const fetchData = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -78,26 +72,22 @@ export function UnifiedDataList<T extends DataItem>({
 
     useEffect(() => {
         fetchData();
-    }, [fetchData]); // fetchData уже включает все зависимости
+    }, [fetchData]);
 
-    // --- Обработчики для дочерних компонентов ---
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
 
     const handleSearchChange = (query: string) => {
-        // При новом поиске сбрасываем на первую страницу
         setCurrentPage(1);
         setFilters(prev => ({ ...prev, query }));
     };
 
     const handleDateFilterApply = (startDate: string, endDate: string) => {
-        // При применении фильтра дат сбрасываем на первую страницу
         setCurrentPage(1);
         setFilters(prev => ({ ...prev, startDate, endDate }));
     };
 
-    // --- Рендеринг ---
     return (
         <div className="unified-data-container">
             <FilterBar

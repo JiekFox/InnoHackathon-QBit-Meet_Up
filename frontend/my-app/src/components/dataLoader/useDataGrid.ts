@@ -81,12 +81,10 @@ export const useDataGrid = <T>(fetchFunction: Fetcher<T>) => {
         totalPages,
         loading,
         error,
-        searchQuery, // Экспортируем для AI функций
-        // Методы для управления состоянием
+        searchQuery,
         setCurrentPage: handlePageChange,
         handleSearchChange,
         handleDateFilter,
-        // Методы для прямого управления состоянием извне (для AI логики)
         setLoading,
         setItems,
         setTotalPages

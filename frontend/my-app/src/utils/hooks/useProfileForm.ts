@@ -1,4 +1,3 @@
-// src/hooks/useProfileForm.ts
 import { useCallback, useEffect, useState } from 'react';
 import { USER_API_URL } from '../../constant/apiURL';
 import { useAuth } from '../AuthContext';
@@ -8,7 +7,6 @@ import { useAxiosWithAuth } from './useAxiosWithAuth';
 export interface ProfileFormErrors {
     [key: string]: string[];
 }
-// ... (импорты остаются)
 
 export const useProfileForm = () => {
     const { token, userID } = useAuth();
@@ -24,7 +22,7 @@ export const useProfileForm = () => {
         teams_id: '',
         photo: null
     });
-    //console.log(formData);
+    console.log(formData);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const [errors, setErrors] = useState<ProfileFormErrors>({});
     const [loading, setLoading] = useState(false);
@@ -46,9 +44,8 @@ export const useProfileForm = () => {
                 photo: null
             });
 
-            // Установка превью, если фото есть
             if (data.photo) {
-                setPhotoPreview(data.photo); // допустим, URL приходит напрямую
+                setPhotoPreview(data.photo);
             }
         } catch (error: any) {
             console.error(error.response?.data || error.message);
