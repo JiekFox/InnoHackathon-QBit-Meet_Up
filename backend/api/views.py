@@ -39,11 +39,12 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         """
         Возвращает разрешения для текущего действия.
         """
-        if self.action in ["list", "retrieve"]:  
-            return [AllowAny()]
-        if self.action in ["update", "partial_update", "destroy"]:
-            return [IsAuthenticated(), IsAuthorOrStaff()]
-        return super().get_permissions()
+        return [AllowAny()]
+        # if self.action in ["list", "retrieve"]:  
+        #     return [AllowAny()]
+        # if self.action in ["update", "partial_update", "destroy"]:
+        #     return [IsAuthenticated(), IsAuthorOrStaff()]
+        # return super().get_permissions()
 
     #@method_decorator(cache_page(60 * 15))
     def list(self, request, *args, **kwargs):
