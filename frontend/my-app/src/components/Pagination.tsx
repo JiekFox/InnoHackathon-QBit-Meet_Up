@@ -36,7 +36,6 @@ const Pagination = React.memo(
             }
             return pages;
         }, [currentPage, totalPages]);
-        console.log(renderPages());
         return (
             <nav className="pagination">
                 <button

@@ -47,10 +47,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const saveDate = useCallback(
         (newDate: AuthResponseData) => {
+            // if()
             saveToken({ refresh: newDate.refresh, access: newDate.access });
             saveName(newDate.username);
             saveId(newDate.user_id);
             setLoading(false);
+            if (newDate.photo) {
+                setImg(newDate.photo);
+            }
         },
         [saveToken, saveName, saveId]
     );
@@ -202,7 +206,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         initializeFromStorage();
     }, [refreshAccessToken, removeToken]);*/
 
-    console.log(name, userID, token);
     const value: AuthContextType = {
         token,
         userID,

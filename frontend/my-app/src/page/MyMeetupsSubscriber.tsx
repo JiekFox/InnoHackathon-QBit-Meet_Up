@@ -58,24 +58,6 @@ export default function MyMeetupsSubscriber() {
         }
     };
 
-    const handleRecommendedByAI = async (controls: AIControls<Meetup>) => {
-        const { setLoading, setItems, setTotalPages } = controls;
-        if (!userID) {
-            navigate(SIGN_IN);
-            return;
-        }
-        // TODO
-        setLoading(true);
-        try {
-            setItems([]);
-            setTotalPages(1);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     return (
         <>
             <IntroSection
@@ -87,7 +69,6 @@ export default function MyMeetupsSubscriber() {
             <DataGridSection<Meetup>
                 fetchFunction={fetchMeetups}
                 onSearchByAI={handleSearchByAI}
-                onRecommendByAI={handleRecommendedByAI}
             />
         </>
     );

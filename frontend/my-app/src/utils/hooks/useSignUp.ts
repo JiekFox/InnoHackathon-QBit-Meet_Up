@@ -50,11 +50,11 @@ export const useSignUp = () => {
                     REGISTER_API_URL,
                     formData
                 );
-                console.log(response);
+
                 saveDate(response.data);
                 navigate('/');
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 const axiosError = error as AxiosError<RegisterErrorResponse>;
                 const errorData = axiosError.response?.data;
 

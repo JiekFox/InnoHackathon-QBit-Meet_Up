@@ -73,7 +73,6 @@ export const useMeetupForm = () => {
                     MEETINGS_API_URL,
                     meetingData
                 );
-                console.log(response);
                 navigate(`${MEETUP_DETAILS}/${response.data.id}`);
             } catch (err) {
                 const axiosError = err as AxiosError<ApiError>;

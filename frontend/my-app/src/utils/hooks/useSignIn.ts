@@ -50,9 +50,11 @@ export const useSignIn = (): UseSignInReturn => {
                     TOKEN_API_URL,
                     formData
                 );
-                saveDate(response.data);
+                console.log(response.data);
+                //saveDate(response.data);
                 navigate('/');
             } catch (error) {
+                console.log(error);
                 setErrorMessage('Invalid username or password. Please try again.');
             } finally {
                 setIsPending(false);

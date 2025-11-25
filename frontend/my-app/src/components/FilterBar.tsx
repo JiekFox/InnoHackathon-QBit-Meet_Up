@@ -35,7 +35,7 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
                             className="filter-button"
                             onClick={() => setShowDateFilters(!showDateFilters)}
                         >
-                            Filter by Date 🗓️
+                            Filter by Date
                         </button>
                         {showDateFilters && (
                             <div className="date-filters">

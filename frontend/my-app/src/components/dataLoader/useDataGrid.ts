@@ -15,23 +15,13 @@ export const useDataGrid = <T>(fetchFunction: Fetcher<T>) => {
     const [dateFilter, setDateFilter] = useState({ startDate: '', endDate: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
-    console.log(
-        items,
-        currentPage,
-        totalPages,
-        searchQuery,
-        dateFilter,
-        loading,
-        error
-    );
+
     const loadData = async ({
         page = currentPage,
         search = searchQuery,
         startDate = dateFilter.startDate,
         endDate = dateFilter.endDate
     }: Partial<ParamsForFetch> = {}) => {
-        console.log('loadData triggered with params:', page, search, startDate);
-
         setLoading(true);
         try {
             const params: ParamsForFetch = {

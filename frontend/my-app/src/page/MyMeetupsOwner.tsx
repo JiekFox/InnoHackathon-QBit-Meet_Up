@@ -19,7 +19,6 @@ export default function MyMeetups() {
 
     const fetchMeetups = useCallback(async (params: ParamsForFetch) => {
         const query = paramsToQuery(params);
-        console.log(`${USER_API_URL}${userID}/meetings_owned/?${query}`);
         const response = await axios.get(
             `${USER_API_URL}${userID}/meetings_owned/?${query}`
         );
@@ -58,24 +57,6 @@ export default function MyMeetups() {
         }
     };
 
-    const handleRecommendedByAI = async (controls: AIControls<Meetup>) => {
-        const { setLoading, setItems, setTotalPages } = controls;
-        if (!userID) {
-            navigate(SIGN_IN);
-            return;
-        }
-        // TODO
-        setLoading(true);
-        try {
-            setItems([]);
-            setTotalPages(1);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     return (
         <>
             <IntroSection
@@ -87,7 +68,6 @@ export default function MyMeetups() {
             <DataGridSection<Meetup>
                 fetchFunction={fetchMeetups}
                 onSearchByAI={handleSearchByAI}
-                onRecommendByAI={handleRecommendedByAI}
             />
         </>
     );

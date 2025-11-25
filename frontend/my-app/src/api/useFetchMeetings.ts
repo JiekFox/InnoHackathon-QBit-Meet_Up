@@ -20,7 +20,6 @@ function useFetchMeetings<T = any>(url: string): UseFetchMeetingsResult<T> {
 
             try {
                 const response = await axios.get<T>(url);
-                console.log(response);
                 setData(response.data);
             } catch (err: any) {
                 setError(err.message || 'Something went wrong');

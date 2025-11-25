@@ -9,6 +9,7 @@ export interface AuthResponseData {
     username: string;
     user_id: number;
     message?: string;
+    photo?: string;
 }
 
 export interface AuthContextType {

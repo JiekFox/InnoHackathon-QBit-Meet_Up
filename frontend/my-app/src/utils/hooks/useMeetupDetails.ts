@@ -47,7 +47,7 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
             try {
                 const response: AxiosResponse<{ message: boolean }> =
                     await axios.get(`${MEETINGS_API_URL}${id}/is_subscribed/`);
-                console.log(response);
+
                 setIsFavorite(response.data.message);
             } catch (err) {
                 console.error(
