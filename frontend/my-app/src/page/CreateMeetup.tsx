@@ -2,17 +2,23 @@ import { useMeetupForm } from '../utils/hooks/useMeetupForm';
 import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { SIGN_IN } from '../constant/router';
-import { useEffect, useState, ChangeEvent, JSX } from 'react';
+import { useEffect, useState, ChangeEvent, JSX, useRef } from 'react';
 import { GPT_URL } from '../constant/apiURL';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
+import { ImagePreview } from '../components/ImagePreview';
 
 export function CreateMeetup(): JSX.Element {
     const { token } = useAuth();
     const navigate = useNavigate();
+    const axios = useAxiosWithAuth();
+
     const [aiResponse, setAiResponse] = useState<string>('');
     const [isAiResponseVisible, setIsAiResponseVisible] = useState<boolean>(false);
     const [isPendingAI, setIsPendingAI] = useState<boolean>(false);
-    const axios = useAxiosWithAuth();
+
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
         if (!token) {
             navigate(SIGN_IN);
@@ -27,6 +33,32 @@ export function CreateMeetup(): JSX.Element {
         handleSubmit,
         isPending
     } = useMeetupForm();
+
+    const onImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setPreviewUrl(URL.createObjectURL(file));
+            handleImageUpload(e);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setPreviewUrl(null);
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+
+        const syntheticEvent = {
+            target: {
+                name: 'image',
+                files: null,
+                value: ''
+            }
+        } as unknown as ChangeEvent<HTMLInputElement>;
+
+        handleImageUpload(syntheticEvent);
+    };
 
     const handleImproveWithAI = async (): Promise<void> => {
         if (!formData.description) {
@@ -114,7 +146,6 @@ export function CreateMeetup(): JSX.Element {
                         value={formData.link}
                         onChange={handleChange}
                         placeholder="e.g., https://google.com"
-                        required
                     />
                 </div>
                 <div className="input-group">
@@ -127,6 +158,7 @@ export function CreateMeetup(): JSX.Element {
                         required
                     />
                 </div>
+
                 <button
                     type="button"
                     className="ai-button"
@@ -135,6 +167,7 @@ export function CreateMeetup(): JSX.Element {
                 >
                     {isPendingAI ? 'Processing AI...' : 'Improve with AI ✨'}
                 </button>
+
                 {isAiResponseVisible && (
                     <>
                         <div className="input-group">
@@ -155,16 +188,32 @@ export function CreateMeetup(): JSX.Element {
                         </button>
                     </>
                 )}
-                <div className="input-group">
-                    <label htmlFor="image">Image:</label>
+
+                <div className="image-upload-wrapper">
+                    <label
+                        htmlFor="customFileInput"
+                        className="custom-file-label create-meetup-button"
+                    >
+                        Select image
+                    </label>
                     <input
                         type="file"
-                        id="image"
+                        id="customFileInput"
                         name="image"
                         accept="image/*"
-                        onChange={handleImageUpload}
+                        onChange={onImageChange}
+                        className="hidden-file-input"
+                        ref={fileInputRef}
                     />
+
+                    <div className="preview-box">
+                        <ImagePreview
+                            previewUrl={previewUrl}
+                            onRemove={handleRemoveImage}
+                        />
+                    </div>
                 </div>
+
                 <button type="submit" className="create-meetup-button">
                     {isPending ? 'is pending...' : 'Create Meetup'}
                 </button>

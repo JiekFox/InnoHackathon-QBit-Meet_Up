@@ -2,6 +2,7 @@ import React, {
     useCallback,
     useEffect,
     useState,
+    useRef,
     ChangeEvent,
     FormEvent,
     JSX
@@ -12,6 +13,7 @@ import { MEETUP_DETAILS, SIGN_IN } from '../constant/router';
 import Loader from '../components/Loader';
 import { MEETINGS_API_URL } from '../constant/apiURL';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
+import { ImagePreview } from '../components/ImagePreview';
 
 interface FormDataState {
     title: string;
@@ -35,6 +37,8 @@ export function EditMeetup(): JSX.Element {
     const navigate = useNavigate();
     const axios = useAxiosWithAuth();
 
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const [serverValues, setServerValues] = useState<FormDataState | null>(null);
     const [userValues, setUserValues] = useState<Partial<FormDataState>>({});
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -48,14 +52,12 @@ export function EditMeetup(): JSX.Element {
     const [isPending, setIsPending] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // проверка токена
     useEffect(() => {
         if (!token) {
             navigate(SIGN_IN);
         }
     }, [token, navigate]);
 
-    // загрузка встречи
     useEffect(() => {
         const fetchMeetupDetails = async () => {
             setIsPending(true);
@@ -84,7 +86,6 @@ export function EditMeetup(): JSX.Element {
         fetchMeetupDetails();
     }, [id]);
 
-    // текстовые поля → только userValues
     const handleChange = useCallback(
         (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             const { name, value } = e.target;
@@ -93,23 +94,23 @@ export function EditMeetup(): JSX.Element {
         []
     );
 
-    // загрузка картинки → только userValues
     const handleImageUpload = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
-        if (file.type === 'image/webp') {
-            setError(
-                'WebP images are not allowed. Please choose a different format.'
-            );
-            return;
-        }
 
         setUserValues(prev => ({ ...prev, image: file }));
         setPreviewUrl(URL.createObjectURL(file));
     }, []);
 
-    // отправка формы → PATCH только с тем, что изменено
+    const handleRemoveImage = useCallback(() => {
+        setPreviewUrl(null);
+        setUserValues(prev => ({ ...prev, image: null }));
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    }, []);
+
     const handleEditSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setIsPending(true);
@@ -118,18 +119,15 @@ export function EditMeetup(): JSX.Element {
             const formDataToSend = new FormData();
 
             Object.entries(userValues).forEach(([key, value]) => {
-                if (value !== undefined && value !== null) {
-                    console.log(key, value);
-                    formDataToSend.append(key, value as any);
-                }
+                console.log(key, value);
+                const tempValue = value === null ? '' : value;
+                formDataToSend.append(key, tempValue as any);
             });
             console.log([...formDataToSend]);
 
-            // отправляем только изменённые поля
             await axios.patch(`${MEETINGS_API_URL}${id}/`, formDataToSend);
 
             alert('Meetup updated successfully');
-
             navigate(`${MEETUP_DETAILS}/${id}`);
         } catch (error: any) {
             setError(error.message || 'Failed to update meetup.');
@@ -178,7 +176,6 @@ export function EditMeetup(): JSX.Element {
                         name="link"
                         value={finalValues.link}
                         onChange={handleChange}
-                        required
                     />
                 </div>
 
@@ -207,12 +204,14 @@ export function EditMeetup(): JSX.Element {
                         accept="image/*"
                         onChange={handleImageUpload}
                         className="hidden-file-input"
+                        ref={fileInputRef}
                     />
-                    {previewUrl && (
-                        <div className="preview-box">
-                            <img src={previewUrl} alt="Preview" />
-                        </div>
-                    )}
+                    <div className="preview-box">
+                        <ImagePreview
+                            previewUrl={previewUrl}
+                            onRemove={handleRemoveImage}
+                        />
+                    </div>
                 </div>
 
                 <button

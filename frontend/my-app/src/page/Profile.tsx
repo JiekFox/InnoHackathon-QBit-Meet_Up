@@ -12,6 +12,7 @@ export default function Profile() {
         loading,
         photoPreview,
         handleChange,
+        handlePhotoDelete,
         handlePhotoUpload,
         handleSave
     } = useProfileForm();
@@ -92,6 +93,7 @@ export default function Profile() {
                     <PhotoUpload
                         photo={photoPreview}
                         onPhotoUpload={handlePhotoUpload}
+                        onPhotoDelete={handlePhotoDelete}
                         classVisible="photo-upload-unvisible"
                     />
 
@@ -137,6 +139,7 @@ export default function Profile() {
                     photo={photoPreview}
                     onPhotoUpload={handlePhotoUpload}
                     classVisible="photo-upload-visible"
+                    onPhotoDelete={handlePhotoDelete}
                 />
             </form>
         </div>

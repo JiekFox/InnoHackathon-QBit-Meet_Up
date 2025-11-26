@@ -1,14 +1,16 @@
 import React from 'react';
-
+import logo from '../assets/img/handle_color_green.png';
 interface PhotoUploadProps {
     photo: File | string | null;
     onPhotoUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onPhotoDelete?: () => void;
     classVisible?: string;
 }
 
 const PhotoUpload: React.FC<PhotoUploadProps> = ({
     photo,
     onPhotoUpload,
+    onPhotoDelete,
     classVisible = ''
 }) => {
     return (
@@ -21,23 +23,47 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
                         <img src={photo} alt="Uploaded" />
                     )
                 ) : (
-                    <div className="placeholder">Upload photo</div>
+                    <img src={logo} alt="no-image" />
                 )}
             </div>
-            {onPhotoUpload && (
-                <>
-                    <label htmlFor="photo-upload" className="photo-upload-label">
-                        Upload photo
-                    </label>
-                    <input
-                        type="file"
-                        id="photo-upload"
-                        accept="image/*"
-                        onChange={onPhotoUpload}
-                        className="photo-input"
-                    />
-                </>
-            )}
+
+            <div
+                className="photo-controls"
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '10px'
+                }}
+            >
+                {onPhotoUpload && (
+                    <>
+                        <label htmlFor="photo-upload" className="photo-upload-label">
+                            {photo ? 'Change photo' : 'Upload photo'}
+                        </label>
+                        <input
+                            type="file"
+                            id="photo-upload"
+                            accept="image/*"
+                            onChange={onPhotoUpload}
+                            className="photo-input"
+                            style={{ display: 'none' }}
+                        />
+                    </>
+                )}
+
+                {photo && onPhotoDelete ? (
+                    <button
+                        type="button"
+                        onClick={onPhotoDelete}
+                        className="delete-photo-button"
+                    >
+                        Delete photo
+                    </button>
+                ) : (
+                    <div style={{ height: 33 }}> </div>
+                )}
+            </div>
         </div>
     );
 };

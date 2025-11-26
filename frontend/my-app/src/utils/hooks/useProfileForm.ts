@@ -38,6 +38,12 @@ export const useProfileForm = () => {
         };
     }, [serverValues, userValues]);
 
+    const handlePhotoDelete = () => {
+        setPhotoPreview(null);
+
+        setUserValues(prev => ({ ...prev, photo: '' }));
+    };
+
     // Загружаем профиль с сервера
     const fetchUserData = useCallback(async () => {
         if (!token?.access) return;
@@ -57,6 +63,9 @@ export const useProfileForm = () => {
             });
 
             if (data.photo) setPhotoPreview(data.photo);
+        } catch (error: any) {
+            if (error.response?.data) setErrors(error.response.data);
+            else console.error(error.message);
         } finally {
             setLoading(false);
         }
@@ -90,20 +99,18 @@ export const useProfileForm = () => {
         const formDataToSend = new FormData();
         setLoading(true);
         Object.entries(userValues).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                formDataToSend.append(
-                    key === 'name'
-                        ? 'first_name'
-                        : key === 'surname'
-                          ? 'last_name'
-                          : key === 'about'
-                            ? 'user_description'
-                            : key,
-                    value as any
-                );
-            }
+            formDataToSend.append(
+                key === 'name'
+                    ? 'first_name'
+                    : key === 'surname'
+                      ? 'last_name'
+                      : key === 'about'
+                        ? 'user_description'
+                        : key,
+                value as any
+            );
         });
-
+        console.log([...formDataToSend]);
         try {
             console.log([...formDataToSend]);
             const response = await axios.patch(
@@ -111,7 +118,14 @@ export const useProfileForm = () => {
                 formDataToSend
             );
             console.log(response);
-            // saveDate(response.data);
+            const forSaveDate = {
+                username: response.data.username,
+                user_id: response.data.id,
+                photo: response.data.photo,
+                refresh: response.data?.token?.refresh ?? token.refresh,
+                access: response.data?.token?.access ?? token.access
+            };
+            saveDate(forSaveDate);
             setErrors({});
             alert('Profile updated successfully!');
         } catch (error: any) {
@@ -128,6 +142,7 @@ export const useProfileForm = () => {
         photoPreview,
         errors,
         loading,
+        handlePhotoDelete,
         handleChange,
         handlePhotoUpload,
         handleSave

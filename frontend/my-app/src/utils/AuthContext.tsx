@@ -47,8 +47,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const saveDate = useCallback(
         (newDate: AuthResponseData) => {
-            // if()
-            saveToken({ refresh: newDate.refresh, access: newDate.access });
+            if (newDate.refresh && newDate.access) {
+                saveToken({ refresh: newDate.refresh, access: newDate.access });
+            }
             saveName(newDate.username);
             saveId(newDate.user_id);
             setLoading(false);
