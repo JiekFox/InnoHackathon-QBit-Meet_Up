@@ -1,8 +1,6 @@
 import { useCallback } from 'react';
 import { useAuth } from '../utils/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { SIGN_IN } from '../constant/router';
-import { BASE_API_URL, USER_API_URL } from '../constant/apiURL';
+import { GPT_URL, USER_API_URL } from '../constant/apiURL';
 import {
     AIControls,
     DataGridSection
@@ -13,12 +11,12 @@ import { paramsToQuery } from '../utils/paramsToQuery';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 
 export default function MyMeetups() {
-    const navigate = useNavigate();
     const { userID } = useAuth();
     const axios = useAxiosWithAuth();
 
     const fetchMeetups = useCallback(async (params: ParamsForFetch) => {
         const query = paramsToQuery(params);
+        console.log(`${USER_API_URL}${userID}/meetings_owned/?${query}`);
         const response = await axios.get(
             `${USER_API_URL}${userID}/meetings_owned/?${query}`
         );
@@ -33,25 +31,66 @@ export default function MyMeetups() {
             count: response.data.count
         };
     }, []);
+
     const handleSearchByAI = async (controls: AIControls<Meetup>) => {
         const { setLoading, setItems, setTotalPages, searchQuery } = controls;
 
+        if (!searchQuery || !searchQuery.trim()) {
+            console.log('Search query is empty');
+            return;
+        }
+
         setLoading(true);
+
         try {
             const meetupsResponse = await axios.get(
-                `${BASE_API_URL}meetings/?page_size=50`
+                `${USER_API_URL}${userID}/meetings_owned/?${searchQuery}`
             );
-            const meetups = meetupsResponse.data?.results || [];
+            const meetups: Meetup[] = meetupsResponse.data?.results || [];
 
-            const gptMessage = 'Success, id:[81, 69, 85]';
+            const formattedMeetups = meetups
+                .map(m => `ID:${m.id} (Title: ${m.title}, Desc: ${m.description})`)
+                .join('; ');
+
+            const gptPrompt = `
+                Тебе дана строка поиска: "${searchQuery}". 
+                И список существующих митапов: ${formattedMeetups}. 
+                Твоя задача: найти митапы, которые по смыслу связаны с поисковым запросом.
+                Дай ответ СТРОГО в одном из двух форматов:
+                1. Если нашел: "Success, id:[1, 2, 3]" (где в скобках ID подходящих митапов).
+                2. Если не нашел: "Fail, nothing interesting was found".
+                Ничего лишнего не пиши.
+            `;
+            console.log(gptPrompt);
+            const gptResponse = await axios.post(
+                `${GPT_URL}/chatgpt`,
+                { message: gptPrompt },
+                { headers: { 'Content-Type': 'application/json' } }
+            );
+
+            const gptMessage =
+                gptResponse.data?.choices?.[0]?.message?.content || '';
+
             if (gptMessage.startsWith('Success')) {
-                const ids = JSON.parse(gptMessage.match(/\[.*?\]/)?.[0] || '[]');
-                const filtered = meetups.filter((m: Meetup) => ids.includes(m.id));
-                setItems(filtered);
-                setTotalPages(1);
+                const match = gptMessage.match(/\[.*?\]/);
+
+                if (match) {
+                    const ids: number[] = JSON.parse(match[0]);
+
+                    const filtered = meetups.filter(m => ids.includes(m.id));
+
+                    setItems(filtered);
+                    setTotalPages(1);
+                } else {
+                    console.error('Failed to parse IDs from AI response');
+                }
+            } else {
+                console.log('AI did not find relevant meetups.');
+                setItems([]);
             }
         } catch (error) {
             console.error('Error in AI search:', error);
+            alert('Failed to perform AI search. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -71,50 +110,4 @@ export default function MyMeetups() {
             />
         </>
     );
-    /*const { token } = useAuth();
-    const navigate = useNavigate();
-    useEffect(() => {
-        if (!token) {
-            navigate(SIGN_IN);
-        }
-    }, []);
-    const {
-        paginatedMeetups,
-        currentPage,
-        totalPages,
-        loading,
-        error,
-        setCurrentPage,
-        handleSearchChange
-    } = useUserMeetups('meetings_owned');
-*/
-    /*return (
-        <section className="home">
-            <FilterBar onSearchChange={handleSearchChange} />
-
-            <div className="meetup-grid">
-                {loading ? (
-                    <Loader />
-                ) : error ? (
-                    <h1>Error: {error}</h1>
-                ) : paginatedMeetups.length > 0 ? (
-                    paginatedMeetups.map(meetup => (
-                        <MeetupCard
-                            key={meetup.id}
-                            to={`${MEETUP_DETAILS}/${meetup.id}`}
-                            {...meetup}
-                        />
-                    ))
-                ) : (
-                    <h2>No meetups found.</h2>
-                )}
-            </div>
-
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-            />
-        </section>
-    );*/
 }

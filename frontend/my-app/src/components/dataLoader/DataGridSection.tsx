@@ -68,14 +68,6 @@ export function DataGridSection<T extends Meetup>({
                 ) : error ? (
                     <h1>Error: {error.message}</h1>
                 ) : items.length > 0 ? (
-                    /*interface MeetupCardProps {
-                    title: string;
-                    description: string;
-                    image?: string;
-                    dateTime?: string;
-                    datetime_beg?: string;
-
-                }*/
                     items.map(meetup => (
                         <MeetupCard
                             key={meetup.id}

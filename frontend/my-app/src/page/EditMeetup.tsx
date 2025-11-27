@@ -9,11 +9,12 @@ import React, {
 } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
-import { MEETUP_DETAILS, SIGN_IN } from '../constant/router';
+import { BASE, MEETUP_DETAILS, SIGN_IN } from '../constant/router';
 import Loader from '../components/Loader';
 import { MEETINGS_API_URL } from '../constant/apiURL';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 import { ImagePreview } from '../components/ImagePreview';
+import { ConfirmationModal } from '../components/ConfirmationModal';
 
 interface FormDataState {
     title: string;
@@ -42,6 +43,7 @@ export function EditMeetup(): JSX.Element {
     const [serverValues, setServerValues] = useState<FormDataState | null>(null);
     const [userValues, setUserValues] = useState<Partial<FormDataState>>({});
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
     const finalValues: FormDataState = {
         ...baseValues,
@@ -136,6 +138,19 @@ export function EditMeetup(): JSX.Element {
         }
     };
 
+    const handleDeleteMeetup = async () => {
+        setIsPending(true);
+        try {
+            await axios.delete(`${MEETINGS_API_URL}${id}/`);
+            navigate(`${BASE}/`);
+        } catch (error: any) {
+            setError(error.message || 'Failed to delete meetup.');
+            setIsDeleteModalOpen(false);
+        } finally {
+            setIsPending(false);
+        }
+    };
+
     if (isPending && !serverValues) return <Loader />;
 
     return (
@@ -214,13 +229,47 @@ export function EditMeetup(): JSX.Element {
                     </div>
                 </div>
 
-                <button
-                    type="submit"
-                    className="edit-meetup-button create-meeting-button"
+                <div
+                    className="form-actions"
+                    style={{ display: 'flex', gap: '15px', marginTop: '20px' }}
                 >
-                    {isPending ? 'Saving...' : 'Save Changes'}
-                </button>
+                    <button
+                        type="submit"
+                        className="edit-meetup-button create-meeting-button"
+                        style={{ flex: 1 }}
+                    >
+                        {isPending ? 'Saving...' : 'Save Changes'}
+                    </button>
+                    {/* нужен редизайн */}
+                    <button
+                        type="button"
+                        onClick={() => setIsDeleteModalOpen(true)}
+                        className="delete-meetup-button"
+                        style={{
+                            flex: 1,
+                            backgroundColor: '#ff4d4f',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            fontWeight: 'bold'
+                        }}
+                    >
+                        Delete Meetup
+                    </button>
+                </div>
             </form>
+
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                setIsOpen={setIsDeleteModalOpen}
+                title="Delete Meetup"
+                description="Are you sure you want to delete this meetup? This action cannot be undone."
+                onConfirm={handleDeleteMeetup}
+                confirmText="Delete"
+                cancelText="Cancel"
+            />
         </main>
     );
 }

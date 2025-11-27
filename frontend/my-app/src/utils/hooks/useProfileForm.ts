@@ -65,11 +65,8 @@ export const useProfileForm = () => {
             if (data.photo) setPhotoPreview(data.photo);
         } catch (error: any) {
             //!!Check it
-            if (error.response?.data)
-                setErrors(errors =>
-                    Object.assign({ global: error.message }, errors)
-                );
-            else console.error(error.message);
+            setErrors(errors => Object.assign({ global: error.message }, errors));
+            console.error(error.message);
         } finally {
             setLoading(false);
         }

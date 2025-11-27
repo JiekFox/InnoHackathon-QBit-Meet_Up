@@ -161,9 +161,10 @@ export function CreateMeetup(): JSX.Element {
 
                 <button
                     type="button"
-                    className="ai-button"
+                    className={`ai-button ${isPendingAI && 'ai-loading'}`}
                     onClick={handleImproveWithAI}
                     disabled={isPendingAI}
+                    style={{ height: 35 }}
                 >
                     {isPendingAI ? 'Processing AI...' : 'Improve with AI ✨'}
                 </button>
