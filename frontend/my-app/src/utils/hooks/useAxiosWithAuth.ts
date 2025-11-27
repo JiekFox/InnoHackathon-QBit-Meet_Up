@@ -17,12 +17,16 @@ const isTokenExpired = (token: string): boolean => {
         return true;
     }
 };
-const errorText = 'The server is not responding. Try again later.';
+
+const errorText =
+    'The server is not responding. Try refreshing the page or coming back later.';
+const errorCode = 'ECONNABORTED';
+const TIMEOUT_MS = 10000;
 
 const withTimeout = <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
     return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
-            reject(new AxiosError(errorText));
+            reject(new AxiosError(errorText, errorCode));
         }, timeoutMs);
 
         promise
@@ -36,9 +40,13 @@ const withTimeout = <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
             });
     });
 };
+
 export const useAxiosWithAuth = (): AxiosInstance => {
     const { token, saveToken, removeToken } = useAuth();
-    const instance = axios.create();
+
+    const instance = axios.create({
+        timeout: TIMEOUT_MS
+    });
 
     instance.interceptors.request.use(
         async config => {
@@ -46,6 +54,7 @@ export const useAxiosWithAuth = (): AxiosInstance => {
             if (!currentToken) {
                 return config;
             }
+
             if (isTokenExpired(currentToken.access)) {
                 console.log('Please wait, additional authorization is underway.');
                 try {
@@ -55,8 +64,9 @@ export const useAxiosWithAuth = (): AxiosInstance => {
                             { refresh: currentToken.refresh },
                             { headers: { 'Content-Type': 'application/json' } }
                         ),
-                        10000
+                        TIMEOUT_MS
                     );
+
                     console.log('successful authorization', response.data);
                     saveToken({
                         refresh: currentToken.refresh,
@@ -65,12 +75,12 @@ export const useAxiosWithAuth = (): AxiosInstance => {
 
                     currentToken = {
                         access: response.data.access,
-                        refresh: response.data.refresh
+                        refresh: response.data.refresh //refresh: currentToken.refresh
                     };
                 } catch (err) {
                     console.error('Ошибка при обновлении токена:', err);
                     removeToken();
-                    return config;
+                    throw new axios.Cancel('Session expired');
                 }
             }
 
@@ -83,15 +93,13 @@ export const useAxiosWithAuth = (): AxiosInstance => {
         error => Promise.reject(error)
     );
 
-    //работает ли?
     instance.interceptors.response.use(
         response => response,
         async error => {
-            if (error.message === errorText) {
-                /*return Promise.reject(error);*/
-                console.log(error.message);
-                throw error;
+            if (error.code === errorCode || error.message.includes('timeout')) {
+                return Promise.reject(new AxiosError(errorText));
             }
+
             try {
                 const config = error.config;
                 if (!config || config._retry) {
@@ -99,8 +107,7 @@ export const useAxiosWithAuth = (): AxiosInstance => {
                 }
 
                 config._retry = true;
-
-                return await withTimeout(axios.request(config), 10000);
+                return await withTimeout(instance.request(config), TIMEOUT_MS);
             } catch (err) {
                 return Promise.reject(err);
             }

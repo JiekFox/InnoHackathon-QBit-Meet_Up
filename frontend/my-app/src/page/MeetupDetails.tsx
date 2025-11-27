@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { NavLink, useParams, useNavigate } from 'react-router-dom';
+import { NavLink, useParams, useNavigate, Link } from 'react-router-dom';
 import { useMeetupDetails } from '../utils/hooks/useMeetupDetails';
 import icon from '../assets/img/icon.png';
 import { useAuth } from '../utils/AuthContext';
@@ -7,11 +7,12 @@ import { USERS_DETAIL, EDIT_MEETUP, SIGN_IN } from '../constant/router';
 import Loader from '../components/Loader';
 
 export default function MeetupDetails(): JSX.Element {
-    const { token, userID } = useAuth();
+    const { userID } = useAuth();
     const { id } = useParams<{ id: string }>();
     const {
         meetup,
         loading,
+        pending,
         error,
         handleSignForMeeting,
         handleUnsubscribe,
@@ -20,13 +21,50 @@ export default function MeetupDetails(): JSX.Element {
     } = useMeetupDetails(id);
     const navigate = useNavigate();
 
+    const renderActionButtons = () => {
+        if (userID === meetup?.author_id) {
+            return (
+                <Link className="meetup-details-button" to={`${EDIT_MEETUP}/${id}`}>
+                    Edit Meetup
+                </Link>
+            );
+        }
+
+        const canInteract = isFavorite !== null || pending;
+
+        if (!canInteract) {
+            return (
+                <button onClick={() => navigate(SIGN_IN)} className="control-button">
+                    Sign in to subscribe
+                </button>
+            );
+        }
+
+        if (pending) {
+            return <div>loading...</div>;
+        }
+
+        if (isFavorite) {
+            return (
+                <button
+                    className="meetup-details-button"
+                    onClick={handleUnsubscribe}
+                >
+                    Unsubscribe
+                </button>
+            );
+        }
+
+        return (
+            <button className="meetup-details-button" onClick={handleSignForMeeting}>
+                Subscribe
+            </button>
+        );
+    };
+
     if (loading) return <Loader />;
     if (error) return <p>Error: {error}</p>;
     if (!meetup) return <p>No meetup data.</p>;
-
-    const handleEditClick = () => {
-        navigate(`${EDIT_MEETUP}/${id}`);
-    };
 
     return (
         <main className="meetup-details">
@@ -61,39 +99,7 @@ export default function MeetupDetails(): JSX.Element {
                         {meetup.description || 'No description available.'}
                     </pre>
                 </div>
-                {userID === meetup.author_id ? (
-                    <button
-                        className="meetup-details-button"
-                        onClick={handleEditClick}
-                    >
-                        Edit Meetup
-                    </button>
-                ) : isFavorite !== null ? (
-                    isFavorite ? (
-                        <button
-                            className="meetup-details-button"
-                            onClick={handleUnsubscribe}
-                        >
-                            Unsubscribe
-                        </button>
-                    ) : (
-                        <button
-                            className="meetup-details-button"
-                            onClick={handleSignForMeeting}
-                        >
-                            Subscribe
-                        </button>
-                    )
-                ) : !token ? (
-                    <button
-                        onClick={() => navigate(SIGN_IN)}
-                        className="control-button"
-                    >
-                        Sign in to subscribe
-                    </button>
-                ) : (
-                    <div>loading... </div>
-                )}
+                {renderActionButtons()}
             </div>
         </main>
     );

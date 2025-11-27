@@ -1,5 +1,6 @@
-import { JSX } from 'react';
+import { JSX, useState } from 'react';
 import logo from '../assets/img/handle_color_green.png';
+import { ConfirmationModal } from './ConfirmationModal';
 
 interface ImagePreviewProps {
     previewUrl: string | null;
@@ -10,7 +11,9 @@ export const ImagePreview = ({
     previewUrl,
     onRemove
 }: ImagePreviewProps): JSX.Element | null => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
     if (!previewUrl) return <img src={logo} alt="no-image" />;
+
     return (
         <>
             <img
@@ -20,12 +23,20 @@ export const ImagePreview = ({
             />
             <button
                 type="button"
-                onClick={onRemove}
+                onClick={() => setIsModalOpen(true)}
                 className="remove-image-btn"
                 aria-label="Remove image"
             >
                 ×
             </button>
+
+            <ConfirmationModal
+                isOpen={isModalOpen}
+                setIsOpen={setIsModalOpen}
+                title="Delete Image?"
+                onConfirm={onRemove}
+                confirmText="Delete"
+            />
         </>
     );
 };

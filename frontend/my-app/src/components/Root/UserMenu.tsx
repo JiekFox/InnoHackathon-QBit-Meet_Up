@@ -24,6 +24,8 @@ const UserMenu: React.FC<UserMenuProps> = React.memo(({ userName }) => {
     useEffect(() => {
         if (img) {
             setLogo(img);
+        } else {
+            setLogo(icon);
         }
     }, [img]);
 

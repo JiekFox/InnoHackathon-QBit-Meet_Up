@@ -51,7 +51,7 @@ export const useSignIn = (): UseSignInReturn => {
                     formData
                 );
                 console.log(response.data);
-                //saveDate(response.data);
+                saveDate(response.data);
                 navigate('/');
             } catch (error) {
                 console.log(error);

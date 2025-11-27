@@ -5,7 +5,9 @@ import { useAxiosWithAuth } from './useAxiosWithAuth';
 import { ProfileFormData } from '../../constant/types';
 
 export interface ProfileFormErrors {
-    [key: string]: string[];
+    email?: string[];
+    username?: string[];
+    global?: string;
 }
 
 const baseValues: ProfileFormData = {
@@ -29,7 +31,6 @@ export const useProfileForm = () => {
     const [errors, setErrors] = useState<ProfileFormErrors>({});
     const [loading, setLoading] = useState(false);
 
-    // Итоговое состояние формы
     const finalValues: ProfileFormData = useMemo(() => {
         return {
             ...baseValues,
@@ -44,7 +45,6 @@ export const useProfileForm = () => {
         setUserValues(prev => ({ ...prev, photo: '' }));
     };
 
-    // Загружаем профиль с сервера
     const fetchUserData = useCallback(async () => {
         if (!token?.access) return;
         setLoading(true);
@@ -64,7 +64,11 @@ export const useProfileForm = () => {
 
             if (data.photo) setPhotoPreview(data.photo);
         } catch (error: any) {
-            if (error.response?.data) setErrors(error.response.data);
+            //!!Check it
+            if (error.response?.data)
+                setErrors(errors =>
+                    Object.assign({ global: error.message }, errors)
+                );
             else console.error(error.message);
         } finally {
             setLoading(false);
@@ -75,7 +79,6 @@ export const useProfileForm = () => {
         if (token?.access) fetchUserData();
     }, [fetchUserData, token]);
 
-    // Текстовые поля → userValues
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -83,7 +86,6 @@ export const useProfileForm = () => {
         setUserValues(prev => ({ ...prev, [name]: value }));
     };
 
-    // Фото → userValues
     const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -92,7 +94,6 @@ export const useProfileForm = () => {
         setPhotoPreview(URL.createObjectURL(file));
     };
 
-    // PATCH — отправляем только изменённые данные
     const handleSave = useCallback(async () => {
         if (!token?.access) return;
 
@@ -129,6 +130,7 @@ export const useProfileForm = () => {
             setErrors({});
             alert('Profile updated successfully!');
         } catch (error: any) {
+            console.log(error);
             if (error.response?.data) setErrors(error.response.data);
             else console.error(error.message);
         } finally {

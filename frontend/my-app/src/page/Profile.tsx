@@ -22,6 +22,7 @@ export default function Profile() {
         handleSave();
     };
 
+    if (errors.global) return <p>Error: {errors.global}</p>;
     if (loading) return <Loader />;
 
     return (

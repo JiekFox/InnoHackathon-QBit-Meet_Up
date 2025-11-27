@@ -10,6 +10,7 @@ import { useAxiosWithAuth } from './useAxiosWithAuth';
 interface UseMeetupDetailsReturn {
     meetup: Meetup | null;
     loading: boolean;
+    pending: boolean;
     error: string | null;
     isFavorite: boolean | null;
     handleSignForMeeting: () => Promise<void>;
@@ -23,6 +24,7 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
     const axios = useAxiosWithAuth();
     const [meetup, setMeetup] = useState<Meetup | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [pending, setPending] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [isFavorite, setIsFavorite] = useState<boolean | null>(null);
 
@@ -43,7 +45,7 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
 
         const checkIsFavorite = async () => {
             if (!token) return;
-
+            setPending(true);
             try {
                 const response: AxiosResponse<{ message: boolean }> =
                     await axios.get(`${MEETINGS_API_URL}${id}/is_subscribed/`);
@@ -54,6 +56,10 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
                     'Error checking subscription:',
                     (err as Error).message
                 );
+                const axiosErr = err as AxiosError;
+                setError((axiosErr.response?.data as string) || axiosErr.message);
+            } finally {
+                setPending(false);
             }
         };
 
@@ -68,34 +74,58 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
             navigate(SIGN_IN);
             return;
         }
-
+        setPending(true);
         try {
             await axios.post(`${MEETINGS_API_URL}${id}/subscribe/`, {});
-            window.location.reload();
+
+            setIsFavorite(true);
+            setMeetup(prev =>
+                prev
+                    ? { ...prev, attendees_count: (prev.attendees_count || 0) + 1 }
+                    : null
+            );
         } catch (error) {
             console.error(
                 'Error signing for meeting:',
                 (error as AxiosError).message
             );
+            setError('Failed to subscribe');
+        } finally {
+            setPending(false);
         }
-    }, [token, id, navigate]);
+    }, [token, navigate, axios, id]);
 
     const handleUnsubscribe = useCallback(async () => {
         if (!token) {
             navigate(SIGN_IN);
             return;
         }
-
+        setPending(true);
         try {
             await axios.delete(`${MEETINGS_API_URL}${id}/unsubscribe/`);
-            window.location.reload();
+
+            setIsFavorite(false);
+            setMeetup(prev =>
+                prev
+                    ? {
+                          ...prev,
+                          attendees_count: Math.max(
+                              (prev.attendees_count || 0) - 1,
+                              0
+                          )
+                      }
+                    : null
+            );
         } catch (error) {
             console.error(
                 'Error unsubscribing from meeting:',
                 (error as AxiosError).message
             );
+            setError('Failed to unsubscribe');
+        } finally {
+            setPending(false);
         }
-    }, [token, id, navigate]);
+    }, [token, id, navigate, axios]);
 
     const formattedDate = useMemo(() => {
         return meetup ? new Date(meetup.datetime_beg).toString() : 'Not specified';
@@ -104,6 +134,7 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
     return {
         meetup,
         loading,
+        pending,
         error,
         handleSignForMeeting,
         handleUnsubscribe,

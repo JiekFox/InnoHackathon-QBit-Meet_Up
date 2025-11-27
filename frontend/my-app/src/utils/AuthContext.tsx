@@ -52,10 +52,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             }
             saveName(newDate.username);
             saveId(newDate.user_id);
+            setImg(newDate.photo);
             setLoading(false);
-            if (newDate.photo) {
-                setImg(newDate.photo);
-            }
         },
         [saveToken, saveName, saveId]
     );

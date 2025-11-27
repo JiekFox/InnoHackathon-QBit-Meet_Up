@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from '../assets/img/handle_color_green.png';
+import { ConfirmationModal } from './ConfirmationModal';
+
 interface PhotoUploadProps {
     photo: File | string | null;
     onPhotoUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -13,6 +15,8 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
     onPhotoDelete,
     classVisible = ''
 }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     return (
         <div className={`photo-upload ${classVisible}`}>
             <div className="photo-preview">
@@ -53,13 +57,23 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
                 )}
 
                 {photo && onPhotoDelete ? (
-                    <button
-                        type="button"
-                        onClick={onPhotoDelete}
-                        className="delete-photo-button"
-                    >
-                        Delete photo
-                    </button>
+                    <>
+                        <button
+                            type="button"
+                            onClick={() => setIsModalOpen(true)}
+                            className="delete-photo-button"
+                        >
+                            Delete photo
+                        </button>
+
+                        <ConfirmationModal
+                            isOpen={isModalOpen}
+                            setIsOpen={setIsModalOpen}
+                            title="Delete photo?"
+                            onConfirm={onPhotoDelete}
+                            confirmText="Delete"
+                        />
+                    </>
                 ) : (
                     <div style={{ height: 33 }}> </div>
                 )}
