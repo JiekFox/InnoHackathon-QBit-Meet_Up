@@ -231,30 +231,25 @@ export function EditMeetup(): JSX.Element {
 
                 <div
                     className="form-actions"
-                    style={{ display: 'flex', gap: '15px', marginTop: '20px' }}
+                    style={{
+                        display: 'flex',
+                        gap: '1rem',
+                        marginTop: '20px',
+                        justifyContent: 'space-between'
+                    }}
                 >
                     <button
                         type="submit"
                         className="edit-meetup-button create-meeting-button"
-                        style={{ flex: 1 }}
+                        style={{ width: '100%' }}
                     >
                         {isPending ? 'Saving...' : 'Save Changes'}
                     </button>
-                    {/* нужен редизайн */}
+
                     <button
                         type="button"
                         onClick={() => setIsDeleteModalOpen(true)}
-                        className="delete-meetup-button"
-                        style={{
-                            flex: 1,
-                            backgroundColor: '#ff4d4f',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            fontSize: '16px',
-                            fontWeight: 'bold'
-                        }}
+                        className="delete-button"
                     >
                         Delete Meetup
                     </button>

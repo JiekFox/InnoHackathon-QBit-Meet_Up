@@ -532,7 +532,8 @@ input:checked + .slider:before {
 }
 
 .profile-edit-form .delete-photo-button,
-.confirm-btn {
+.confirm-btn,
+.delete-button {
     color: var(--danger);
     background: var(--control-bgColor-rest);
     background: transparent;
@@ -540,6 +541,10 @@ input:checked + .slider:before {
     border: 1px solid var(--button-border-dark);
     padding: 8px 16px;
     border-radius: 8px;
+}
+.delete-button {
+    width: 100%;
+    padding: 12px 80px;
 }
 
 .sign-form p {
