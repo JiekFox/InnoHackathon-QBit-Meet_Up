@@ -80,7 +80,11 @@ export const useMeetupForm = () => {
                     'Error creating meeting:',
                     axiosError.response?.data || axiosError.message
                 );
-                setError(axiosError.response?.data || 'An error occurred');
+                setError(
+                    axiosError.response?.data ||
+                        axiosError.message ||
+                        'An error occurred'
+                );
             } finally {
                 setIsPending(false);
             }
