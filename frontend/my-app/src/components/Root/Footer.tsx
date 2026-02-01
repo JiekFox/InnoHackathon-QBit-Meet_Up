@@ -1,9 +1,13 @@
+import { useTranslation } from 'react-i18next';
+
 export default function Footer() {
+    const { t } = useTranslation();
+
     return (
         <footer className="footer">
             <p className="credits">
-                MeetUp! <br />
-                Made by "Q-bit" team, Gomel, 2024
+                {t('footer.title')} <br />
+                {t('footer.credits')}
             </p>
         </footer>
     );

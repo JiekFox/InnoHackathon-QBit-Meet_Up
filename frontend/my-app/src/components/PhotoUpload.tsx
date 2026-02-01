@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import logo from '../assets/img/handle_color_green.png';
 import { ConfirmationModal } from './ConfirmationModal';
+import { useTranslation } from 'react-i18next';
 
 interface PhotoUploadProps {
     photo: File | string | null;
@@ -15,6 +16,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
     onPhotoDelete,
     classVisible = ''
 }) => {
+    const { t } = useTranslation();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
@@ -43,7 +45,9 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
                 {onPhotoUpload && (
                     <>
                         <label htmlFor="photo-upload" className="photo-upload-label">
-                            {photo ? 'Change photo' : 'Upload photo'}
+                            {photo
+                                ? t('photoUpload.changeLabel')
+                                : t('photoUpload.uploadLabel')}
                         </label>
                         <input
                             type="file"
@@ -63,15 +67,15 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
                             onClick={() => setIsModalOpen(true)}
                             className="delete-photo-button"
                         >
-                            Delete photo
+                            {t('photoUpload.deleteButton')}
                         </button>
 
                         <ConfirmationModal
                             isOpen={isModalOpen}
                             setIsOpen={setIsModalOpen}
-                            title="Delete photo?"
+                            title={t('photoUpload.deleteTitle')}
                             onConfirm={onPhotoDelete}
-                            confirmText="Delete"
+                            confirmText={t('photoUpload.deleteConfirm')}
                         />
                     </>
                 ) : (

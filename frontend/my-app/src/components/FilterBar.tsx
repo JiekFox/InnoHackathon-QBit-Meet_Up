@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import DebounceInput from './DebounceInput';
+import { useTranslation } from 'react-i18next';
 
 interface FilterBarProps {
     onSearchChange: (query: string) => void;
@@ -10,6 +11,7 @@ interface FilterBarProps {
 
 const FilterBar: React.FC<FilterBarProps> = React.memo(
     ({ onSearchChange, onDateFilter, onRecommendByAI, onQueryTuchUseAI }) => {
+        const { t } = useTranslation();
         const [showDateFilters, setShowDateFilters] = useState<boolean>(false);
         const [startDate, setStartDate] = useState<string>('');
         const [endDate, setEndDate] = useState<string>('');
@@ -60,7 +62,7 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
                             className="filter-button"
                             onClick={() => setShowDateFilters(!showDateFilters)}
                         >
-                            Filter by Date
+                            {t('filterBar.filterButton')}
                         </button>
                         {showDateFilters && (
                             <div className="date-filters">
@@ -90,7 +92,7 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
                     type="text"
                     id="search"
                     name="search"
-                    placeholder="Search meetups..."
+                    placeholder={t('filterBar.searchPlaceholder')}
                     className="search-input"
                     onChange={handleSearchChange}
                     delay={500}
@@ -102,7 +104,9 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
                         onClick={handleAiSearchClick}
                         disabled={isAiSearchLoading}
                     >
-                        {isAiSearchLoading ? 'Thinking...' : 'Find with AI✨'}
+                        {isAiSearchLoading
+                            ? t('common.loading')
+                            : `${t('filterBar.aiSearch')}✨`}
                     </button>
                 )}
 
@@ -113,8 +117,8 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
                         disabled={isAiRecommendLoading}
                     >
                         {isAiRecommendLoading
-                            ? 'Analyzing...'
-                            : 'Recommended by AI ✨'}
+                            ? t('common.loading')
+                            : `${t('filterBar.aiRecommend')} ✨`}
                     </button>
                 )}
             </div>

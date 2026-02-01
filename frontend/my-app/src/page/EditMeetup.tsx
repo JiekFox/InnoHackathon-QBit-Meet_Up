@@ -15,6 +15,7 @@ import { MEETINGS_API_URL } from '../constant/apiURL';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 import { ImagePreview } from '../components/ImagePreview';
 import { ConfirmationModal } from '../components/ConfirmationModal';
+import { useTranslation } from 'react-i18next';
 
 interface FormDataState {
     title: string;
@@ -33,6 +34,7 @@ const baseValues: FormDataState = {
 };
 
 export function EditMeetup(): JSX.Element {
+    const { t } = useTranslation();
     const { token, userID } = useAuth();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -136,7 +138,7 @@ export function EditMeetup(): JSX.Element {
 
             await axios.patch(`${MEETINGS_API_URL}${id}/`, formDataToSend);
 
-            alert('Meetup updated successfully');
+            alert(t('editMeetup.updateSuccess'));
             navigate(`${MEETUP_DETAILS}/${id}`);
         } catch (error: any) {
             setError(error.message || 'Failed to update meetup.');
@@ -162,12 +164,12 @@ export function EditMeetup(): JSX.Element {
 
     return (
         <main className="edit-meetup create-meetup">
-            <h1>Edit Meetup</h1>
+            <h1>{t('editMeetup.title')}</h1>
             {error && <p className="error">{error}</p>}
 
             <form onSubmit={handleEditSubmit} className="create-meetup-form">
                 <div className="input-group">
-                    <label htmlFor="title">Title:</label>
+                    <label htmlFor="title">{t('editMeetup.titleLabel')}</label>
                     <input
                         type="text"
                         id="title"
@@ -179,7 +181,9 @@ export function EditMeetup(): JSX.Element {
                 </div>
 
                 <div className="input-group">
-                    <label htmlFor="datetime_beg">Start Date and Time:</label>
+                    <label htmlFor="datetime_beg">
+                        {t('editMeetup.startDateTime')}
+                    </label>
                     <input
                         type="datetime-local"
                         id="datetime_beg"
@@ -191,7 +195,7 @@ export function EditMeetup(): JSX.Element {
                 </div>
 
                 <div className="input-group">
-                    <label htmlFor="link">Link:</label>
+                    <label htmlFor="link">{t('editMeetup.linkLabel')}</label>
                     <input
                         type="url"
                         id="link"
@@ -202,7 +206,9 @@ export function EditMeetup(): JSX.Element {
                 </div>
 
                 <div className="input-group">
-                    <label htmlFor="description">Description:</label>
+                    <label htmlFor="description">
+                        {t('editMeetup.descriptionLabel')}
+                    </label>
                     <textarea
                         id="description"
                         name="description"
@@ -268,11 +274,11 @@ export function EditMeetup(): JSX.Element {
             <ConfirmationModal
                 isOpen={isDeleteModalOpen}
                 setIsOpen={setIsDeleteModalOpen}
-                title="Delete Meetup"
-                description="Are you sure you want to delete this meetup? This action cannot be undone."
+                title={t('editMeetup.deleteMeetupTitle')}
+                description={t('editMeetup.deleteConfirmation')}
                 onConfirm={handleDeleteMeetup}
-                confirmText="Delete"
-                cancelText="Cancel"
+                confirmText={t('editMeetup.deleteButton')}
+                cancelText={t('buttons.cancel')}
             />
         </main>
     );

@@ -5,6 +5,7 @@ import { useDataGrid } from './useDataGrid';
 import { MEETUP_DETAILS } from '../../constant/router';
 import MeetupCard from '../MeetupCard';
 import { Meetup, ParamsForFetch } from '../../constant/types';
+import { useTranslation } from 'react-i18next';
 
 interface DataGridSectionProps<T extends Meetup> {
     fetchFunction: (
@@ -26,6 +27,7 @@ export function DataGridSection<T extends Meetup>({
     onRecommendByAI,
     onSearchByAI
 }: DataGridSectionProps<T>) {
+    const { t } = useTranslation();
     const {
         items,
         currentPage,
@@ -78,13 +80,14 @@ export function DataGridSection<T extends Meetup>({
                             datetime_beg={meetup?.datetime_beg}
                             dateTime={meetup?.dateTime}
                         />
-                    )) 
+                    ))
                 ) : (
-                    <h1>No results found.</h1>
+                    <h1>{t('dataGrid.noResults')}</h1>
                 )}
             </div>
 
-            {totalPages > 1 && !loading && (
+            {totalPages > 1 && (
+                // && !loading
                 <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}

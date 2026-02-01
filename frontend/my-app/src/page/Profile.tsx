@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useProfileForm } from '../utils/hooks/useProfileForm';
 import Loader from '../components/Loader';
 import PhotoUpload from '../components/PhotoUpload';
 
 export default function Profile() {
+    const { t } = useTranslation();
     const [showTgInfo, setShowTgInfo] = useState(false);
 
     const {
@@ -31,7 +33,7 @@ export default function Profile() {
                 <div className="form-fields">
                     <div className="input-row">
                         <div className="input-group">
-                            <label htmlFor="name">Name</label>
+                            <label htmlFor="name">{t('profile.nameLabel')}</label>
                             <input
                                 type="text"
                                 id="name"
@@ -42,7 +44,9 @@ export default function Profile() {
                         </div>
 
                         <div className="input-group">
-                            <label htmlFor="surname">Surname</label>
+                            <label htmlFor="surname">
+                                {t('profile.surnameLabel')}
+                            </label>
                             <input
                                 type="text"
                                 id="surname"
@@ -54,7 +58,7 @@ export default function Profile() {
                     </div>
 
                     <div className="input-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email">{t('profile.emailLabel')}</label>
                         <input
                             type="email"
                             id="email"
@@ -68,7 +72,9 @@ export default function Profile() {
                     </div>
 
                     <div className="input-group">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="username">
+                            {t('profile.usernameLabel')}
+                        </label>
                         <input
                             type="text"
                             id="username"
@@ -82,7 +88,7 @@ export default function Profile() {
                     </div>
 
                     <div className="input-group">
-                        <label htmlFor="about">About myself</label>
+                        <label htmlFor="about">{t('profile.aboutLabel')}</label>
                         <textarea
                             id="about"
                             name="about"
@@ -100,7 +106,7 @@ export default function Profile() {
 
                     <div className="input-group">
                         <label htmlFor="tg_id" className="info-label">
-                            Telegram ID
+                            {t('profile.telegramIDLabel')}
                             <div
                                 className="info-button"
                                 onClick={() => setShowTgInfo(!showTgInfo)}
@@ -119,20 +125,20 @@ export default function Profile() {
 
                         {showTgInfo && (
                             <div className="info-popup">
-                                To get your Telegram ID, message this bot:{' '}
+                                {t('profile.telegramInfo')}{' '}
                                 <a
                                     href="https://t.me/userinfobot"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    @userinfobot
+                                    {t('profile.telegramBot')}
                                 </a>
                             </div>
                         )}
                     </div>
 
                     <button type="submit" className="save-button">
-                        Save Changes
+                        {t('profile.saveButton')}
                     </button>
                 </div>
 

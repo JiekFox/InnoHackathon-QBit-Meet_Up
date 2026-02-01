@@ -35,15 +35,7 @@
         "showPassword": "Показать пароль",
         "hidePassword": "Скрыть пароль"
     },
-    "home": {
-        "title": "Meet Up!",
-        "description": "Откройте и присоединитесь к удивительным встречам",
-        "searchPlaceholder": "Поиск встреч...",
-        "filter": "Фильтр",
-        "noMeetupsFound": "Встречи не найдены",
-        "loading": "Загрузка...",
-        "error": "Ошибка при загрузке встреч"
-    },
+
     "meetupDetails": {
         "title": "Детали встречи",
         "dateBegin": "Дата начала",
@@ -91,6 +83,137 @@
         "notFound": "Ресурс не найден.",
         "badRequest": "Неверный запрос.",
         "internal": "Произошла ошибка сервера. Пожалуйста, попробуйте позже."
+    },
+    "myMeetups": {
+        "title": "Ваши встречи",
+        "description": "Хотели бы вы просмотреть встречи, на которые вы подписались, или встречи, которыми вы владеете?",
+        "subscriber": "Подписчик",
+        "owner": "Владелец"
+    },
+    "slider": {
+        "announcement": "Анонс",
+        "details": "Подробнее",
+        "errorLoading": "Ошибка загрузки слайдера"
+    },
+    "dataList": {
+        "noResults": "Результатов не найдено.",
+        "error": "Ошибка"
+    },
+    "footer": {
+        "title": "MeetUp!",
+        "credits": "Создано командой \"Q-bit\", Гомель, 2026"
+    },
+    "introSection": {
+        "createButton": "Создать"
+    },
+    "logoutModal": {
+        "title": "Вы хотите выйти?",
+        "message": "Вам нужно будет войти снова, чтобы получить доступ к своему аккаунту.",
+        "confirm": "Подтвердить",
+        "cancel": "Отмена"
+    },
+    "filterBar": {
+        "searchPlaceholder": "Поиск...",
+        "filterButton": "Фильтр",
+        "aiSearch": "Поиск с ИИ",
+        "aiRecommend": "Рекомендации ИИ"
+    },
+    "pagination": {
+        "previous": "« Предыдущая",
+        "next": "Следующая »"
+    },
+    "confirmationModal": {
+        "confirm": "Подтвердить",
+        "cancel": "Отмена",
+        "defaultDescription": "После сохранения это действие невозможно отменить."
+    },
+    "imagePreview": {
+        "deleteTitle": "Удалить изображение?",
+        "deleteConfirm": "Удалить",
+        "noImage": "нет-изображения"
+    },
+    "photoUpload": {
+        "uploadLabel": "Загрузить фото",
+        "changeLabel": "Изменить фото",
+        "deleteButton": "Удалить фото",
+        "deleteTitle": "Удалить фото?",
+        "deleteConfirm": "Удалить"
+    },
+    "userMenu": {
+        "profile": "Профиль",
+        "myMeetupsSubscribed": "Мои встречи (подписка)",
+        "myMeetupsOwned": "Мои встречи (созданные)",
+        "profileDescription": "Просмотрите ваш профиль!",
+        "subscribedDescription": "Просмотрите все встречи, на которые вы подписаны",
+        "ownedDescription": "Просмотрите все встречи, которыми вы владеете",
+        "logOut": "Выход"
+    },
+    "createMeetup": {
+        "title": "Создать новую встречу",
+        "titleLabel": "Название:",
+        "startDateTime": "Дата и время начала:",
+        "linkLabel": "Ссылка:",
+        "linkPlaceholder": "например https://google.com",
+        "descriptionLabel": "Описание:",
+        "improveWithAI": "Улучшить с помощью ИИ ✨",
+        "processingAI": "Обработка ИИ...",
+        "selectImage": "Выбрать изображение",
+        "submitButton": "Создать встречу",
+        "pending": "ожидание...",
+        "pleaseProvideDescription": "Пожалуйста, сначала укажите описание."
+    },
+    "editMeetup": {
+        "title": "Редактировать встречу",
+        "deleteMeetupTitle": "Удалить встречу",
+        "deleteConfirmation": "Вы уверены, что хотите удалить эту встречу? Это действие не может быть отменено.",
+        "titleLabel": "Название:",
+        "startDateTime": "Дата и время начала:",
+        "linkLabel": "Ссылка:",
+        "descriptionLabel": "Описание:",
+        "updateSuccess": "Встреча успешно обновлена",
+        "deleteButton": "Удалить"
+    },
+    "home": {
+        "title": "Meet Up!",
+        "description": "Откройте и присоединитесь к удивительным встречам",
+        "searchPlaceholder": "Поиск встреч...",
+        "filter": "Фильтр",
+        "noMeetupsFound": "Встречи не найдены",
+        "loading": "Загрузка...",
+        "error": "Ошибка при загрузке встреч",
+        "publicMeetupsTitle": "Публичные встречи!",
+        "publicMeetupsDescription": "Здесь вы можете найти новые встречи и подписаться на них!"
+    },
+    "myMeetupsOwner": {
+        "title": "Ваши созданные встречи",
+        "description": "Это встречи, которые вы создали. Управляйте, редактируйте или удаляйте ваши события по мере необходимости."
+    },
+    "myMeetupsSubscriber": {
+        "title": "Встречи, на которые вы подписаны",
+        "description": "Это события, на которые вы подписались. Будьте в курсе и будьте готовы присоединиться к обсуждениям!"
+    },
+    "profile": {
+        "nameLabel": "Имя",
+        "surnameLabel": "Фамилия",
+        "emailLabel": "Электронная почта",
+        "usernameLabel": "Имя пользователя",
+        "aboutLabel": "О себе",
+        "telegramIDLabel": "ID Telegram",
+        "saveButton": "Сохранить изменения",
+        "telegramInfo": "Чтобы получить свой ID Telegram, напишите этому боту:",
+        "telegramBot": "@userinfobot"
+    },
+    "profileViewer": {
+        "nameLabel": "Имя",
+        "surnameLabel": "Фамилия",
+        "emailLabel": "Электронная почта",
+        "usernameLabel": "Имя пользователя",
+        "aboutLabel": "О себе",
+        "telegramIDLabel": "ID Telegram",
+        "userNotFound": "Пользователь не найден."
+    },
+    "dataGrid": {
+        "noResults": "Результатов не найдено."
     },
     "common": {
         "loading": "Загрузка...",

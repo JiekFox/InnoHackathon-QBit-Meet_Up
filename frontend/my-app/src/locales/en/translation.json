@@ -35,15 +35,7 @@
         "showPassword": "Show password",
         "hidePassword": "Hide password"
     },
-    "home": {
-        "title": "Meet Up!",
-        "description": "Discover and join amazing meetups",
-        "searchPlaceholder": "Search meetups...",
-        "filter": "Filter",
-        "noMeetupsFound": "No meetups found",
-        "loading": "Loading...",
-        "error": "Error loading meetups"
-    },
+
     "meetupDetails": {
         "title": "Meetup Details",
         "dateBegin": "Date begin",
@@ -91,6 +83,137 @@
         "notFound": "Resource not found.",
         "badRequest": "Invalid request.",
         "internal": "An internal server error occurred. Please try again later."
+    },
+    "myMeetups": {
+        "title": "Your Meetings",
+        "description": "Would you like to view Meetups you have subscribed to or you own?",
+        "subscriber": "Subscriber",
+        "owner": "Owner"
+    },
+    "slider": {
+        "announcement": "Announcement",
+        "details": "Details",
+        "errorLoading": "Error loading slider"
+    },
+    "dataList": {
+        "noResults": "No results found.",
+        "error": "Error"
+    },
+    "footer": {
+        "title": "MeetUp!",
+        "credits": "Made by \"Q-bit\" team, Gomel, 2026"
+    },
+    "introSection": {
+        "createButton": "Create"
+    },
+    "logoutModal": {
+        "title": "Do you want to log out?",
+        "message": "You will need to log in again to access your account.",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+    },
+    "filterBar": {
+        "searchPlaceholder": "Search...",
+        "filterButton": "Filter",
+        "aiSearch": "AI Search",
+        "aiRecommend": "AI Recommend"
+    },
+    "pagination": {
+        "previous": "« Previous",
+        "next": "Next »"
+    },
+    "confirmationModal": {
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "defaultDescription": "After saving, this action is irreversible."
+    },
+    "imagePreview": {
+        "deleteTitle": "Delete Image?",
+        "deleteConfirm": "Delete",
+        "noImage": "no-image"
+    },
+    "photoUpload": {
+        "uploadLabel": "Upload photo",
+        "changeLabel": "Change photo",
+        "deleteButton": "Delete photo",
+        "deleteTitle": "Delete photo?",
+        "deleteConfirm": "Delete"
+    },
+    "userMenu": {
+        "profile": "Profile",
+        "myMeetupsSubscribed": "My Meetups (subscribed)",
+        "myMeetupsOwned": "My Meetups (owned)",
+        "profileDescription": "Explore your profile!",
+        "subscribedDescription": "View all the meetings you have subscribed to",
+        "ownedDescription": "View all the meetings you own",
+        "logOut": "Log Out"
+    },
+    "createMeetup": {
+        "title": "Create New Meetup",
+        "titleLabel": "Title:",
+        "startDateTime": "Start Date and Time:",
+        "linkLabel": "Link:",
+        "linkPlaceholder": "e.g., https://google.com",
+        "descriptionLabel": "Description:",
+        "improveWithAI": "Improve with AI ✨",
+        "processingAI": "Processing AI...",
+        "selectImage": "Select image",
+        "submitButton": "Create Meetup",
+        "pending": "is pending...",
+        "pleaseProvideDescription": "Please provide a description first."
+    },
+    "editMeetup": {
+        "title": "Edit Meetup",
+        "deleteMeetupTitle": "Delete Meetup",
+        "deleteConfirmation": "Are you sure you want to delete this meetup? This action cannot be undone.",
+        "titleLabel": "Title:",
+        "startDateTime": "Start Date and Time:",
+        "linkLabel": "Link:",
+        "descriptionLabel": "Description:",
+        "updateSuccess": "Meetup updated successfully",
+        "deleteButton": "Delete"
+    },
+    "home": {
+        "title": "Meet Up!",
+        "description": "Discover and join amazing meetups",
+        "searchPlaceholder": "Search meetups...",
+        "filter": "Filter",
+        "noMeetupsFound": "No meetups found",
+        "loading": "Loading...",
+        "error": "Error loading meetups",
+        "publicMeetupsTitle": "Public MeetUps!",
+        "publicMeetupsDescription": "Here you can find new Meetups and subscribe to them!"
+    },
+    "myMeetupsOwner": {
+        "title": "Your Created Meetups",
+        "description": "These are the meetups you've created. Manage, edit or delete your events as needed."
+    },
+    "myMeetupsSubscriber": {
+        "title": "Meetups You're Subscribed",
+        "description": "These are the events you have subscribed to. Stay updated and get ready to join the discussions!"
+    },
+    "profile": {
+        "nameLabel": "Name",
+        "surnameLabel": "Surname",
+        "emailLabel": "Email",
+        "usernameLabel": "Username",
+        "aboutLabel": "About myself",
+        "telegramIDLabel": "Telegram ID",
+        "saveButton": "Save Changes",
+        "telegramInfo": "To get your Telegram ID, message this bot:",
+        "telegramBot": "@userinfobot"
+    },
+    "profileViewer": {
+        "nameLabel": "Name",
+        "surnameLabel": "Surname",
+        "emailLabel": "Email",
+        "usernameLabel": "Username",
+        "aboutLabel": "About myself",
+        "telegramIDLabel": "Telegram ID",
+        "userNotFound": "User not found."
+    },
+    "dataGrid": {
+        "noResults": "No results found."
     },
     "common": {
         "loading": "Loading...",

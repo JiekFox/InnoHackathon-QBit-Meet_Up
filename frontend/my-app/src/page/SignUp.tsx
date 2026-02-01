@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { SIGN_IN } from '../constant/router';
 import { useSignUp } from '../utils/hooks/useSignUp';
+import { useTranslation } from 'react-i18next';
 
 export default function SignUp() {
     const {
@@ -13,13 +14,14 @@ export default function SignUp() {
         handleSubmit,
         isPending
     } = useSignUp();
+    const { t } = useTranslation();
 
     return (
         <main className="main-content">
-            <h1 className="sign-title">Sign Up</h1>
+            <h1 className="sign-title">{t('signUp.title')}</h1>
             <form className="sign-form" onSubmit={handleSubmit}>
                 <div className="input-group">
-                    <label htmlFor="username">Username</label>
+                    <label htmlFor="username">{t('signUp.username')}</label>
                     <input
                         type="text"
                         id="username"
@@ -30,7 +32,7 @@ export default function SignUp() {
                     />
                 </div>
                 <div className="input-group">
-                    <label htmlFor="email">Email</label>
+                    <label htmlFor="email">{t('signUp.email')}</label>
                     <input
                         type="email"
                         id="email"
@@ -41,7 +43,7 @@ export default function SignUp() {
                     />
                 </div>
                 <div className="input-group">
-                    <label htmlFor="password">Password</label>
+                    <label htmlFor="password">{t('signUp.password')}</label>
                     <div className="password-container">
                         <input
                             type={showPassword ? 'text' : 'password'}
@@ -57,7 +59,9 @@ export default function SignUp() {
                             onClick={togglePasswordVisibility}
                             role="button"
                             aria-label={
-                                showPassword ? 'Скрыть пароль' : 'Показать пароль'
+                                showPassword
+                                    ? t('signUp.hidePassword')
+                                    : t('signUp.showPassword')
                             }
                         >
                             {showPassword ? '🔓' : '🔒'}
@@ -66,12 +70,12 @@ export default function SignUp() {
                 </div>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
                 <button type="submit" className="sign-button">
-                    {isPending ? 'Pending...' : 'Submit'}
+                    {isPending ? t('signUp.pending') : t('signUp.submit')}
                 </button>
                 <p>
-                    Already registered?{' '}
+                    {t('signUp.alreadyAccount')}{' '}
                     <NavLink to={SIGN_IN} className="sign-in-link" replace>
-                        Sign in.
+                        {t('signUp.signIn')}
                     </NavLink>
                 </p>
             </form>

@@ -1,4 +1,5 @@
 import React, { JSX } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmationModalProps {
     isOpen: boolean;
@@ -21,6 +22,15 @@ export const ConfirmationModal = ({
     confirmText = 'Confirm',
     cancelText = 'Cancel'
 }: ConfirmationModalProps): JSX.Element | null => {
+    const { t } = useTranslation();
+    const displayDescription =
+        description === 'After saving, this action is irreversible.'
+            ? t('confirmationModal.defaultDescription')
+            : description;
+    const displayConfirmText =
+        confirmText === 'Confirm' ? t('confirmationModal.confirm') : confirmText;
+    const displayCancelText =
+        cancelText === 'Cancel' ? t('confirmationModal.cancel') : cancelText;
     if (!isOpen) return null;
 
     const handleClose = () => {
@@ -47,7 +57,7 @@ export const ConfirmationModal = ({
                 </button>
 
                 <h3 className="modal-title">{title}</h3>
-                <p className="modal-description">{description}</p>
+                <p className="modal-description">{displayDescription}</p>
 
                 <div className="modal-actions">
                     <button
@@ -55,14 +65,14 @@ export const ConfirmationModal = ({
                         className="modal-btn cancel-btn"
                         onClick={handleClose}
                     >
-                        {cancelText}
+                        {displayCancelText}
                     </button>
                     <button
                         type="button"
                         className="modal-btn confirm-btn"
                         onClick={handleConfirmWrapper}
                     >
-                        {confirmText}
+                        {displayConfirmText}
                     </button>
                 </div>
             </div>

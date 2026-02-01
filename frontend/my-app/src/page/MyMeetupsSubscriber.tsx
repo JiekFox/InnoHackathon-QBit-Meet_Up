@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../utils/AuthContext';
 import { GPT_URL, USER_API_URL } from '../constant/apiURL';
 import {
@@ -11,6 +12,7 @@ import { paramsToQuery } from '../utils/paramsToQuery';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 
 export default function MyMeetupsSubscriber() {
+    const { t } = useTranslation();
     const { userID } = useAuth();
     const axios = useAxiosWithAuth();
 
@@ -110,8 +112,8 @@ export default function MyMeetupsSubscriber() {
         <>
             <IntroSection
                 styleClass="intro"
-                title="Meetups You're Subscribed"
-                description="These are the events you have subscribed to. Stay updated and get ready to join the discussions!"
+                title={t('myMeetupsSubscriber.title')}
+                description={t('myMeetupsSubscriber.description')}
             />
 
             <DataGridSection<Meetup>

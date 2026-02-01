@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { Link, useRouteError } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import NotFound from '../NotFound';
 import './ErrorPage.css';
 
@@ -20,6 +21,7 @@ function safeStringFromRouteError(err: unknown): string {
 }
 
 function ErrorPageComponent() {
+    const { t } = useTranslation();
     const routeError = useRouteError();
 
     const handleError = useCallback(() => {
@@ -30,12 +32,20 @@ function ErrorPageComponent() {
 
     const status = (routeError as any)?.status;
     const statusText = (routeError as any)?.statusText;
-    const message = safeStringFromRouteError(
+    const rawMessage = safeStringFromRouteError(
         (routeError as any)?.message || (routeError as any)
     );
+    const message =
+        rawMessage === 'Unknown error'
+            ? t('errorPage.unknownError', 'Unknown error')
+            : rawMessage;
+
+    const loadingText = t('common.loading', 'Loading...');
+    const goHome = t('buttons.goHome', 'Go to Home');
+    const unexpected = t('errorPage.unexpected', 'Unexpected error');
 
     return (
-        <React.Suspense fallback={<div>Loading...</div>}>
+        <React.Suspense fallback={<div>{loadingText}</div>}>
             <main>
                 <div className="errorContainer ep-x1a2b3_error">
                     {status === 404 ? (
@@ -43,12 +53,12 @@ function ErrorPageComponent() {
                     ) : (
                         <div className="ep-x1a2b3_generic">
                             <h1 className="ep-x1a2b3_status">
-                                {status ?? 'Unknown'} -{' '}
-                                {statusText ?? 'Unexpected error'}
+                                {status ?? t('errorPage.unknownStatus', 'Unknown')} -{' '}
+                                {statusText ?? unexpected}
                             </h1>
                             <p className="ep-x1a2b3_message">{message}</p>
                             <Link to="/" className="ep-x1a2b3_button">
-                                Go to Home
+                                {goHome}
                             </Link>
                         </div>
                     )}

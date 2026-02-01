@@ -5,6 +5,7 @@ import icon from '../assets/img/icon.png';
 import { useAuth } from '../utils/AuthContext';
 import { USERS_DETAIL, EDIT_MEETUP, SIGN_IN } from '../constant/router';
 import Loader from '../components/Loader';
+import { useTranslation } from 'react-i18next';
 
 export default function MeetupDetails(): JSX.Element {
     const { userID } = useAuth();
@@ -20,12 +21,13 @@ export default function MeetupDetails(): JSX.Element {
         formattedDate
     } = useMeetupDetails(id);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const renderActionButtons = () => {
         if (userID === meetup?.author_id) {
             return (
                 <Link className="meetup-details-button" to={`${EDIT_MEETUP}/${id}`}>
-                    Edit Meetup
+                    {t('meetupDetails.edit')}
                 </Link>
             );
         }
@@ -35,13 +37,13 @@ export default function MeetupDetails(): JSX.Element {
         if (!canInteract) {
             return (
                 <button onClick={() => navigate(SIGN_IN)} className="control-button">
-                    Sign in to subscribe
+                    {t('meetupDetails.signToSubscribe')}
                 </button>
             );
         }
 
         if (pending) {
-            return <div>loading...</div>;
+            return <div>{t('meetupDetails.loading')}</div>;
         }
 
         if (isFavorite) {
@@ -50,21 +52,26 @@ export default function MeetupDetails(): JSX.Element {
                     className="meetup-details-button"
                     onClick={handleUnsubscribe}
                 >
-                    Unsubscribe
+                    {t('meetupDetails.unsubscribe')}
                 </button>
             );
         }
 
         return (
             <button className="meetup-details-button" onClick={handleSignForMeeting}>
-                Subscribe
+                {t('meetupDetails.subscribe')}
             </button>
         );
     };
 
     if (loading) return <Loader />;
-    if (error) return <p>Error: {error}</p>;
-    if (!meetup) return <p>No meetup data.</p>;
+    if (error)
+        return (
+            <p>
+                {t('common.error')}: {error}
+            </p>
+        );
+    if (!meetup) return <p>{t('meetupDetails.noData')}</p>;
 
     return (
         <main className="meetup-details">
@@ -74,29 +81,29 @@ export default function MeetupDetails(): JSX.Element {
                 </div>
                 <div className="meetup-details-content">
                     <h1 className="meetup-details-title">
-                        {meetup.title || 'Untitled Meetup'}
+                        {meetup.title || t('meetupDetails.title')}
                     </h1>
                     <h2 className="meetup-details-author">
-                        Author:{' '}
+                        {t('meetupDetails.author')}:
                         {meetup.author_id && meetup.author ? (
                             <NavLink to={`${USERS_DETAIL}/${meetup.author_id}`}>
                                 {meetup.author}
                             </NavLink>
                         ) : (
-                            'Unknown'
+                            t('common.error')
                         )}
                     </h2>
                     <p className="meetup-details-date">
-                        Link:{' '}
+                        {t('meetupDetails.link')}:
                         <a href={meetup.link} className="link">
                             {meetup.link}
                         </a>
                     </p>
-                    <p className="meetup-details-date">{`Date begin: ${formattedDate}`}</p>
-                    <p className="meetup-details-signed">{`Already signed: ${meetup.attendees_count || 0}`}</p>
-                    <h3>Description:</h3>
+                    <p className="meetup-details-date">{`${t('meetupDetails.dateBegin')}: ${formattedDate}`}</p>
+                    <p className="meetup-details-signed">{`${t('meetupDetails.alreadySigned')}: ${meetup.attendees_count || 0}`}</p>
+                    <h3>{t('meetupDetails.description')}:</h3>
                     <pre className="meetup-details-description">
-                        {meetup.description || 'No description available.'}
+                        {meetup.description || t('meetupDetails.noData')}
                     </pre>
                 </div>
                 {renderActionButtons()}

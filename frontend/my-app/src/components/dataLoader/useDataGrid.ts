@@ -62,10 +62,9 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
     );
 
     const handlePageChange = useCallback(async (page: number) => {
-        await loadData({ page });
         setCurrentPage(page);
+        await loadData({ page });
     }, []);
-
 
     return {
         items,

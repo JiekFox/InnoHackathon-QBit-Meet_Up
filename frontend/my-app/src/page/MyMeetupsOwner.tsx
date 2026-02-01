@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../utils/AuthContext';
 import { GPT_URL, USER_API_URL } from '../constant/apiURL';
 import {
@@ -11,6 +12,7 @@ import { paramsToQuery } from '../utils/paramsToQuery';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 
 export default function MyMeetups() {
+    const { t } = useTranslation();
     const { userID } = useAuth();
     const axios = useAxiosWithAuth();
 
@@ -100,8 +102,8 @@ export default function MyMeetups() {
         <>
             <IntroSection
                 styleClass="intro"
-                title="Your Created Meetups"
-                description="These are the meetups you've created. Manage, edit or delete your events as needed."
+                title={t('myMeetupsOwner.title')}
+                description={t('myMeetupsOwner.description')}
             />
 
             <DataGridSection<Meetup>

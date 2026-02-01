@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PaginationProps {
     currentPage: number;
@@ -8,6 +9,7 @@ interface PaginationProps {
 
 const Pagination = React.memo(
     ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
+        const { t } = useTranslation();
         const handlePageClick = useCallback(
             (page: number) => {
                 if (page >= 1 && page <= totalPages) {
@@ -43,7 +45,7 @@ const Pagination = React.memo(
                     onClick={() => handlePageClick(currentPage - 1)}
                     disabled={currentPage === 1}
                 >
-                    « Previous
+                    {t('pagination.previous')}
                 </button>
                 {renderPages().map((page, index) =>
                     typeof page === 'string' /*=== '...'*/ ? (
@@ -68,7 +70,7 @@ const Pagination = React.memo(
                     onClick={() => handlePageClick(currentPage + 1)}
                     disabled={currentPage === totalPages}
                 >
-                    Next »
+                    {t('pagination.next')}
                 </button>
             </nav>
         );

@@ -5,6 +5,7 @@ import Loader from './Loader';
 import { formatDate } from '../utils/formatDate';
 import { Link, NavLink } from 'react-router-dom';
 import { MEETUP_DETAILS } from '../constant/router';
+import { useTranslation } from 'react-i18next';
 
 const SLIDER_SIZE = 5;
 
@@ -17,6 +18,7 @@ interface HeroProps {
 }
 
 const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
+    const { t } = useTranslation();
     const [meetups, setMeetups] = useState<Meetup[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -125,7 +127,9 @@ const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
                 <div className="hero-slide-flex">
                     <div className="hero-text-side">
                         <div className="hero-info-wrapper">
-                            <span className="hero-badge">Анонс</span>
+                            <span className="hero-badge">
+                                {t('slider.announcement')}
+                            </span>
                             <h1 className="hero-title">{current.title}</h1>
                             <p className="hero-description">{current.description}</p>
                             <div className="hero-meta">
@@ -139,7 +143,7 @@ const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
                                 className="create-meeting-button "
                                 to={`${MEETUP_DETAILS}/${current.id}`}
                             >
-                                Details
+                                {t('slider.details')}
                             </Link>
                         </div>
                     </div>

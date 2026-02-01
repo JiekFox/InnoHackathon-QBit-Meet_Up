@@ -1,6 +1,7 @@
 import { JSX, useState } from 'react';
 import logo from '../assets/img/handle_color_green.png';
 import { ConfirmationModal } from './ConfirmationModal';
+import { useTranslation } from 'react-i18next';
 
 interface ImagePreviewProps {
     previewUrl: string | null;
@@ -11,8 +12,9 @@ export const ImagePreview = ({
     previewUrl,
     onRemove
 }: ImagePreviewProps): JSX.Element | null => {
+    const { t } = useTranslation();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    if (!previewUrl) return <img src={logo} alt="no-image" />;
+    if (!previewUrl) return <img src={logo} alt={t('imagePreview.noImage')} />;
 
     return (
         <>
@@ -33,9 +35,9 @@ export const ImagePreview = ({
             <ConfirmationModal
                 isOpen={isModalOpen}
                 setIsOpen={setIsModalOpen}
-                title="Delete Image?"
+                title={t('imagePreview.deleteTitle')}
                 onConfirm={onRemove}
-                confirmText="Delete"
+                confirmText={t('imagePreview.deleteConfirm')}
             />
         </>
     );

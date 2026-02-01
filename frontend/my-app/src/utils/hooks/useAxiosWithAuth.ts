@@ -3,6 +3,7 @@ import axios, { AxiosError, AxiosInstance } from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { TOKEN_REFRESH_URL } from '../../constant/apiURL';
 import { AuthResponseData } from '../../constant/types';
+import i18n from '../../i18n';
 
 interface DecodedToken {
     exp: number;
@@ -18,15 +19,17 @@ const isTokenExpired = (token: string): boolean => {
     }
 };
 
-const errorText =
-    'The server is not responding. Try refreshing the page or coming back later.';
 const errorCode = 'ECONNABORTED';
 const TIMEOUT_MS = 10000;
+
+const getErrorText = (): string => {
+    return i18n.t('errors.serverNotResponding');
+};
 
 const withTimeout = <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
     return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
-            reject(new AxiosError(errorText, errorCode));
+            reject(new AxiosError(getErrorText(), errorCode));
         }, timeoutMs);
 
         promise
@@ -104,7 +107,7 @@ export const useAxiosWithAuth = (): AxiosInstance => {
         response => response,
         async error => {
             if (error.code === errorCode || error.message.includes('timeout')) {
-                return Promise.reject(new AxiosError(errorText));
+                return Promise.reject(new AxiosError(getErrorText()));
             }
 
             try {

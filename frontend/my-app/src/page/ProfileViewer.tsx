@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import useFetchMeetings from '../api/useFetchMeetings';
 import Loader from '../components/Loader';
@@ -18,6 +19,7 @@ interface UserProfile {
 }
 
 export default function ProfileViewer() {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
 
     const {
@@ -28,7 +30,10 @@ export default function ProfileViewer() {
 
     if (loading) return <Loader />;
     if (error) return <div className="error-message">{error}</div>;
-    if (!formData) return <div className="error-message">User not found.</div>;
+    if (!formData)
+        return (
+            <div className="error-message">{t('profileViewer.userNotFound')}</div>
+        );
 
     return (
         <div className="profile-edit-form">
@@ -36,7 +41,9 @@ export default function ProfileViewer() {
                 <div className="form-fields">
                     <div className="input-row">
                         <div className="input-group">
-                            <label htmlFor="name">Name</label>
+                            <label htmlFor="name">
+                                {t('profileViewer.nameLabel')}
+                            </label>
                             <input
                                 type="text"
                                 id="name"
@@ -47,7 +54,9 @@ export default function ProfileViewer() {
                             />
                         </div>
                         <div className="input-group">
-                            <label htmlFor="surname">Surname</label>
+                            <label htmlFor="surname">
+                                {t('profileViewer.surnameLabel')}
+                            </label>
                             <input
                                 type="text"
                                 id="surname"
@@ -60,7 +69,9 @@ export default function ProfileViewer() {
                     </div>
 
                     <div className="input-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="email">
+                            {t('profileViewer.emailLabel')}
+                        </label>
                         <input
                             type="email"
                             id="email"
@@ -72,7 +83,9 @@ export default function ProfileViewer() {
                     </div>
 
                     <div className="input-group">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="username">
+                            {t('profileViewer.usernameLabel')}
+                        </label>
                         <input
                             type="text"
                             id="username"
@@ -84,7 +97,9 @@ export default function ProfileViewer() {
                     </div>
 
                     <div className="input-group">
-                        <label htmlFor="about">About myself</label>
+                        <label htmlFor="about">
+                            {t('profileViewer.aboutLabel')}
+                        </label>
                         <textarea
                             id="about"
                             name="about"
@@ -101,7 +116,7 @@ export default function ProfileViewer() {
 
                     <div className="input-group">
                         <label htmlFor="tg_id" className="info-label">
-                            Telegram ID
+                            {t('profileViewer.telegramIDLabel')}
                         </label>
                         <input
                             type="text"

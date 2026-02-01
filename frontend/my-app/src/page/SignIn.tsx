@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { SIGN_UP } from '../constant/router';
 import { useSignIn } from '../utils/hooks/useSignIn';
+import { useTranslation } from 'react-i18next';
 
 const SignIn: React.FC = () => {
     const {
@@ -13,13 +14,14 @@ const SignIn: React.FC = () => {
         handleInputChange,
         handleSubmit
     } = useSignIn();
+    const { t } = useTranslation();
 
     return (
         <main className="main-content">
-            <h1 className="sign-title">Log In</h1>
+            <h1 className="sign-title">{t('signIn.title')}</h1>
             <form className="sign-form" onSubmit={handleSubmit}>
                 <div className="input-group">
-                    <label htmlFor="username">Username</label>
+                    <label htmlFor="username">{t('signIn.username')}</label>
                     <input
                         type="text"
                         id="username"
@@ -30,7 +32,7 @@ const SignIn: React.FC = () => {
                     />
                 </div>
                 <div className="input-group">
-                    <label htmlFor="password">Password</label>
+                    <label htmlFor="password">{t('signIn.password')}</label>
                     <div className="password-container">
                         <input
                             type={showPassword ? 'text' : 'password'}
@@ -46,7 +48,9 @@ const SignIn: React.FC = () => {
                             onClick={togglePasswordVisibility}
                             role="button"
                             aria-label={
-                                showPassword ? 'Скрыть пароль' : 'Показать пароль'
+                                showPassword
+                                    ? t('signIn.hidePassword')
+                                    : t('signIn.showPassword')
                             }
                         >
                             {showPassword ? '🔓' : '🔒'}
@@ -55,12 +59,12 @@ const SignIn: React.FC = () => {
                 </div>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
                 <button type="submit" className="sign-button" disabled={isPending}>
-                    {isPending ? 'Pending...' : 'Sign In'}
+                    {isPending ? t('signIn.pending') : t('signIn.submit')}
                 </button>
                 <p>
-                    You’re not with us yet?{' '}
+                    {t('signIn.noAccount')}{' '}
                     <NavLink to={SIGN_UP} className="sign-in-link" replace>
-                        Sign up!
+                        {t('signIn.signUp')}
                     </NavLink>
                 </p>
             </form>

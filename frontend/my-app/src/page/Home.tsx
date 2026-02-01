@@ -1,6 +1,7 @@
 import IntroSection from '../components/IntroSection';
 import { GPT_URL, MEETINGS_API_URL } from '../constant/apiURL';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 
@@ -17,6 +18,7 @@ import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 import MeetupPaginationSlider from '../components/Slider';
 
 export default function Home() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { userID } = useAuth();
     const axios = useAxiosWithAuth();
@@ -189,8 +191,8 @@ export default function Home() {
             <MeetupPaginationSlider fetchMeetups={fetchMeetups} />
             <IntroSection
                 styleClass="intro"
-                title="Public MeetUps!"
-                description="Here you can find new Meetups and subscribe to them!"
+                title={t('home.publicMeetupsTitle')}
+                description={t('home.publicMeetupsDescription')}
                 isButton={true}
             />
             {/*<MeetupsSection />*/}

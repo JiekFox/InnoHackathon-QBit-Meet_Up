@@ -6,8 +6,10 @@ import { useEffect, useState, ChangeEvent, JSX, useRef } from 'react';
 import { GPT_URL } from '../constant/apiURL';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 import { ImagePreview } from '../components/ImagePreview';
+import { useTranslation } from 'react-i18next';
 
 export function CreateMeetup(): JSX.Element {
+    const { t } = useTranslation();
     const { token } = useAuth();
     const navigate = useNavigate();
     const axios = useAxiosWithAuth();
@@ -62,7 +64,7 @@ export function CreateMeetup(): JSX.Element {
 
     const handleImproveWithAI = async (): Promise<void> => {
         if (!formData.description) {
-            alert('Please provide a description first.');
+            alert(t('createMeetup.pleaseProvideDescription'));
             return;
         }
 
@@ -112,11 +114,11 @@ export function CreateMeetup(): JSX.Element {
 
     return (
         <main className="create-meetup">
-            <h1>Create New Meetup</h1>
+            <h1>{t('createMeetup.title')}</h1>
             {error && <p className="error">{error.toString()}</p>}
             <form onSubmit={handleSubmit} className="create-meetup-form">
                 <div className="input-group">
-                    <label htmlFor="title">Title:</label>
+                    <label htmlFor="title">{t('createMeetup.titleLabel')}</label>
                     <input
                         type="text"
                         id="title"
@@ -127,7 +129,9 @@ export function CreateMeetup(): JSX.Element {
                     />
                 </div>
                 <div className="input-group">
-                    <label htmlFor="datetime_beg">Start Date and Time:</label>
+                    <label htmlFor="datetime_beg">
+                        {t('createMeetup.startDateTime')}
+                    </label>
                     <input
                         type="datetime-local"
                         id="datetime_beg"
@@ -138,18 +142,20 @@ export function CreateMeetup(): JSX.Element {
                     />
                 </div>
                 <div className="input-group">
-                    <label htmlFor="link">Link:</label>
+                    <label htmlFor="link">{t('createMeetup.linkLabel')}</label>
                     <input
                         type="url"
                         id="link"
                         name="link"
                         value={formData.link}
                         onChange={handleChange}
-                        placeholder="e.g., https://google.com"
+                        placeholder={t('createMeetup.linkPlaceholder')}
                     />
                 </div>
                 <div className="input-group">
-                    <label htmlFor="description">Description:</label>
+                    <label htmlFor="description">
+                        {t('createMeetup.descriptionLabel')}
+                    </label>
                     <textarea
                         id="description"
                         name="description"
@@ -166,7 +172,9 @@ export function CreateMeetup(): JSX.Element {
                     disabled={isPendingAI}
                     style={{ height: 35 }}
                 >
-                    {isPendingAI ? 'Processing AI...' : 'Improve with AI ✨'}
+                    {isPendingAI
+                        ? t('createMeetup.processingAI')
+                        : t('createMeetup.improveWithAI')}
                 </button>
 
                 {isAiResponseVisible && (
@@ -195,7 +203,7 @@ export function CreateMeetup(): JSX.Element {
                         htmlFor="customFileInput"
                         className="custom-file-label create-meetup-button"
                     >
-                        Select image
+                        {t('createMeetup.selectImage')}
                     </label>
                     <input
                         type="file"
@@ -216,7 +224,9 @@ export function CreateMeetup(): JSX.Element {
                 </div>
 
                 <button type="submit" className="create-meetup-button">
-                    {isPending ? 'is pending...' : 'Create Meetup'}
+                    {isPending
+                        ? t('createMeetup.pending')
+                        : t('createMeetup.submitButton')}
                 </button>
             </form>
         </main>

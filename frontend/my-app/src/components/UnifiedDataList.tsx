@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import FilterBar from './FilterBar';
 import Pagination from './Pagination';
 import Loader from './Loader';
+import { useTranslation } from 'react-i18next';
 interface UnifiedDataListProps<T> {
     fetchFunction: (
         params: Record<string, string>
@@ -30,6 +31,7 @@ export function UnifiedDataList<T extends DataItem>({
     onQueryTuchUseAI,
     enableDateFilter = true
 }: UnifiedDataListProps<T>) {
+    const { t } = useTranslation();
     const [data, setData] = useState<T[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -111,7 +113,9 @@ export function UnifiedDataList<T extends DataItem>({
                         ))}
                     </div>
                 ) : (
-                    <div className="no-results-message">No results found.</div>
+                    <div className="no-results-message">
+                        {t('dataList.noResults')}
+                    </div>
                 )}
             </div>
 

@@ -10,12 +10,14 @@ import {
     SIGN_IN
 } from '../../constant/router';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface UserMenuProps {
     userName: string;
 }
 
 const UserMenu: React.FC<UserMenuProps> = React.memo(({ userName }) => {
+    const { t } = useTranslation();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const { removeToken, img } = useAuth();
     const navigate = useNavigate();
@@ -49,18 +51,18 @@ const UserMenu: React.FC<UserMenuProps> = React.memo(({ userName }) => {
             <div className="user-dropdown">
                 <DropdownItem
                     to={PROFILE}
-                    title="Profile"
-                    description="Explore your profile!"
+                    title={t('userMenu.profile')}
+                    description={t('userMenu.profileDescription')}
                 />
                 <DropdownItem
                     to={MY_MEETUPS_SUBSCRIBER}
-                    title="My Meetups (subscribed)"
-                    description="View all the meetings you have subscribed to"
+                    title={t('userMenu.myMeetupsSubscribed')}
+                    description={t('userMenu.subscribedDescription')}
                 />
                 <DropdownItem
                     to={MY_MEETUPS_OWNER}
-                    title="My Meetups (owned)"
-                    description="View all the meetings you own"
+                    title={t('userMenu.myMeetupsOwned')}
+                    description={t('userMenu.ownedDescription')}
                 />
                 <hr />
                 <div
@@ -68,7 +70,7 @@ const UserMenu: React.FC<UserMenuProps> = React.memo(({ userName }) => {
                     onClick={handleLogoutClick}
                     role="button"
                 >
-                    Log Out
+                    {t('userMenu.logOut')}
                 </div>
             </div>
             {showLogoutModal && (

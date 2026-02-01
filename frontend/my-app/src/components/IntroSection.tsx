@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
 import { CREATE_MEETUPS } from '../constant/router';
+import { useTranslation } from 'react-i18next';
 
 interface IntroSectionProps {
     styleClass: string;
@@ -15,6 +16,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({
     isButton = false
 }) => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     return (
         <section className={styleClass}>
@@ -25,7 +27,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({
                     className="create-meeting-button create-meeting-button-min-width"
                     onClick={() => navigate(CREATE_MEETUPS)}
                 >
-                    Create
+                    {t('introSection.createButton')}
                 </button>
             )}
         </section>

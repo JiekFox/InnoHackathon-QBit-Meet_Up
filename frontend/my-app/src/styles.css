@@ -1110,7 +1110,6 @@ h3 {
     cursor: pointer;
     margin: 0 auto;
     display: block;
-    max-width: 220px;
     transition:
         background-color 0.5s ease,
         transform 0.2s ease,
