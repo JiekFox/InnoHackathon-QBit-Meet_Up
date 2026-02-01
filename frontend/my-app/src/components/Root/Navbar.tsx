@@ -1,12 +1,15 @@
 import UserMenu from './UserMenu';
+import LocaleSwitcher from '../LocaleSwitcher';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BASE, SIGN_IN } from '../../constant/router';
 import { useAuth } from '../../utils/AuthContext';
 import { useTheme } from '../../utils/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import logo from '../../assets/img/handle_color_green.png';
 
 export default function Navbar() {
     const { theme, toggleTheme } = useTheme();
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
     const { name } = useAuth();
@@ -26,6 +29,9 @@ export default function Navbar() {
                     <h1 className="title">Meet Up!</h1>
                 </div>
                 <div className="controls">
+                    <div className="locale-switch">
+                        <LocaleSwitcher />
+                    </div>
                     <div className="theme-switch">
                         <label className="switch">
                             <input
@@ -46,7 +52,7 @@ export default function Navbar() {
                             onClick={() => navigate(SIGN_IN)}
                             className="control-button"
                         >
-                            Sign in.
+                            {t('navbar.signIn')}
                         </button>
                     )}
                 </div>

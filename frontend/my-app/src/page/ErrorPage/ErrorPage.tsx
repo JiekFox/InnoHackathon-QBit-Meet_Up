@@ -1,36 +1,56 @@
 import React, { useCallback } from 'react';
 import { Link, useRouteError } from 'react-router-dom';
+import NotFound from '../NotFound';
+import './ErrorPage.css';
 
-interface RouteError {
-    status?: number;
-    statusText?: string;
-    message?: string;
+function safeStringFromRouteError(err: unknown): string {
+    if (!err) return 'Unknown error';
+    const anyErr = err as any;
+    if (typeof anyErr === 'string') return anyErr;
+    if (typeof anyErr === 'object') {
+        if (anyErr?.detail) return String(anyErr.detail);
+        if (anyErr?.message) return String(anyErr.message);
+        try {
+            return JSON.stringify(anyErr);
+        } catch (e) {
+            return 'Unknown error object';
+        }
+    }
+    return String(anyErr);
 }
 
 function ErrorPageComponent() {
-    const error = useRouteError() as RouteError;
+    const routeError = useRouteError();
 
     const handleError = useCallback(() => {
-        console.error(error);
-    }, [error]);
+        console.error(routeError);
+    }, [routeError]);
 
     handleError();
 
+    const status = (routeError as any)?.status;
+    const statusText = (routeError as any)?.statusText;
+    const message = safeStringFromRouteError(
+        (routeError as any)?.message || (routeError as any)
+    );
+
     return (
         <React.Suspense fallback={<div>Loading...</div>}>
-            <main id="detail">
-                <div className="errorContainer">
-                    {error?.status === 404 ? (
-                        <div className="not-found-container">
-                            <h1>404 - Not Found</h1>
-                            <p>The page you are looking for does not exist.</p>
-                            <Link to="/">Go to Home</Link>
-                        </div>
+            <main>
+                <div className="errorContainer ep-x1a2b3_error">
+                    {status === 404 ? (
+                        <NotFound />
                     ) : (
-                        <h1>
-                            {error?.status ?? 'Unknown'} -{' '}
-                            {error?.statusText ?? 'Unexpected error'}
-                        </h1>
+                        <div className="ep-x1a2b3_generic">
+                            <h1 className="ep-x1a2b3_status">
+                                {status ?? 'Unknown'} -{' '}
+                                {statusText ?? 'Unexpected error'}
+                            </h1>
+                            <p className="ep-x1a2b3_message">{message}</p>
+                            <Link to="/" className="ep-x1a2b3_button">
+                                Go to Home
+                            </Link>
+                        </div>
                     )}
                 </div>
             </main>

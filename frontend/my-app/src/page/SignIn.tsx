@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { SIGN_UP } from '../constant/router';
 import { useSignIn } from '../utils/hooks/useSignIn';
 
@@ -59,7 +59,7 @@ const SignIn: React.FC = () => {
                 </button>
                 <p>
                     You’re not with us yet?{' '}
-                    <NavLink to={SIGN_UP} className="sign-in-link">
+                    <NavLink to={SIGN_UP} className="sign-in-link" replace>
                         Sign up!
                     </NavLink>
                 </p>

@@ -33,7 +33,7 @@ const baseValues: FormDataState = {
 };
 
 export function EditMeetup(): JSX.Element {
-    const { token } = useAuth();
+    const { token, userID } = useAuth();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const axios = useAxiosWithAuth();
@@ -66,6 +66,13 @@ export function EditMeetup(): JSX.Element {
             try {
                 const response = await axios.get(`${MEETINGS_API_URL}${id}/`);
                 const data = response.data;
+                console.log('Fetched meetup data:', data);
+
+                if (data.author_id !== userID) {
+                    console.log('Redirecting to sign In because of ID mismatch');
+                    await navigate(SIGN_IN);
+                    return;
+                }
 
                 setServerValues({
                     title: data.title || '',
@@ -208,7 +215,7 @@ export function EditMeetup(): JSX.Element {
                 <div className="image-upload-wrapper">
                     <label
                         htmlFor="customFileInput"
-                        className="custom-file-label edit-meetup-button create-meeting-button"
+                        className="custom-file-label edit-meetup-button create-meeting-button w-full"
                     >
                         Select image
                     </label>
@@ -221,11 +228,13 @@ export function EditMeetup(): JSX.Element {
                         className="hidden-file-input"
                         ref={fileInputRef}
                     />
-                    <div className="preview-box">
-                        <ImagePreview
-                            previewUrl={previewUrl}
-                            onRemove={handleRemoveImage}
-                        />
+                    <div className="w-full">
+                        <div className="preview-box">
+                            <ImagePreview
+                                previewUrl={previewUrl}
+                                onRemove={handleRemoveImage}
+                            />
+                        </div>
                     </div>
                 </div>
 

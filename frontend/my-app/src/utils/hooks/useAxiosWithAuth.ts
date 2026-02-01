@@ -55,6 +55,12 @@ export const useAxiosWithAuth = (): AxiosInstance => {
                 return config;
             }
 
+            // double check it
+            const currentLang = localStorage.getItem('i18nextLng') || 'en';
+            config.headers = Object.assign({}, config.headers, {
+                'Accept-Language': currentLang
+            });
+
             if (isTokenExpired(currentToken.access)) {
                 console.log('Please wait, additional authorization is underway.');
                 try {
@@ -85,7 +91,8 @@ export const useAxiosWithAuth = (): AxiosInstance => {
             }
 
             config.headers = Object.assign({}, config.headers, {
-                Authorization: `Bearer ${currentToken.access}`
+                Authorization: `Bearer ${currentToken.access}`,
+                'Accept-Language': currentLang
             });
 
             return config;

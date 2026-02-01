@@ -52,7 +52,7 @@ export const useSignUp = () => {
                 );
 
                 saveDate(response.data);
-                navigate('/');
+                navigate(-1);
             } catch (error) {
                 console.error(error);
                 const axiosError = error as AxiosError<RegisterErrorResponse>;

@@ -70,7 +70,7 @@ export default function SignUp() {
                 </button>
                 <p>
                     Already registered?{' '}
-                    <NavLink to={SIGN_IN} className="sign-in-link">
+                    <NavLink to={SIGN_IN} className="sign-in-link" replace>
                         Sign in.
                     </NavLink>
                 </p>

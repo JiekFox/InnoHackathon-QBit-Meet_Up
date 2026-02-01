@@ -1,0 +1,101 @@
+{
+    "navbar": {
+        "signIn": "Sign in",
+        "home": "Home",
+        "profile": "Profile",
+        "myMeetupsSubscribed": "My Meetups (subscribed)",
+        "myMeetupsOwned": "My Meetups (owned)",
+        "logOut": "Log Out"
+    },
+    "signIn": {
+        "title": "Log In",
+        "username": "Username",
+        "password": "Password",
+        "submit": "Sign In",
+        "pending": "Pending...",
+        "noAccount": "You're not with us yet?",
+        "signUp": "Sign up!",
+        "invalidCredentials": "Invalid username or password. Please try again.",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password"
+    },
+    "signUp": {
+        "title": "Sign Up",
+        "username": "Username",
+        "email": "Email",
+        "password": "Password",
+        "submit": "Sign Up",
+        "pending": "Pending...",
+        "alreadyAccount": "Already have an account?",
+        "signIn": "Sign in!",
+        "registrationFailed": "Registration failed. Please try again.",
+        "usernameError": "Username error",
+        "emailError": "Email error",
+        "passwordError": "Password error",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password"
+    },
+    "home": {
+        "title": "Meet Up!",
+        "description": "Discover and join amazing meetups",
+        "searchPlaceholder": "Search meetups...",
+        "filter": "Filter",
+        "noMeetupsFound": "No meetups found",
+        "loading": "Loading...",
+        "error": "Error loading meetups"
+    },
+    "meetupDetails": {
+        "title": "Meetup Details",
+        "dateBegin": "Date begin",
+        "alreadySigned": "Already signed",
+        "author": "Author",
+        "description": "Description",
+        "link": "Link",
+        "subscribe": "Subscribe",
+        "unsubscribe": "Unsubscribe",
+        "edit": "Edit Meetup",
+        "signToSubscribe": "Sign in to subscribe",
+        "failedToSubscribe": "Failed to subscribe",
+        "failedToUnsubscribe": "Failed to unsubscribe",
+        "noData": "No meetup data.",
+        "loading": "Loading..."
+    },
+    "errorPage": {
+        "notFound": "Page not found",
+        "message": "The resource may have been deleted or the link is incorrect.",
+        "goHome": "Go to Home",
+        "unknownError": "Unknown error",
+        "unexpectedError": "Unexpected error"
+    },
+    "notFound": {
+        "title": "404",
+        "heading": "Page not found",
+        "message": "The resource may have been deleted or the link is incorrect.",
+        "goHome": "Home",
+        "goBack": "Back"
+    },
+    "buttons": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "confirm": "Confirm",
+        "decline": "Decline",
+        "loading": "Loading..."
+    },
+    "errors": {
+        "serverNotResponding": "The server is not responding. Try refreshing the page or coming back later.",
+        "sessionExpired": "Session expired. Please log in again.",
+        "unauthorized": "You are not authorized to perform this action.",
+        "notFound": "Resource not found.",
+        "badRequest": "Invalid request.",
+        "internal": "An internal server error occurred. Please try again later."
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success",
+        "warning": "Warning"
+    }
+}

@@ -22,7 +22,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({
             <p className="description"> {description}</p>
             {isButton && (
                 <button
-                    className="create-meeting-button"
+                    className="create-meeting-button create-meeting-button-min-width"
                     onClick={() => navigate(CREATE_MEETUPS)}
                 >
                     Create

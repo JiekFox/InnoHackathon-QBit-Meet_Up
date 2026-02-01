@@ -66,7 +66,7 @@ export function DataGridSection<T extends Meetup>({
                 {loading ? (
                     <Loader />
                 ) : error ? (
-                    <h1>Error: {error.message}</h1>
+                    <h1 className="error-message">Error: {error.message}</h1>
                 ) : items.length > 0 ? (
                     items.map(meetup => (
                         <MeetupCard
@@ -78,7 +78,7 @@ export function DataGridSection<T extends Meetup>({
                             datetime_beg={meetup?.datetime_beg}
                             dateTime={meetup?.dateTime}
                         />
-                    ))
+                    )) 
                 ) : (
                     <h1>No results found.</h1>
                 )}

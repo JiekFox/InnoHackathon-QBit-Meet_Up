@@ -52,10 +52,14 @@ export const useSignIn = (): UseSignInReturn => {
                 );
                 console.log(response.data);
                 saveDate(response.data);
-                navigate('/');
+                navigate(-1);
             } catch (error) {
                 console.log(error);
-                setErrorMessage('Invalid username or password. Please try again.');
+                const errorMessage =
+                    error instanceof Error
+                        ? error.message
+                        : 'Invalid username or password. Please try again.';
+                setErrorMessage(errorMessage);
             } finally {
                 setIsPending(false);
             }

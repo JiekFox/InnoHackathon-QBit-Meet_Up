@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router';
 import { SIGN_IN } from '../../constant/router';
 import { Meetup } from '../../constant/types';
 import { useAxiosWithAuth } from './useAxiosWithAuth';
+import { formatDate } from '../formatDate';
 
 interface UseMeetupDetailsReturn {
     meetup: Meetup | null;
@@ -37,7 +38,18 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
                 setMeetup(response.data);
             } catch (err) {
                 const axiosErr = err as AxiosError;
-                setError((axiosErr.response?.data as string) || axiosErr.message);
+                const data = axiosErr.response?.data;
+                if (data) {
+                    setError(
+                        typeof data === 'string'
+                            ? data
+                            : (data as any).detail ||
+                                  (data as any).message ||
+                                  JSON.stringify(data)
+                    );
+                } else {
+                    setError(axiosErr.message);
+                }
             } finally {
                 setLoading(false);
             }
@@ -56,8 +68,6 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
                     'Error checking subscription:',
                     (err as Error).message
                 );
-                const axiosErr = err as AxiosError;
-                setError((axiosErr.response?.data as string) || axiosErr.message);
             } finally {
                 setPending(false);
             }
@@ -89,7 +99,19 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
                 'Error signing for meeting:',
                 (error as AxiosError).message
             );
-            setError('Failed to subscribe');
+            const axiosErr = error as AxiosError;
+            const data = axiosErr.response?.data;
+            if (data) {
+                setError(
+                    typeof data === 'string'
+                        ? data
+                        : (data as any).detail ||
+                              (data as any).message ||
+                              JSON.stringify(data)
+                );
+            } else {
+                setError('Failed to subscribe');
+            }
         } finally {
             setPending(false);
         }
@@ -121,14 +143,26 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
                 'Error unsubscribing from meeting:',
                 (error as AxiosError).message
             );
-            setError('Failed to unsubscribe');
+            const axiosErr = error as AxiosError;
+            const data = axiosErr.response?.data;
+            if (data) {
+                setError(
+                    typeof data === 'string'
+                        ? data
+                        : (data as any).detail ||
+                              (data as any).message ||
+                              JSON.stringify(data)
+                );
+            } else {
+                setError('Failed to unsubscribe');
+            }
         } finally {
             setPending(false);
         }
     }, [token, id, navigate, axios]);
 
     const formattedDate = useMemo(() => {
-        return meetup ? new Date(meetup.datetime_beg).toString() : 'Not specified';
+        return meetup ? formatDate(meetup.datetime_beg) : 'Not specified';
     }, [meetup]);
 
     return {

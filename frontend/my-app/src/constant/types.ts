@@ -55,9 +55,9 @@ export interface ProfileFormData {
 }
 
 export interface ParamsForFetch {
-    page: number;
-    pageSize: number;
-    search: string;
-    startDate: string;
-    endDate: string;
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    startDate?: string;
+    endDate?: string;
 }

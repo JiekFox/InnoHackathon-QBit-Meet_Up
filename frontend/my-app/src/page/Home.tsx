@@ -14,6 +14,7 @@ import { BASE_API_URL /*, MEETINGS_API_URL */ } from '../constant/apiURL';
 import { Meetup, ParamsForFetch } from '../constant/types';
 import { paramsToQuery } from '../utils/paramsToQuery';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
+import MeetupPaginationSlider from '../components/Slider';
 
 export default function Home() {
     const navigate = useNavigate();
@@ -185,6 +186,7 @@ export default function Home() {
 
     return (
         <>
+            <MeetupPaginationSlider fetchMeetups={fetchMeetups} />
             <IntroSection
                 styleClass="intro"
                 title="Public MeetUps!"

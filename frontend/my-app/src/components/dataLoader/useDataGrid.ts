@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { ParamsForFetch } from '../../constant/types';
+import { useState, useCallback, useEffect } from 'react';
+import { Meetup, ParamsForFetch } from '../../constant/types';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -7,7 +7,7 @@ type Fetcher<T> = (
     params: ParamsForFetch
 ) => Promise<{ results: T[]; count: number }>;
 
-export const useDataGrid = <T>(fetchFunction: Fetcher<T>) => {
+export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
     const [items, setItems] = useState<T[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
@@ -36,6 +36,7 @@ export const useDataGrid = <T>(fetchFunction: Fetcher<T>) => {
             setTotalPages(Math.ceil((response.count || 0) / ITEMS_PER_PAGE));
             setError(null);
         } catch (err) {
+            console.error(err);
             setError(
                 err instanceof Error ? err : new Error('An unknown error occurred')
             );
@@ -64,6 +65,7 @@ export const useDataGrid = <T>(fetchFunction: Fetcher<T>) => {
         await loadData({ page });
         setCurrentPage(page);
     }, []);
+
 
     return {
         items,
