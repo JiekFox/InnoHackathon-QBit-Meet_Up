@@ -1,13 +1,23 @@
-from api.models import Meeting, SignedToMeeting, UserProfile
+from api.models import Meeting, SignedToMeeting, Tag, UserProfile
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ["id", "name", "slug", "color"]
 
 
 class MeetingSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField(read_only=True)
     author_id = serializers.IntegerField(source="author.id", read_only=True)
     attendees_count = serializers.SerializerMethodField()
+    tags = TagSerializer(many=True, read_only=True)
+    tag_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(), many=True, write_only=True, required=False, source="tags"
+    )
 
     class Meta:
         model = Meeting
@@ -23,6 +33,8 @@ class MeetingSerializer(serializers.ModelSerializer):
             "description",
             "image",
             "attendees_count",
+            "tags",
+            "tag_ids",
         ]
 
     def get_attendees_count(self, obj):
@@ -30,6 +42,19 @@ class MeetingSerializer(serializers.ModelSerializer):
         Метод для вычисления количества участников встречи.
         """
         return obj.attendees.count()
+
+    def create(self, validated_data):
+        tag_ids = validated_data.pop("tags", [])
+        meeting = super().create(validated_data)
+        meeting.tags.set(tag_ids)
+        return meeting
+
+    def update(self, instance, validated_data):
+        tag_ids = validated_data.pop("tags", None)
+        meeting = super().update(instance, validated_data)
+        if tag_ids is not None:
+            meeting.tags.set(tag_ids)
+        return meeting
 
 
 class UserSerializer(serializers.ModelSerializer):

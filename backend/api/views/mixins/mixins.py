@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
-from api.models.meetups import Meeting, SignedToMeeting
-from api.models.users import UserProfile
+from api.models.meeting import Meeting, SignedToMeeting
+from api.models.user import UserProfile
 from api.views.filters.filters import MeetingFilter
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination

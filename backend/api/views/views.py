@@ -1,9 +1,10 @@
-from api.models import Meeting, SignedToMeeting, UserProfile
+from api.models import Meeting, SignedToMeeting, Tag, UserProfile
 from api.views.filters.filters import MeetingFilter
 from api.views.mixins.mixins import MeetingPagination, SubscriptionMixin, UserMeetingQueryMixin
 from api.views.serializers.serializers import (
     MeetingSerializer,
     ObtainTokenSerializer,
+    TagSerializer,
     UserRegistrationSerializer,
     UserSerializer,
 )
@@ -22,7 +23,6 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
     ViewSet для управления встречами.
     """
 
-    queryset = Meeting.objects.all()
     serializer_class = MeetingSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = MeetingPagination
@@ -31,6 +31,9 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
     search_fields = ["title", "description"]
     ordering_fields = ["datetime_beg", "location"]
     ordering = ["-datetime_beg"]
+
+    def get_queryset(self):
+        return Meeting.objects.all().prefetch_related("tags").select_related("author")
 
     def get_permissions(self):
         """
@@ -249,3 +252,10 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
 
 class ObtainTokenView(TokenObtainPairView):
     serializer_class = ObtainTokenSerializer
+
+
+class TagViewSet(ModelViewSet):
+    queryset = Tag.objects.all().order_by("name")
+    serializer_class = TagSerializer
+    permission_classes = [AllowAny]  # TODO: CHANGE IN FUTURE
+    search_fields = ["name", "slug"]

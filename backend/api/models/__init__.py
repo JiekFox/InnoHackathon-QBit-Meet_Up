@@ -1,4 +1,5 @@
-from .meetups import Meeting, SignedToMeeting
-from .users import UserProfile
+from .meeting import Meeting, SignedToMeeting
+from .tag import Tag
+from .user import UserProfile
 
-__all__ = ["UserProfile", "Meeting", "SignedToMeeting"]
+__all__ = ["UserProfile", "Meeting", "SignedToMeeting", "Tag"]

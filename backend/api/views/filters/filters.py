@@ -1,4 +1,6 @@
-from api.models.meetups import Meeting
+import django_filters
+from api.models import Tag
+from api.models.meeting import Meeting
 from django_filters import BooleanFilter, CharFilter, FilterSet, IsoDateTimeFilter
 
 
@@ -8,7 +10,10 @@ class MeetingFilter(FilterSet):
     datetime_beg = IsoDateTimeFilter(field_name="datetime_beg__date", lookup_expr="exact")
     location = CharFilter(field_name="location", lookup_expr="icontains")
     is_online = BooleanFilter(field_name="is_online")
+    tags = django_filters.ModelMultipleChoiceFilter(
+        field_name="tags__slug", to_field_name="slug", queryset=Tag.objects.all(), conjoined=False
+    )
 
     class Meta:
         model = Meeting
-        fields = ["datetime_beg", "location", "is_online"]
+        fields = ["datetime_beg", "location", "is_online", "tags"]

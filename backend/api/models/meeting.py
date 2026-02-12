@@ -1,4 +1,5 @@
-from api.models.users import UserProfile
+from api.models.tag import Tag
+from api.models.user import UserProfile
 from django.db import models
 
 
@@ -11,6 +12,7 @@ class Meeting(models.Model):
     is_online = models.BooleanField(default=True)
     description = models.CharField(max_length=1000)
     image = models.ImageField(upload_to="meeting_images/", null=True, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True, related_name="meetings")
 
     def str(self):
         return self.title
