@@ -211,6 +211,7 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
                 return Response(
                     {
                         "message": "User registered successfully",
+                        "role": "user",
                         "user_id": user.id,
                         "username": user.username,
                         "access": tokens.get("access"),
