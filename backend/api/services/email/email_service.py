@@ -1,7 +1,9 @@
-from api.services.rabbit.rabbitmq import publish_message, process_message
+from datetime import datetime
+
+from api.services.rabbit.rabbitmq import process_message, publish_message
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from datetime import datetime
+
 
 class EmailService:
     @staticmethod
@@ -15,7 +17,8 @@ class EmailService:
             "template": "email/welcome.html",
             "context": {
                 "subject": "Добро пожаловать!",
-                "message": f"Здравствуйте, {username}! Спасибо за регистрацию на нашем сайте. Мы рады вас приветствовать!",
+                "message": f"Здравствуйте, {username}! Спасибо за регистрацию на нашем сайте. Мы рады вас "
+                f"приветствовать!",
                 "year": datetime.now().year,
                 "username": username,
             },

@@ -1,6 +1,5 @@
-from django.db import models
-
 from api.models.users import UserProfile
+from django.db import models
 
 
 class Meeting(models.Model):

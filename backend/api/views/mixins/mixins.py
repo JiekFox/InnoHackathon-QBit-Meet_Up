@@ -1,19 +1,22 @@
-from rest_framework.response import Response
-from rest_framework import status
 from datetime import datetime, timezone
-from rest_framework.pagination import PageNumberPagination
-from api.views.filters.filters import MeetingFilter
+
 from api.models.meetups import Meeting, SignedToMeeting
 from api.models.users import UserProfile
+from api.views.filters.filters import MeetingFilter
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 
 
 class MeetingPagination(PageNumberPagination):
     """
     Класс для настройки пагинации.
     """
+
     page_size = 10
     page_size_query_param = "page_size"
     max_page_size = 50
+
 
 class SubscriptionMixin:
     @staticmethod

@@ -1,5 +1,6 @@
 from rest_framework.permissions import BasePermission
 
+
 class IsAuthor(BasePermission):
     """
     Разрешает доступ только автору карточки
@@ -7,7 +8,8 @@ class IsAuthor(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return request.user == obj.author
-    
+
+
 class IsStaff(BasePermission):
     """
     Разрешает доступ администратору или модератору
@@ -16,9 +18,11 @@ class IsStaff(BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.is_staff
 
+
 class IsAuthorOrStaff(BasePermission):
     """
     Разрешает доступ администратору или модератору или создателю карточки
-    """    
+    """
+
     def has_object_permission(self, request, view, obj):
         return request.user.is_staff

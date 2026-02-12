@@ -1,7 +1,8 @@
+from api.models import Meeting, SignedToMeeting, UserProfile
 from rest_framework import serializers
-from api.models import Meeting, UserProfile, SignedToMeeting
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 class MeetingSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField(read_only=True)
@@ -30,11 +31,12 @@ class MeetingSerializer(serializers.ModelSerializer):
         """
         return obj.attendees.count()
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = [
-            "id", 
+            "id",
             "username",
             "first_name",
             "last_name",
@@ -43,12 +45,14 @@ class UserSerializer(serializers.ModelSerializer):
             "user_description",
         ]
 
+
 class SignedToMeetingSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
 
     class Meta:
         model = SignedToMeeting
         fields = ["id", "user", "meeting", "signed_at"]
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -60,8 +64,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = UserProfile.objects.create_user(**validated_data)
         return user
-    
-    
+
+
 class UserTokenSerializer(serializers.Serializer):
     access_token = serializers.CharField()
     refresh_token = serializers.CharField()
@@ -77,10 +81,9 @@ class UserTokenSerializer(serializers.Serializer):
     def to_representation(self, user):
         tokens = self.get_tokens(user)
         return tokens
-    
+
 
 class ObtainTokenSerializer(TokenObtainPairSerializer):
-
     def retrieve_role(self):
         if self.user.is_staff:
             return "admin"

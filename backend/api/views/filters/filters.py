@@ -1,10 +1,8 @@
-from django_filters import FilterSet, BooleanFilter, CharFilter, IsoDateTimeFilter
-
 from api.models.meetups import Meeting
+from django_filters import BooleanFilter, CharFilter, FilterSet, IsoDateTimeFilter
 
 
 class MeetingFilter(FilterSet):
-
     datetime_beg__gt = IsoDateTimeFilter(field_name="datetime_beg", lookup_expr="gt")
     datetime_beg__lt = IsoDateTimeFilter(field_name="datetime_beg", lookup_expr="lt")
     datetime_beg = IsoDateTimeFilter(field_name="datetime_beg__date", lookup_expr="exact")

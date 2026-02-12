@@ -1,6 +1,8 @@
-import pika
 import json
+
+import pika
 from django.conf import settings
+
 
 def get_connection():
     """
@@ -9,6 +11,7 @@ def get_connection():
     url = settings.RABBITMQ_URL
     params = pika.URLParameters(url)
     return pika.BlockingConnection(params)
+
 
 def publish_message(queue, message):
     """
@@ -25,9 +28,10 @@ def publish_message(queue, message):
         body=json.dumps(message),
         properties=pika.BasicProperties(
             delivery_mode=2,
-        )
+        ),
     )
     connection.close()
+
 
 def process_message(queue, callback):
     """
