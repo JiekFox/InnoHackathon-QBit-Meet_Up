@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import MeetingViewSet, UserViewSet, ObtainTokenView
+from api.views.views import MeetingViewSet, UserViewSet, ObtainTokenView
 from rest_framework_simplejwt import views as jwt_views
 
 router = DefaultRouter()

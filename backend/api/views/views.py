@@ -1,22 +1,15 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from datetime import datetime, timezone
-from .models import Meeting, SignedToMeeting, UserProfile
+from api.models import Meeting, SignedToMeeting, UserProfile
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
-from .serializers import MeetingSerializer, UserRegistrationSerializer, ObtainTokenSerializer, UserSerializer
+from api.views.serializers.serializers import MeetingSerializer, UserRegistrationSerializer, ObtainTokenSerializer, UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .utils import get_user_by_param
-from .email_service import EmailService
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from .filters import MeetingFilter
-from django.views.decorators.cache import cache_page
-from django.utils.decorators import method_decorator
-from .cache_control import clear_all_cache
-from .permissions import IsStaff, IsAuthorOrStaff
-from .mixins import SubscriptionMixin, MeetingQueryMixin, UserMeetingQueryMixin, MeetingPagination
+from api.views.filters.filters import MeetingFilter
+from api.views.mixins.mixins import SubscriptionMixin, UserMeetingQueryMixin, MeetingPagination
 
 
 
@@ -124,36 +117,6 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         response_data, status_code = self.manage_subscription(request.user, meeting, action="unsubscribe")
         return Response(response_data, status=status_code)
 
-    @action(detail=True, methods=["post"])
-    def subscribe_by_id(self, request, pk=None):
-        user, error_response = self.get_user_from_query_params(request)
-        if error_response:
-            return error_response
-        meeting, error_response = self.get_meeting(pk)
-        if error_response:
-            return error_response
-        response_data, status_code = self.manage_subscription(user, meeting, action="subscribe")
-        return Response(response_data, status=status_code)
-
-    @action(detail=True, methods=["delete"])
-    def unsubscribe_by_id(self, request, pk=None):
-        user, error_response = self.get_user_from_query_params(request)
-        if error_response:
-            return error_response
-        meeting, error_response = self.get_meeting(pk)
-        if error_response:
-            return error_response
-        response_data, status_code = self.manage_subscription(user, meeting, action="unsubscribe")
-        return Response(response_data, status=status_code)
-
-    @staticmethod
-    def get_user_from_query_params(request):
-        tg_id = request.query_params.get('tg_id')
-        teams_id = request.query_params.get('teams_id')
-        if not tg_id and not teams_id:
-            return None, Response({"error": "tg_id or teams_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-        user, error = get_user_by_param(request, 'tg_id' if tg_id else 'teams_id')
-        return (user, None) if user else (None, Response({"error": error}, status=status.HTTP_404_NOT_FOUND))
     
     @action(detail=True, methods=["get"])
     def is_subscribed(self, request, pk=None):
@@ -204,7 +167,7 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
                 "destroy", 
                 "meetings_owned"
             ]:
-            #return [IsAuthenticated()]
+            return [IsAuthenticated()]
             return [AllowAny()]
         return super().get_permissions()
 
@@ -303,81 +266,6 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
         return paginator.get_paginated_response(serializer.data)
 
 
-    @action(detail=False, methods=["get"])
-    def meetings_signed_active(self, request):
-        """
-        Возвращает список актуальных встреч, на которые подписан пользователь по его tg_id или teams_id,
-        с поддержкой фильтрации и пагинации.
-        """
-        # Определение пользователя по tg_id или teams_id
-        tg_id = request.query_params.get('tg_id', None)
-        teams_id = request.query_params.get('teams_id', None)
-
-        if tg_id:
-            user, error = get_user_by_param(request, 'tg_id')
-        elif teams_id:
-            user, error = get_user_by_param(request, 'teams_id')
-        else:
-            return Response({"error": "tg_id or teams_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        if user is None:
-            return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
-
-        now = datetime.now(timezone.utc)
-        meetings = Meeting.objects.filter(
-            attendees__user=user,
-            datetime_beg__gt=now,
-        ).exclude(
-            author=user
-        )
-
-        meeting_filter = MeetingFilter(request.query_params, queryset=meetings)
-        if not meeting_filter.is_valid():
-            return Response(meeting_filter.errors, status=status.HTTP_400_BAD_REQUEST)
-        filtered_meetings = meeting_filter.qs
-
-        paginator = MeetingPagination()
-        paginated_meetings = paginator.paginate_queryset(filtered_meetings, request)
-        serializer = self.get_serializer(paginated_meetings, many=True)
-        return paginator.get_paginated_response(serializer.data)
-        
-    @action(detail=False, methods=["get"])
-    def meetings_authored_active(self, request):
-        """
-        Возвращает список актуальных встреч, на которые подписан пользователь по его tg_id или teams_id.
-        """
-        tg_id = request.query_params.get('tg_id', None)
-        teams_id = request.query_params.get('teams_id', None)
-
-        user = None
-        if tg_id:
-            user, error = get_user_by_param(request, 'tg_id')
-        elif teams_id:
-            user, error = get_user_by_param(request, 'teams_id')
-        else:
-            return Response({"error": "tg_id or teams_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        if user is None:
-            return Response({"error": error}, status=status.HTTP_404_NOT_FOUND)
-
-        now = datetime.now(timezone.utc)
-
-        meetings = Meeting.objects.filter(
-            author=user,
-            datetime_beg__gt=now
-        )
-        
-        
-        meeting_filter = MeetingFilter(request.query_params, queryset=meetings)
-        if not meeting_filter.is_valid():
-            return Response(meeting_filter.errors, status=status.HTTP_400_BAD_REQUEST)
-        filtered_meetings = meeting_filter.qs
-
-        paginator = MeetingPagination()
-        paginated_meetings = paginator.paginate_queryset(filtered_meetings, request)
-        serializer = self.get_serializer(paginated_meetings, many=True)
-        return paginator.get_paginated_response(serializer.data)
-    
 
 class ObtainTokenView(TokenObtainPairView):
     serializer_class = ObtainTokenSerializer

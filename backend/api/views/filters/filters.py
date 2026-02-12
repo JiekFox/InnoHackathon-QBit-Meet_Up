@@ -1,5 +1,7 @@
 from django_filters import FilterSet, BooleanFilter, CharFilter, IsoDateTimeFilter
-from .models import Meeting
+
+from api.models.meetups import Meeting
+
 
 class MeetingFilter(FilterSet):
 

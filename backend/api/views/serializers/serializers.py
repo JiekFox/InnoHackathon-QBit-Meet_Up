@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Meeting, UserProfile, SignedToMeeting
+from api.models import Meeting, UserProfile, SignedToMeeting
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -41,8 +41,6 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "photo",
             "user_description",
-            "tg_id",
-            "teams_id"
         ]
 
 class SignedToMeetingSerializer(serializers.ModelSerializer):
@@ -82,13 +80,21 @@ class UserTokenSerializer(serializers.Serializer):
     
 
 class ObtainTokenSerializer(TokenObtainPairSerializer):
+
+    def retrieve_role(self):
+        if self.user.is_staff:
+            return "admin"
+        return "user"
+
     def validate(self, attrs):
         data = super().validate(attrs)
         data["username"] = self.user.username
         data["user_id"] = self.user.id
+        data["role"] = self.retrieve_role()
         refresh = self.get_token(self.user)
         refresh["username"] = self.user.username
         refresh["user_id"] = self.user.id
+        refresh["role"] = self.retrieve_role()
         data["access"] = str(refresh.access_token)
         data["refresh"] = str(refresh)
         user = self.user

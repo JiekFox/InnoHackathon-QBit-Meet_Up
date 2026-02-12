@@ -137,3 +137,7 @@ backend/api/migrations
 test/
 
 frontend/deploy.cmd
+
+# IDE
+
+.idea/

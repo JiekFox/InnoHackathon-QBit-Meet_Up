@@ -1,9 +1,11 @@
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime, timezone
-from .models import Meeting, SignedToMeeting, UserProfile
 from rest_framework.pagination import PageNumberPagination
-from .filters import MeetingFilter
+from api.views.filters.filters import MeetingFilter
+from api.models.meetups import Meeting, SignedToMeeting
+from api.models.users import UserProfile
+
 
 class MeetingPagination(PageNumberPagination):
     """
@@ -37,6 +39,7 @@ class SubscriptionMixin:
             except SignedToMeeting.DoesNotExist:
                 return {"error": "Subscription not found"}, status.HTTP_404_NOT_FOUND
 
+
 class MeetingQueryMixin:
     def get_filtered_paginated_meetings(self, meetings, request):
         meeting_filter = MeetingFilter(request.query_params, queryset=meetings)
@@ -47,6 +50,7 @@ class MeetingQueryMixin:
         paginated = paginator.paginate_queryset(meeting_filter.qs, request)
         serializer = self.get_serializer(paginated, many=True)
         return paginator.get_paginated_response(serializer.data)
+
 
 class UserMeetingQueryMixin(MeetingQueryMixin):
     def get_user_by_id(self, pk):

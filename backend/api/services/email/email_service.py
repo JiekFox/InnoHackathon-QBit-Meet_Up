@@ -1,4 +1,4 @@
-from .rabbitmq import publish_message, process_message
+from api.services.rabbit.rabbitmq import publish_message, process_message
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from datetime import datetime
