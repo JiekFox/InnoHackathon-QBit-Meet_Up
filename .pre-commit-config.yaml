@@ -7,29 +7,29 @@ repos:
         exclude: ^backend/staticfiles/
       - id: end-of-file-fixer
         files: ^backend/.*\.py$
-        exclude: ^backend/staticfiles/
+        exclude: ^backend/(staticfiles/.*|.*/migrations/.*)
       - id: check-yaml
         files: ^backend/.*\.py$
-        exclude: ^backend/staticfiles/
+        exclude: ^backend/(staticfiles/.*|.*/migrations/.*)
       - id: check-added-large-files
         files: ^backend/.*\.py$
-        exclude: ^backend/staticfiles/
+        exclude: ^backend/(staticfiles/.*|.*/migrations/.*)
       - id: check-json
         files: ^backend/.*\.py$
-        exclude: ^backend/staticfiles/
+        exclude: ^backend/(staticfiles/.*|.*/migrations/.*)
       - id: check-toml
         files: ^backend/.*\.py$
-        exclude: ^backend/staticfiles/
+        exclude: ^backend/(staticfiles/.*|.*/migrations/.*)
       - id: detect-private-key
         files: ^backend/.*\.py$
-        exclude: ^backend/staticfiles/
+        exclude: ^backend/(staticfiles/.*|.*/migrations/.*)
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.3.5
     hooks:
       - id: ruff
         files: ^backend/.*\.py$
-        exclude: ^backend/staticfiles/
+        exclude: ^backend/(staticfiles/.*|.*/migrations/.*)
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
 
@@ -38,7 +38,7 @@ repos:
     hooks:
       - id: black
         files: ^backend/.*\.py$
-        exclude: ^backend/staticfiles/
+        exclude: ^backend/(staticfiles/.*|.*/migrations/.*)
         language_version: python3
 
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -46,6 +46,6 @@ repos:
     hooks:
       - id: mypy
         files: ^backend/.*\.py$
-        exclude: ^backend/staticfiles/
+        exclude: ^backend/(staticfiles/.*|.*/migrations/.*)
         additional_dependencies: [types-requests, types-PyYAML]
         args: [--ignore-missing-imports]

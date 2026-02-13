@@ -1,4 +1,5 @@
 from api.models import Meeting, SignedToMeeting, Tag, UserProfile
+from api.security.permissions import IsStaff
 from api.views.filters.filters import MeetingFilter
 from api.views.mixins.mixins import MeetingPagination, SubscriptionMixin, UserMeetingQueryMixin
 from api.views.serializers.serializers import (
@@ -24,7 +25,6 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
     """
 
     serializer_class = MeetingSerializer
-    permission_classes = [IsAuthenticated]
     pagination_class = MeetingPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = MeetingFilter
@@ -257,5 +257,5 @@ class ObtainTokenView(TokenObtainPairView):
 class TagViewSet(ModelViewSet):
     queryset = Tag.objects.all().order_by("name")
     serializer_class = TagSerializer
-    permission_classes = [AllowAny]  # TODO: CHANGE IN FUTURE
+    permission_classes = [IsStaff]  # TODO: CHANGE IN FUTURE
     search_fields = ["name", "slug"]

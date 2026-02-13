@@ -7,6 +7,7 @@ class Meeting(models.Model):
     title = models.CharField(max_length=50)
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="meetings")
     datetime_beg = models.DateTimeField()
+    duration = models.PositiveIntegerField(default=0)
     link = models.CharField(max_length=200, null=True, blank=True)
     location = models.CharField(max_length=200, null=True, blank=True)
     is_online = models.BooleanField(default=True)
