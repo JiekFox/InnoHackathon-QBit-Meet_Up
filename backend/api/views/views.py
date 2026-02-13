@@ -243,11 +243,7 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
             return error
 
         qs = self.get_signed_meetings(user).order_by("-datetime_beg")
-        qs = self.filter_queryset(qs)
-        paginator = MeetingPagination()
-        page = paginator.paginate_queryset(qs, request)
-        serializer = self.get_serializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        return self.get_filtered_paginated_meetings(qs, request)
 
 
 class ObtainTokenView(TokenObtainPairView):
