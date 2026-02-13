@@ -7,7 +7,7 @@ class IsAuthor(BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        return request.user == obj.author
+        return request.user.is_authenticated and request.user.id == obj.author.id
 
 
 class IsStaff(BasePermission):
@@ -16,13 +16,9 @@ class IsStaff(BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        return request.user.is_staff
+        return request.user.is_authenticated and request.user.is_staff
 
 
 class IsAuthorOrStaff(BasePermission):
-    """
-    Разрешает доступ администратору или модератору или создателю карточки
-    """
-
     def has_object_permission(self, request, view, obj):
-        return request.user.is_staff
+        return request.user.is_authenticated and (request.user.is_staff or request.user.id == obj.author.id)

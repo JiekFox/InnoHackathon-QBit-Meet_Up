@@ -1,6 +1,11 @@
+import logging
+
 from api.models.tag import Tag
 from api.models.user import UserProfile
+from api.utils import convert_to_webp
 from django.db import models
+
+logger = logging.getLogger(__name__)
 
 
 class Meeting(models.Model):
@@ -17,6 +22,16 @@ class Meeting(models.Model):
 
     def str(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if self.image and hasattr(self.image, "file") and not self.image.name.endswith(".webp"):
+            try:
+                new_image = convert_to_webp(self.image)
+                self.image.save(new_image.name, new_image, save=False)
+            except Exception as e:
+                logger.warning("Error occurred while saving meetup image: %s", str(e))
+                raise e
+        super().save(*args, **kwargs)
 
 
 class SignedToMeeting(models.Model):

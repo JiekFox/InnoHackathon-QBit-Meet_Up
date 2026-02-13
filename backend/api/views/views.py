@@ -1,5 +1,5 @@
 from api.models import Meeting, SignedToMeeting, Tag, UserProfile
-from api.security.permissions import IsStaff
+from api.security.permissions import IsAuthorOrStaff, IsStaff
 from api.views.filters.filters import MeetingFilter
 from api.views.mixins.mixins import MeetingPagination, SubscriptionMixin, UserMeetingQueryMixin
 from api.views.serializers.serializers import (
@@ -24,6 +24,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
     ViewSet для управления встречами.
     """
 
+    permission_classes = [IsAuthenticated]
     serializer_class = MeetingSerializer
     pagination_class = MeetingPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -39,12 +40,12 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         """
         Возвращает разрешения для текущего действия.
         """
-        return [AllowAny()]
-        # if self.action in ["list", "retrieve"]:
-        #     return [AllowAny()]
-        # if self.action in ["update", "partial_update", "destroy"]:
-        #     return [IsAuthenticated(), IsAuthorOrStaff()]
-        # return super().get_permissions()
+        if self.action in ["list", "retrieve"]:
+            return [AllowAny()]
+        if self.action in ["update", "partial_update", "destroy"]:
+            return [AllowAny()]  # TODO: Only for test reasons
+            return [IsAuthorOrStaff()]
+        return super().get_permissions()
 
     # @method_decorator(cache_page(60 * 15))
     def list(self, request, *args, **kwargs):
@@ -67,11 +68,9 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         image = request.FILES.get("image")
         if image and image.size > 5 * 1024 * 1024:
             return Response({"error": "Размер файла не должен превышать 5 MB"}, status=status.HTTP_400_BAD_REQUEST)
-
         self.perform_create(serializer)
         # clear_all_cache()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -143,8 +142,7 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
 
     queryset = UserProfile.objects.all()
     serializer_class = UserSerializer
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     search_fields = ["title", "description"]
 
     def get_filter_backends(self):
@@ -156,11 +154,12 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
         """
         Переопределение прав доступа для конкретных действий.
         """
-        if self.action in ["register", "list", "retrieve"]:
-            return [AllowAny()]
-        if self.action in ["update", "partial_update", "destroy", "meetings_owned"]:
+        if self.action in ["list", "retrieve"]:
+            return [AllowAny()]  # TODO: Temporary
+        if self.action in ["update", "partial_update", "destroy"]:
+            return [IsAuthorOrStaff()]
+        if self.action in ["meetings_owned", "meetings_signed"]:
             return [IsAuthenticated()]
-            return [AllowAny()]
         return super().get_permissions()
 
     def get_serializer_class(self):

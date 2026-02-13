@@ -1,5 +1,9 @@
+from io import BytesIO
+
+from django.core.files.base import ContentFile
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from PIL import Image
 
 
 def send_email(subject, to_email, template_name, context):
@@ -10,3 +14,17 @@ def send_email(subject, to_email, template_name, context):
     email = EmailMessage(subject, message, to=[to_email])
     email.content_subtype = "html"
     email.send()
+
+
+def convert_to_webp(image_field):
+    img = Image.open(image_field)
+    # Конвертируем в RGB (на случай RGBA, т.к. WebP не поддерживает прозрачность в простом режиме)
+    img = img.convert("RGB")
+    output = BytesIO()
+    # Качество 85 — хороший баланс между размером и качеством
+    img.save(output, format="WEBP", quality=85)
+    output.seek(0)
+    # Генерируем имя с расширением .webp
+    original_name = image_field.name
+    new_name = original_name.rsplit(".", 1)[0] + ".webp"
+    return ContentFile(output.read(), name=new_name)
