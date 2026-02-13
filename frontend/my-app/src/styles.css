@@ -267,6 +267,8 @@ input:checked + .slider:before {
 
 .user-name {
     max-width: 100px;
+    min-width: 70px;
+    text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -283,7 +285,7 @@ input:checked + .slider:before {
     position: absolute;
     top: 100%;
     right: 0;
-    width: 220px;
+    width: 190px;
     background-color: var(--dropdown-bg);
     box-shadow: 0 8px 16px var(--dropdown-shadow);
     border-radius: 8px;
@@ -653,9 +655,15 @@ textarea {
     box-sizing: border-box;
 }
 
+textarea {
+    overflow-y: auto;
+    resize: vertical;
+}
+
 .profile-edit-form textarea {
-    resize: none;
+    resize: vertical;
     height: 80px;
+    overflow-y: auto;
 }
 
 .profile-edit-form .save-button {
@@ -987,14 +995,9 @@ h3 {
 }
 
 .create-meetup-form .input-group textarea {
-    resize: none;
-    overflow: hidden;
-    min-height: 50px;
-}
-
-.create-meetup-form .input-group textarea {
     resize: vertical;
-    height: 100px;
+    overflow-y: auto;
+    min-height: 100px;
 }
 
 .create-meetup-form .input-group input[type='file'] {
@@ -1694,6 +1697,7 @@ h3 {
     color: #ffffff;
     font-size: 13px;
     font-weight: 500;
+    cursor: pointer;
 }
 
 .remove-tag-btn {
@@ -1761,6 +1765,11 @@ h3 {
 .tag-badge.selected {
     border: 2px solid #ffffff;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+}
+.meetup-card .tag-badge,
+.meetup-details-tags .tag-badge,
+.hero-tags .tag-badge {
+    cursor: default;
 }
 
 @media (max-width: 768px) {

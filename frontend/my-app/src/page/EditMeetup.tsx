@@ -17,6 +17,7 @@ import { ImagePreview } from '../components/ImagePreview';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { useTranslation } from 'react-i18next';
 import TagSelector, { Tag } from '../components/TagSelector';
+import { getErrorDescription } from '../utils';
 
 interface FormDataState {
     title: string;
@@ -180,7 +181,9 @@ export function EditMeetup(): JSX.Element {
 
             navigate(`${MEETUP_DETAILS}/${id}`);
         } catch (error: any) {
-            setError(error.message || 'Failed to update meetup.');
+            const errorDescription = getErrorDescription(error);
+            console.error('Error updating meetup:', errorDescription);
+            setError(errorDescription || 'Failed to update meetup.');
         } finally {
             setIsPending(false);
         }

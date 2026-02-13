@@ -54,12 +54,9 @@ export const useSignIn = (): UseSignInReturn => {
                 saveDate(response.data);
                 navigate(-1);
             } catch (error) {
-                console.log(error);
-                const errorMessage =
-                    error instanceof Error
-                        ? error.message
-                        : 'Invalid username or password. Please try again.';
-                setErrorMessage(errorMessage);
+                const errorDescription = getErrorDescription(error, 'Invalid username or password. Please try again.');
+                console.error('Sign in error:', errorDescription);
+                setErrorMessage(errorDescription);
             } finally {
                 setIsPending(false);
             }

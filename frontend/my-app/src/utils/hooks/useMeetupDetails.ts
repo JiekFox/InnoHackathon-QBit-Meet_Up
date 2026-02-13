@@ -8,6 +8,7 @@ import { Meetup } from '../../constant/types';
 import { useAxiosWithAuth } from './useAxiosWithAuth';
 import { formatDate } from '../formatDate';
 import i18n from '../../i18n';
+import { getErrorDescription } from '../index';
 
 interface UseMeetupDetailsReturn {
     meetup: Meetup | null;
@@ -38,19 +39,12 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
                 );
                 setMeetup(response.data);
             } catch (err) {
-                const axiosErr = err as AxiosError;
-                const data = axiosErr.response?.data;
-                if (data) {
-                    setError(
-                        typeof data === 'string'
-                            ? data
-                            : (data as any).detail ||
-                                  (data as any).message ||
-                                  JSON.stringify(data)
-                    );
-                } else {
-                    setError(axiosErr.message);
-                }
+                const errorDescription = getErrorDescription(
+                    err,
+                    'Failed to fetch meetup'
+                );
+                console.error('Error fetching meetup:', errorDescription);
+                setError(errorDescription);
             } finally {
                 setLoading(false);
             }
@@ -65,10 +59,11 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
 
                 setIsFavorite(response.data.message);
             } catch (err) {
-                console.error(
-                    'Error checking subscription:',
-                    (err as Error).message
+                const errorDescription = getErrorDescription(
+                    err,
+                    'Failed to check subscription'
                 );
+                console.error('Error checking favorite:', errorDescription);
             } finally {
                 setPending(false);
             }
@@ -96,23 +91,12 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
                     : null
             );
         } catch (error) {
-            console.error(
-                'Error signing for meeting:',
-                (error as AxiosError).message
+            const errorDescription = getErrorDescription(
+                error,
+                'Failed to subscribe'
             );
-            const axiosErr = error as AxiosError;
-            const data = axiosErr.response?.data;
-            if (data) {
-                setError(
-                    typeof data === 'string'
-                        ? data
-                        : (data as any).detail ||
-                              (data as any).message ||
-                              JSON.stringify(data)
-                );
-            } else {
-                setError('Failed to subscribe');
-            }
+            console.error('Error signing for meeting:', errorDescription);
+            setError(errorDescription);
         } finally {
             setPending(false);
         }
@@ -140,23 +124,12 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
                     : null
             );
         } catch (error) {
-            console.error(
-                'Error unsubscribing from meeting:',
-                (error as AxiosError).message
+            const errorDescription = getErrorDescription(
+                error,
+                'Failed to unsubscribe'
             );
-            const axiosErr = error as AxiosError;
-            const data = axiosErr.response?.data;
-            if (data) {
-                setError(
-                    typeof data === 'string'
-                        ? data
-                        : (data as any).detail ||
-                              (data as any).message ||
-                              JSON.stringify(data)
-                );
-            } else {
-                setError('Failed to unsubscribe');
-            }
+            console.error('Error unsubscribing from meeting:', errorDescription);
+            setError(errorDescription);
         } finally {
             setPending(false);
         }

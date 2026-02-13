@@ -6,7 +6,7 @@ import { MEETUP_DETAILS, SIGN_IN } from '../../constant/router';
 import { useAuth } from '../AuthContext';
 import { Meetup } from '../../constant/types';
 import { useAxiosWithAuth } from './useAxiosWithAuth';
-import { getErrorDescription } from '..';
+import { getErrorDescription } from '../index';
 
 export interface Tag {
     id: number;
@@ -61,11 +61,9 @@ export const useMeetupForm = () => {
                 const response = await axios.get(TAGS_API_URL);
                 setAllTags(response.data);
             } catch (error) {
-                const axiosError = error as AxiosError;
-                if (axiosError.message) {
-                    setError(axiosError.message);
-                }
-                console.error('Failed to fetch tags:', error);
+                const errorDescription = getErrorDescription(error, 'Failed to fetch tags');
+                console.error('Failed to fetch tags:', errorDescription);
+                setError(errorDescription);
                 setAllTags([]);
             } finally {
                 setTagsLoading(false);
@@ -186,11 +184,9 @@ export const useMeetupForm = () => {
                 );
                 navigate(`${MEETUP_DETAILS}/${response.data.id}`);
             } catch (err) {
-                const axiosErr = err as AxiosError;
-                console.log(axiosErr.response);
-                const errorData = getErrorDescription(err);
-                console.error('Error creating meeting:', errorData);
-                setError(errorData);
+                const errorDescription = getErrorDescription(err, 'Failed to create meetup');
+                console.error('Error creating meeting:', errorDescription);
+                setError(errorDescription);
             } finally {
                 setIsPending(false);
             }

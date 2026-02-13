@@ -4,6 +4,7 @@ import axios from 'axios';
 import { USER_API_URL } from '../../constant/apiURL';
 import { giveConfig } from '../giveConfig';
 import icon from '../../assets/img/icon.png';
+import { getErrorDescription } from '../index';
 
 const ITEMS_PER_PAGE = 12;
 export const useUserMeetups = path => {
@@ -38,7 +39,9 @@ export const useUserMeetups = path => {
                 );
                 setTotalPages(Math.ceil(results.length / ITEMS_PER_PAGE));
             } catch (err) {
-                setError(err.response?.data?.message || 'Something went wrong');
+                const errorDescription = getErrorDescription(err, 'Failed to fetch meetups');
+                console.error('Error fetching user meetups:', errorDescription);
+                setError(errorDescription);
             } finally {
                 setLoading(false);
             }
