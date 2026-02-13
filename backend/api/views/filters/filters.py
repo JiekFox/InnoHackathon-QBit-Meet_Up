@@ -10,7 +10,7 @@ class MeetingFilter(FilterSet):
     location = CharFilter(field_name="location", lookup_expr="icontains")
     is_online = BooleanFilter(field_name="is_online")
     tags = django_filters.ModelMultipleChoiceFilter(
-        field_name="tags__slug", to_field_name="slug", queryset=Tag.objects.all(), conjoined=False
+        field_name="tags__id", to_field_name="id", queryset=Tag.objects.all(), conjoined=False
     )
 
     class Meta:
