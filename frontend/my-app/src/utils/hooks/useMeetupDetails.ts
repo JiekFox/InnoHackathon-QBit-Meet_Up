@@ -7,6 +7,7 @@ import { SIGN_IN } from '../../constant/router';
 import { Meetup } from '../../constant/types';
 import { useAxiosWithAuth } from './useAxiosWithAuth';
 import { formatDate } from '../formatDate';
+import i18n from '../../i18n';
 
 interface UseMeetupDetailsReturn {
     meetup: Meetup | null;
@@ -163,7 +164,7 @@ export const useMeetupDetails = (id: string | undefined): UseMeetupDetailsReturn
 
     const formattedDate = useMemo(() => {
         return meetup ? formatDate(meetup.datetime_beg) : 'Not specified';
-    }, [meetup]);
+    }, [meetup, i18n.language]);
 
     return {
         meetup,

@@ -9,9 +9,24 @@ import React, {
 
 import { USER_API_URL } from '../constant/apiURL';
 import axios from 'axios';
-import { AuthContextType, AuthToken, AuthResponseData } from '../constant/types';
+import {
+    AuthContextType,
+    AuthToken,
+    AuthResponseData,
+    AuthState
+} from '../constant/types';
+
+const initialState: AuthState = {
+    token: null,
+    name: null,
+    userID: null,
+    role: 'user',
+    img: undefined,
+    loading: true
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
 export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
     if (!context) {
@@ -23,26 +38,28 @@ export const useAuth = (): AuthContextType => {
 interface AuthProviderProps {
     children: ReactNode;
 }
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [token, setToken] = useState<AuthToken | null>(null);
-    const [name, setName] = useState<string | null>(null);
-    const [userID, setUserID] = useState<number | null>(null);
-    const [img, setImg] = useState<string | null | undefined>(undefined);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [authState, setAuthState] = useState<AuthState>(initialState);
 
     const saveToken = useCallback((newToken: AuthToken | null) => {
-        setToken(newToken);
+        setAuthState(prev => ({ ...prev, token: newToken }));
         localStorage.setItem('authToken', JSON.stringify(newToken));
     }, []);
 
     const saveName = useCallback((newName: string) => {
-        setName(newName);
+        setAuthState(prev => ({ ...prev, name: newName }));
         localStorage.setItem('name', JSON.stringify(newName));
     }, []);
 
     const saveId = useCallback((newID: number) => {
-        setUserID(newID);
+        setAuthState(prev => ({ ...prev, userID: newID }));
         localStorage.setItem('ID', JSON.stringify(newID));
+    }, []);
+
+    const saveRole = useCallback((newRole: 'admin' | 'user') => {
+        setAuthState(prev => ({ ...prev, role: newRole }));
+        localStorage.setItem('role', JSON.stringify(newRole));
     }, []);
 
     const saveDate = useCallback(
@@ -52,31 +69,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             }
             saveName(newDate.username);
             saveId(newDate.user_id);
-            setImg(newDate.photo);
-            setLoading(false);
+            if (newDate.role) {
+                saveRole(newDate.role as 'admin' | 'user');
+            }
+            setAuthState(prev => ({ ...prev, img: newDate.photo, loading: false }));
         },
-        [saveToken, saveName, saveId]
+        [saveToken, saveName, saveId, saveRole]
     );
 
     const removeToken = useCallback(() => {
-        setToken(null);
-        setUserID(null);
-        setName(null);
-        setImg(undefined);
+        setAuthState({...initialState, loading: false});
         localStorage.removeItem('authToken');
         localStorage.removeItem('name');
         localStorage.removeItem('ID');
+        localStorage.removeItem('role');
     }, []);
 
     useEffect(() => {
         const savedToken = localStorage.getItem('authToken');
         const savedName = localStorage.getItem('name');
         const savedID = localStorage.getItem('ID');
+        const savedRole = localStorage.getItem('role');
+
+        const newState: AuthState = { ...initialState };
 
         if (savedToken) {
             try {
-                const parsedToken: AuthToken | null = JSON.parse(savedToken);
-                setToken(parsedToken);
+                newState.token = JSON.parse(savedToken);
             } catch (error) {
                 console.error('Failed to parse token from localStorage:', error);
             }
@@ -84,8 +103,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (savedName) {
             try {
-                const parsedName: string = JSON.parse(savedName);
-                setName(parsedName);
+                newState.name = JSON.parse(savedName);
             } catch (error) {
                 console.error('Failed to parse name from localStorage:', error);
             }
@@ -93,130 +111,54 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (savedID) {
             try {
-                const parsedID: number = JSON.parse(savedID);
-                setUserID(parsedID);
+                newState.userID = JSON.parse(savedID);
             } catch (error) {
                 console.error('Failed to parse ID from localStorage:', error);
             }
         }
 
-        setLoading(false);
+        if (savedRole) {
+            try {
+                newState.role = JSON.parse(savedRole) as 'admin' | 'user';
+            } catch (error) {
+                console.error('Failed to parse role from localStorage:', error);
+            }
+        }
+
+        newState.loading = false;
+        setAuthState(newState);
     }, []);
 
     useEffect(() => {
         async function giveImg() {
             try {
-                const response = await axios.get(`${USER_API_URL}${userID}/`);
-                setImg(response.data.photo);
+                const response = await axios.get(
+                    `${USER_API_URL}${authState.userID}/`
+                );
+                setAuthState(prev => ({ ...prev, img: response.data.photo }));
             } catch (err: any) {
                 console.error(err.message);
             }
         }
 
-        if (userID) {
+        if (authState.userID) {
             giveImg();
         }
-    }, [userID]);
-
-    /*
-    const isAccessTokenValid = (accessToken: string): boolean => {
-        try {
-            const decoded: DecodedToken  = jwtDecode(accessToken);
-
-            const now = Math.floor(Date.now() / 1000);
-            console.log("decoded:",decoded, now);
-            console.log(decoded.exp - now)
-            return decoded.exp > now;
-        } catch (err) {
-            console.error('Error decoding access token:', err);
-            return false;
-        }
-    };
-    const refreshAccessToken = useCallback(async (refreshToken: string) => {
-        console.log("start refresh");
-        const decoded: DecodedToken  = jwtDecode(refreshToken);
-        console.log(decoded)
-        try {
-            const response = await axios.post<AuthResponseData>(
-                TOKEN_REFRESH_URL,
-                { refresh: refreshToken },
-                { headers: { 'Content-Type': 'application/json' } }
-            );
-             saveDate(response.data);
-            console.log(response.data)
-            console.log("end refresh");
-        } catch (err) {
-            const axiosErr = err as AxiosError;
-            console.error('Error refreshing token:', axiosErr.response?.data || axiosErr.message);
-            //removeToken(); 
-        }
-    }, [removeToken, saveDate]);
-
-
-    async function initializeFromStorage() {
-        const savedToken = localStorage.getItem('authToken');
-        const savedName = localStorage.getItem('name');
-        const savedID = localStorage.getItem('ID');
-
-        if (savedToken) {
-            try {
-                const parsedToken: AuthToken = JSON.parse(savedToken);
-                console.log(parsedToken)
-                // Если Access не валиден, пробуем обновить
-                if (!parsedToken.access || !isAccessTokenValid(parsedToken.access)) {
-                    if (parsedToken.refresh) {
-                        await refreshAccessToken(parsedToken.refresh);
-                    } else {
-                        removeToken();
-                    }
-                } else {
-                    // Access валиден, сохраняем в state
-                    setToken(parsedToken);
-                }
-            } catch (error) {
-                console.error('Failed to parse token from localStorage:', error);
-                removeToken();
-            }
-        }
-
-        if (savedName) {
-            try {
-                const parsedName: string = JSON.parse(savedName);
-                setName(parsedName);
-            } catch {
-                console.error('Failed to parse name from localStorage');
-            }
-        }
-
-        if (savedID) {
-            try {
-                const parsedID: number = JSON.parse(savedID);
-                setUserID(parsedID);
-            } catch {
-                console.error('Failed to parse ID from localStorage');
-            }
-        }
-        setLoading(false);
-    }
-
-    // ---- При монтировании компонента: пробуем загрузить из localStorage и при необходимости обновить Access ----
-    useEffect(() => {
-
-        initializeFromStorage();
-    }, [refreshAccessToken, removeToken]);*/
+    }, [authState.userID]);
 
     const value: AuthContextType = {
-        token,
-        userID,
-        name,
-        img,
+        token: authState.token,
+        userID: authState.userID,
+        name: authState.name,
+        img: authState.img,
+        role: authState.role,
+        loading: authState.loading,
         saveToken,
         removeToken,
-        saveDate,
-        loading
+        saveDate
     };
 
-    return loading ? (
+    return authState.loading ? (
         <div>Loading...</div>
     ) : (
         <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -25,6 +25,11 @@ const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
     const [error, setError] = useState<Error | null>(null);
     const [totalCount, setTotalCount] = useState(0);
     const [loadedPages, setLoadedPages] = useState(0);
+    const [userInteracted, setUserInteracted] = useState(false);
+    const [prevIndex, setPrevIndex] = useState<number | null>(null);
+    const [animating, setAnimating] = useState(false);
+    const [direction, setDirection] = useState<'next' | 'prev' | null>(null);
+    const animTimeout = React.useRef<number | null>(null);
 
     const loadHeroData = async (page: number = 1) => {
         try {
@@ -34,6 +39,7 @@ const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
             });
             if (page === 1) {
                 setMeetups(data.results);
+                console.log('Fetched meetups:', data.results);
                 setLoadedPages(1);
             } else {
                 setMeetups(prev => {
@@ -88,15 +94,78 @@ const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
     const maxIndex =
         totalCount > 0 ? totalCount - 1 : Math.max(0, meetups.length - 1);
 
-    const handleNext = () => {
-        setCurrentIndex(prev => (prev === maxIndex ? 0 : prev + 1));
+    const performSlide = (
+        newIndex: number,
+        dir: 'next' | 'prev',
+        isUser = false
+    ) => {
+        if (animTimeout.current) {
+            window.clearTimeout(animTimeout.current);
+            animTimeout.current = null;
+        }
+        setPrevIndex(currentIndex);
+        setDirection(dir);
+        setCurrentIndex(newIndex);
+        if (isUser) setUserInteracted(true);
+        setAnimating(true);
+        // end animation after 550ms
+        animTimeout.current = window.setTimeout(() => {
+            setPrevIndex(null);
+            setAnimating(false);
+            setDirection(null);
+            animTimeout.current = null;
+        }, 550);
     };
 
-    const handlePrev = () => {
-        setCurrentIndex(prev => (prev === 0 ? maxIndex : prev - 1));
+    const handleNext = (isUser = false) => {
+        const nextIndex = currentIndex === maxIndex ? 0 : currentIndex + 1;
+        performSlide(nextIndex, 'next', isUser);
     };
+
+    const handlePrev = (isUser = false) => {
+        const prevIdx = currentIndex === 0 ? 0 : currentIndex - 1;
+        // if already at first and user clicked, no action
+        if (isUser && currentIndex === 0) return;
+        performSlide(prevIdx, 'prev', isUser);
+    };
+
+    const handleNextUser = () => handleNext(true);
+    const handlePrevUser = () => handlePrev(true);
+
+    const autoAdvance = React.useCallback(() => {
+        setCurrentIndex(prev => {
+            const nextIdx = prev === maxIndex ? 0 : prev + 1;
+            setPrevIndex(prev);
+            setDirection('next');
+            setAnimating(true);
+            if (animTimeout.current) clearTimeout(animTimeout.current);
+            animTimeout.current = window.setTimeout(() => {
+                setPrevIndex(null);
+                setAnimating(false);
+                setDirection(null);
+                animTimeout.current = null;
+            }, 550);
+            return nextIdx;
+        });
+    }, [maxIndex]);
+
+    useEffect(() => {
+        if (userInteracted) return;
+        if (totalCount <= 1 && meetups.length <= 1) return;
+        const id = setInterval(() => {
+            autoAdvance();
+        }, 5000);
+        return () => clearInterval(id);
+    }, [userInteracted, totalCount, meetups.length, autoAdvance]);
+
+    useEffect(() => {
+        return () => {
+            if (animTimeout.current) window.clearTimeout(animTimeout.current);
+        };
+    }, []);
 
     const current = meetups[currentIndex];
+    const prev = prevIndex !== null ? meetups[prevIndex] : null;
     if (error) {
         return (
             <div className="hero-viewport">
@@ -116,48 +185,140 @@ const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
 
     return (
         <div className="hero-viewport">
-            <button onClick={handlePrev} className="slider-nav-btn prev">
+            <button
+                onClick={handlePrevUser}
+                className={`slider-nav-btn prev ${currentIndex === 0 ? 'disabled' : ''}`}
+                disabled={currentIndex === 0}
+                aria-disabled={currentIndex === 0}
+            >
                 ❮
             </button>
-            <button onClick={handleNext} className="slider-nav-btn next">
+            <button onClick={handleNextUser} className="slider-nav-btn next">
                 ❯
             </button>
 
             <div className="hero-slider-main">
-                <div className="hero-slide-flex">
-                    <div className="hero-text-side">
-                        <div className="hero-info-wrapper">
-                            <span className="hero-badge">
-                                {t('slider.announcement')}
-                            </span>
-                            <h1 className="hero-title">{current.title}</h1>
-                            <p className="hero-description">{current.description}</p>
-                            <div className="hero-meta">
-                                <span>
-                                    {formatDate(current.dateTime ?? '', {
-                                        dateOnly: true
-                                    })}
-                                </span>
+                <div className="slide-wrapper">
+                    {prev && (
+                        <div
+                            className={`slide slide-prev ${animating ? (direction === 'next' ? 'animate-out-left' : 'animate-out-right') : ''}`}
+                            key={`prev-${prevIndex}`}
+                        >
+                            <div className="hero-slide-flex">
+                                <div className="hero-text-side">
+                                    <div className="hero-info-wrapper">
+                                        <div className="hero-tags">
+                                            {prev.tags && prev.tags.length > 0 ? (
+                                                prev.tags.map(tag => (
+                                                    <span
+                                                        key={tag.id}
+                                                        className="tag-badge"
+                                                        style={{
+                                                            backgroundColor:
+                                                                tag.color
+                                                        }}
+                                                    >
+                                                        {tag.name}
+                                                    </span>
+                                                ))
+                                            ) : (
+                                                <span className="hero-badge">
+                                                    {/* {t('slider.announcement')} */}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <h1 className="hero-title">{prev.title}</h1>
+                                        <p className="hero-description">
+                                            {prev.description}
+                                        </p>
+                                        <div className="hero-meta">
+                                            <span>
+                                                {formatDate(prev.dateTime ?? '', {
+                                                    dateOnly: false
+                                                })}
+                                            </span>
+                                        </div>
+                                        <Link
+                                            className="create-meeting-button "
+                                            to={`${MEETUP_DETAILS}/${prev.id}`}
+                                        >
+                                            {t('slider.details')}
+                                        </Link>
+                                    </div>
+                                </div>
+
+                                <Link
+                                    className="hero-image-side"
+                                    to={`${MEETUP_DETAILS}/${prev.id}`}
+                                >
+                                    <img
+                                        src={prev.image ? prev.image : icon}
+                                        alt={prev.title}
+                                        className="hero-main-img"
+                                    />
+                                </Link>
                             </div>
+                        </div>
+                    )}
+
+                    <div
+                        className={`slide slide-current ${animating ? (direction === 'next' ? 'animate-in-from-right' : 'animate-in-from-left') : ''}`}
+                        key={`cur-${currentIndex}`}
+                    >
+                        <div className="hero-slide-flex">
+                            <div className="hero-text-side">
+                                <div className="hero-info-wrapper">
+                                    <div className="hero-tags">
+                                        {current.tags && current.tags.length > 0 ? (
+                                            current.tags.map(tag => (
+                                                <span
+                                                    key={tag.id}
+                                                    className=" tag-badge"
+                                                    style={{
+                                                        backgroundColor: tag.color
+                                                    }}
+                                                >
+                                                    {tag.name}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <span className="hero-badge">
+                                                {/* {t('slider.announcement')} */}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h1 className="hero-title">{current.title}</h1>
+                                    <p className="hero-description">
+                                        {current.description}
+                                    </p>
+                                    <div className="hero-meta">
+                                        <span>
+                                            {formatDate(current.dateTime ?? '', {
+                                                dateOnly: false
+                                            })}
+                                        </span>
+                                    </div>
+                                    <Link
+                                        className="create-meeting-button "
+                                        to={`${MEETUP_DETAILS}/${current.id}`}
+                                    >
+                                        {t('slider.details')}
+                                    </Link>
+                                </div>
+                            </div>
+
                             <Link
-                                className="create-meeting-button "
+                                className="hero-image-side"
                                 to={`${MEETUP_DETAILS}/${current.id}`}
                             >
-                                {t('slider.details')}
+                                <img
+                                    src={current.image ? current.image : icon}
+                                    alt={current.title}
+                                    className="hero-main-img"
+                                />
                             </Link>
                         </div>
                     </div>
-
-                    <Link
-                        className="hero-image-side"
-                        to={`${MEETUP_DETAILS}/${current.id}`}
-                    >
-                        <img
-                            src={current.image ? current.image : icon}
-                            alt={current.title}
-                            className="hero-main-img"
-                        />
-                    </Link>
                 </div>
             </div>
         </div>

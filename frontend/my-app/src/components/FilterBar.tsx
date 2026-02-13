@@ -1,21 +1,29 @@
 import React, { useState, useCallback } from 'react';
 import DebounceInput from './DebounceInput';
 import { useTranslation } from 'react-i18next';
+import FilterPanel, { FilterData } from './FilterPanel';
+import { Tag } from './TagSelector';
 
 interface FilterBarProps {
     onSearchChange: (query: string) => void;
-    onDateFilter?: (startDate: string, endDate: string) => void;
-    onRecommendByAI?: () => Promise<void>;
+    onFiltersApply?: (filters: FilterData) => void;
+        onRecommendByAI?: () => Promise<void>;
     onQueryTuchUseAI?: () => Promise<void>;
+    allTags?: Tag[];
+    tagsLoading?: boolean;
 }
 
 const FilterBar: React.FC<FilterBarProps> = React.memo(
-    ({ onSearchChange, onDateFilter, onRecommendByAI, onQueryTuchUseAI }) => {
+    ({
+        onSearchChange,
+        onFiltersApply,
+        onRecommendByAI,
+        onQueryTuchUseAI,
+        allTags = [],
+        tagsLoading = false
+    }) => {
         const { t } = useTranslation();
-        const [showDateFilters, setShowDateFilters] = useState<boolean>(false);
-        const [startDate, setStartDate] = useState<string>('');
-        const [endDate, setEndDate] = useState<string>('');
-
+        const [isFilterPanelOpen, setIsFilterPanelOpen] = useState<boolean>(false);
         const [isAiSearchLoading, setIsAiSearchLoading] = useState(false);
         const [isAiRecommendLoading, setIsAiRecommendLoading] = useState(false);
 
@@ -26,11 +34,14 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
             [onSearchChange]
         );
 
-        const handleDateFilterApply = () => {
-            if (onDateFilter) {
-                onDateFilter(startDate, endDate);
-            }
-        };
+        const handleFiltersApply = useCallback(
+            (filters: FilterData) => {
+                if (onFiltersApply) {
+                    onFiltersApply(filters);
+                }
+            },
+            [onFiltersApply]
+        );
 
         const handleAiSearchClick = async () => {
             if (!onQueryTuchUseAI) return;
@@ -55,73 +66,58 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
         };
 
         return (
-            <div className="filter-bar">
-                {onDateFilter && (
-                    <>
+            <>
+                <div className="filter-bar">
+                    <button
+                        className="filter-button"
+                        onClick={() => setIsFilterPanelOpen(true)}
+                    >
+                        {t('filterBar.filterButton')}
+                    </button>
+
+                    <DebounceInput
+                        type="text"
+                        id="search"
+                        name="search"
+                        placeholder={t('filterBar.searchPlaceholder')}
+                        className="search-input"
+                        onChange={handleSearchChange}
+                        delay={500}
+                    />
+
+                    {onQueryTuchUseAI && (
                         <button
-                            className="filter-button"
-                            onClick={() => setShowDateFilters(!showDateFilters)}
+                            className={`ai-button ai-button-meetups-section ${isAiSearchLoading ? 'ai-loading' : ''}`}
+                            onClick={handleAiSearchClick}
+                            disabled={isAiSearchLoading}
                         >
-                            {t('filterBar.filterButton')}
+                            {isAiSearchLoading
+                                ? t('common.loading')
+                                : `${t('filterBar.aiSearch')}✨`}
                         </button>
-                        {showDateFilters && (
-                            <div className="date-filters">
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={e => setStartDate(e.target.value)}
-                                    placeholder="Start Date"
-                                />
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={e => setEndDate(e.target.value)}
-                                    placeholder="End Date"
-                                />
-                                <button
-                                    onClick={handleDateFilterApply}
-                                    className="apply-button"
-                                >
-                                    Apply
-                                </button>
-                            </div>
-                        )}
-                    </>
-                )}
-                <DebounceInput
-                    type="text"
-                    id="search"
-                    name="search"
-                    placeholder={t('filterBar.searchPlaceholder')}
-                    className="search-input"
-                    onChange={handleSearchChange}
-                    delay={500}
+                    )}
+
+                    {onRecommendByAI && (
+                        <button
+                            className={`ai-button ai-button-meetups-section ${isAiRecommendLoading ? 'ai-loading' : ''}`}
+                            onClick={handleAiRecommendClick}
+                            disabled={isAiRecommendLoading}
+                        >
+                            {isAiRecommendLoading
+                                ? t('common.loading')
+                                : `${t('filterBar.aiRecommend')} ✨`}
+                        </button>
+                    )}
+                </div>
+
+                <FilterPanel
+                    isOpen={isFilterPanelOpen}
+                    onClose={() => setIsFilterPanelOpen(false)}
+                    onApplyFilters={handleFiltersApply}
+                    allTags={allTags}
+                    tagsLoading={tagsLoading}
                 />
-
-                {onQueryTuchUseAI && (
-                    <button
-                        className={`ai-button ai-button-meetups-section ${isAiSearchLoading ? 'ai-loading' : ''}`}
-                        onClick={handleAiSearchClick}
-                        disabled={isAiSearchLoading}
-                    >
-                        {isAiSearchLoading
-                            ? t('common.loading')
-                            : `${t('filterBar.aiSearch')}✨`}
-                    </button>
-                )}
-
-                {onRecommendByAI && (
-                    <button
-                        className={`ai-button ai-button-meetups-section ${isAiRecommendLoading ? 'ai-loading' : ''}`}
-                        onClick={handleAiRecommendClick}
-                        disabled={isAiRecommendLoading}
-                    >
-                        {isAiRecommendLoading
-                            ? t('common.loading')
-                            : `${t('filterBar.aiRecommend')} ✨`}
-                    </button>
-                )}
-            </div>
+            </>
         );
     }
 );

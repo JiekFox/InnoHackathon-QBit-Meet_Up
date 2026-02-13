@@ -20,7 +20,7 @@ const isTokenExpired = (token: string): boolean => {
 };
 
 const errorCode = 'ECONNABORTED';
-const TIMEOUT_MS = 10000;
+const TIMEOUT_MS = 15000;
 
 const getErrorText = (): string => {
     return i18n.t('errors.serverNotResponding');

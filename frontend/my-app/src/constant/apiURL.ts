@@ -1,5 +1,6 @@
 export const BASE_API_URL = 'https://innohackathon-qbit-meet-up.onrender.com/api/';
 export const MEETINGS_API_URL = BASE_API_URL + 'meetings/';
+export const TAGS_API_URL = BASE_API_URL + 'tags/';
 export const TOKEN_API_URL = BASE_API_URL + 'token/';
 
 export const USER_API_URL = BASE_API_URL + 'users/';

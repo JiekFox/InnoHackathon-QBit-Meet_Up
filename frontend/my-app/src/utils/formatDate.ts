@@ -1,3 +1,5 @@
+import i18n from '../i18n';
+
 /**
  * Options for date formatting
  */
@@ -10,7 +12,7 @@ export interface DateFormatOptions {
 
     /**
      * Locale for date formatting
-     * @default 'ru-RU'
+     * @default current language from i18n
      */
     locale?: string;
 
@@ -21,13 +23,22 @@ export interface DateFormatOptions {
     format?: 'short' | 'long';
 }
 
+// Map language codes to locale strings
+const languageToLocale: { [key: string]: string } = {
+    ru: 'ru-RU',
+    en: 'en-US',
+    es: 'es-ES',
+    fr: 'fr-FR',
+    de: 'de-DE'
+};
+
 /**
  * Format date to localized string with optional time
  * Default: "31 января 2026 г., 14:30"
  *
  * @example
  * formatDate(new Date())
- * // "31 января 2026 г., 14:30"
+ * // "31 января 2026 г., 14:30" (uses current i18n language)
  *
  * @example
  * formatDate(new Date(), { dateOnly: true })
@@ -41,7 +52,11 @@ export function formatDate(
     date: Date | string,
     options: DateFormatOptions = {}
 ): string {
-    const { dateOnly = false, locale = 'ru-RU', format = 'long' } = options;
+    // Get current language from i18n and convert to locale
+    const currentLanguage = i18n.language || 'ru';
+    const defaultLocale = languageToLocale[currentLanguage] || 'ru-RU';
+
+    const { dateOnly = false, locale = defaultLocale, format = 'long' } = options;
 
     const dateObj = typeof date === 'string' ? new Date(date) : date;
 

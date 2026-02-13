@@ -3,20 +3,14 @@ import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { SIGN_IN } from '../constant/router';
 import { useEffect, useState, ChangeEvent, JSX, useRef } from 'react';
-import { GPT_URL } from '../constant/apiURL';
-import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 import { ImagePreview } from '../components/ImagePreview';
+import TagSelector from '../components/TagSelector';
 import { useTranslation } from 'react-i18next';
 
 export function CreateMeetup(): JSX.Element {
     const { t } = useTranslation();
     const { token } = useAuth();
     const navigate = useNavigate();
-    const axios = useAxiosWithAuth();
-
-    const [aiResponse, setAiResponse] = useState<string>('');
-    const [isAiResponseVisible, setIsAiResponseVisible] = useState<boolean>(false);
-    const [isPendingAI, setIsPendingAI] = useState<boolean>(false);
 
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,8 +24,18 @@ export function CreateMeetup(): JSX.Element {
     const {
         formData,
         error,
+        allTags,
+        tagsLoading,
+        selectedTags,
+        aiResponse,
+        isAiResponseVisible,
+        isPendingAI,
         handleChange,
         handleImageUpload,
+        handleTagsChange,
+        handleImproveWithAI,
+        handleAcceptAiSuggestion,
+        dismissAiResponse,
         handleSubmit,
         isPending
     } = useMeetupForm();
@@ -62,54 +66,8 @@ export function CreateMeetup(): JSX.Element {
         handleImageUpload(syntheticEvent);
     };
 
-    const handleImproveWithAI = async (): Promise<void> => {
-        if (!formData.description) {
-            alert(t('createMeetup.pleaseProvideDescription'));
-            return;
-        }
-
-        setIsPendingAI(true);
-
-        const gptPrompt = `
-            Тебе дано краткое описание мероприятия: "${formData.description}". 
-            Твоя задача: расписать это описание больше объемом, сделать его структурированным и по пунктам. 
-            Затем дай мне ответ СТРОГО В СЛЕДУЮЩЕМ ФОРМАТЕ: 
-            "текст расширенного описания митапа, который ты придумаешь"
-            Ничего больше добавлять не нужно. НЕ ПИШИ вводных слов, комментариев, заключений, либо других текстов вне указанного формата. ТОЛЬКО содержимое улучшенного описания. 
-            ВАЖНО: ответ должен быть в пределах 480 символов. Если текст превышает это количество, сократи его.`;
-
-        try {
-            const gptResponse = await axios.post(
-                `${GPT_URL}/chatgpt`,
-                { message: gptPrompt },
-                { headers: { 'Content-Type': 'application/json' } }
-            );
-
-            const gptMessage: string | undefined =
-                gptResponse.data.choices[0]?.message?.content;
-
-            if (!gptMessage) {
-                throw new Error('No content received from GPT.');
-            }
-
-            setAiResponse(gptMessage);
-            setIsAiResponseVisible(true);
-        } catch (error) {
-            console.error('Error occurred while communicating with AI:', error);
-            alert('Failed to communicate with AI.');
-        } finally {
-            setIsPendingAI(false);
-        }
-    };
-
-    const handleAcceptAiSuggestion = (): void => {
-        if (aiResponse) {
-            handleChange({
-                target: { name: 'description', value: aiResponse }
-            } as ChangeEvent<HTMLInputElement>);
-            setAiResponse('');
-            setIsAiResponseVisible(false);
-        }
+    const handleAIClick = () => {
+        handleImproveWithAI(formData.description, t);
     };
 
     return (
@@ -165,10 +123,24 @@ export function CreateMeetup(): JSX.Element {
                     />
                 </div>
 
+                <div className="input-group">
+                    <label>{t('createMeetup.tagsLabel')}</label>
+                    {tagsLoading ? (
+                        <p>Loading tags...</p>
+                    ) : (
+                        <TagSelector
+                            tags={allTags}
+                            selectedTags={selectedTags}
+                            onTagsChange={handleTagsChange}
+                            maxTags={5}
+                        />
+                    )}
+                </div>
+
                 <button
                     type="button"
                     className={`ai-button ${isPendingAI && 'ai-loading'}`}
-                    onClick={handleImproveWithAI}
+                    onClick={handleAIClick}
                     disabled={isPendingAI}
                     style={{ height: 35 }}
                 >
@@ -188,13 +160,23 @@ export function CreateMeetup(): JSX.Element {
                                 className="ai-response-field"
                             />
                         </div>
-                        <button
-                            type="button"
-                            className="ai-button"
-                            onClick={handleAcceptAiSuggestion}
-                        >
-                            Accept AI Suggestion
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <button
+                                type="button"
+                                className="ai-button"
+                                onClick={handleAcceptAiSuggestion}
+                            >
+                                Accept AI Suggestion
+                            </button>
+                            <button
+                                type="button"
+                                className="ai-button"
+                                onClick={dismissAiResponse}
+                                style={{ backgroundColor: '#6c757d' }}
+                            >
+                                Dismiss
+                            </button>
+                        </div>
                     </>
                 )}
 

@@ -69,20 +69,6 @@ export default function ProfileViewer() {
                     </div>
 
                     <div className="input-group">
-                        <label htmlFor="email">
-                            {t('profileViewer.emailLabel')}
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            readOnly
-                            placeholder="Value"
-                        />
-                    </div>
-
-                    <div className="input-group">
                         <label htmlFor="username">
                             {t('profileViewer.usernameLabel')}
                         </label>
@@ -113,20 +99,6 @@ export default function ProfileViewer() {
                         photo={formData.photo}
                         classVisible="photo-upload-unvisible"
                     />
-
-                    <div className="input-group">
-                        <label htmlFor="tg_id" className="info-label">
-                            {t('profileViewer.telegramIDLabel')}
-                        </label>
-                        <input
-                            type="text"
-                            id="tg_id"
-                            name="tg_id"
-                            value={formData.tg_id}
-                            readOnly
-                            placeholder="Telegram ID"
-                        />
-                    </div>
                 </div>
 
                 <PhotoUpload

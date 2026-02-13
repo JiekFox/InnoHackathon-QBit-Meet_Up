@@ -28,7 +28,8 @@ export default function MyMeetups() {
                 title: item.title,
                 description: item.description,
                 image: item.image,
-                dateTime: item.datetime_beg
+                dateTime: item.datetime_beg,
+                tags: item.tags
             })),
             count: response.data.count
         };

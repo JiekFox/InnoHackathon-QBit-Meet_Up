@@ -29,22 +29,25 @@ export default function Navbar() {
                     <h1 className="title">Meet Up!</h1>
                 </div>
                 <div className="controls">
-                    <div className="locale-switch">
-                        <LocaleSwitcher />
+                    <div className="switchs">
+                        <div className="locale-switch">
+                            <LocaleSwitcher />
+                        </div>
+                        <div className="theme-switch">
+                            <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={theme === 'dark'}
+                                    onChange={toggleTheme}
+                                />
+                                <span className="slider round">
+                                    <span className={'moon'}>🌜</span>
+                                    <span className={'sun'}>🌞</span>
+                                </span>
+                            </label>
+                        </div>
                     </div>
-                    <div className="theme-switch">
-                        <label className="switch">
-                            <input
-                                type="checkbox"
-                                checked={theme === 'dark'}
-                                onChange={toggleTheme}
-                            />
-                            <span className="slider round">
-                                <span className={'moon'}>🌜</span>
-                                <span className={'sun'}>🌞</span>
-                            </span>
-                        </label>
-                    </div>
+
                     {name ? (
                         <UserMenu userName={name} />
                     ) : (

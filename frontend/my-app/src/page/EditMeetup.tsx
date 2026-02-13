@@ -11,11 +11,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import { BASE, MEETUP_DETAILS, SIGN_IN } from '../constant/router';
 import Loader from '../components/Loader';
-import { MEETINGS_API_URL } from '../constant/apiURL';
+import { MEETINGS_API_URL, TAGS_API_URL } from '../constant/apiURL';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 import { ImagePreview } from '../components/ImagePreview';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { useTranslation } from 'react-i18next';
+import TagSelector, { Tag } from '../components/TagSelector';
 
 interface FormDataState {
     title: string;
@@ -23,6 +24,7 @@ interface FormDataState {
     link: string;
     description: string;
     image: File | null;
+    tag_ids: number[];
 }
 
 const baseValues: FormDataState = {
@@ -30,12 +32,13 @@ const baseValues: FormDataState = {
     datetime_beg: '',
     link: '',
     description: '',
-    image: null
+    image: null,
+    tag_ids: []
 };
 
 export function EditMeetup(): JSX.Element {
     const { t } = useTranslation();
-    const { token, userID } = useAuth();
+    const { token, userID, role } = useAuth();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const axios = useAxiosWithAuth();
@@ -46,6 +49,8 @@ export function EditMeetup(): JSX.Element {
     const [userValues, setUserValues] = useState<Partial<FormDataState>>({});
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+    const [allTags, setAllTags] = useState<Tag[]>([]);
+    const [tagsLoading, setTagsLoading] = useState(true);
 
     const finalValues: FormDataState = {
         ...baseValues,
@@ -62,6 +67,23 @@ export function EditMeetup(): JSX.Element {
         }
     }, [token, navigate]);
 
+    // Fetch tags on mount
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const response = await axios.get(TAGS_API_URL);
+                setAllTags(response.data);
+            } catch (error) {
+                console.error('Failed to fetch tags:', error);
+                setAllTags([]);
+            } finally {
+                setTagsLoading(false);
+            }
+        };
+
+        fetchTags();
+    }, []);
+
     useEffect(() => {
         const fetchMeetupDetails = async () => {
             setIsPending(true);
@@ -70,7 +92,7 @@ export function EditMeetup(): JSX.Element {
                 const data = response.data;
                 console.log('Fetched meetup data:', data);
 
-                if (data.author_id !== userID) {
+                if (data.author_id !== userID && role !== 'admin') {
                     console.log('Redirecting to sign In because of ID mismatch');
                     await navigate(SIGN_IN);
                     return;
@@ -83,7 +105,8 @@ export function EditMeetup(): JSX.Element {
                         .slice(0, 16),
                     description: data.description || '',
                     link: data.link || '',
-                    image: null
+                    image: null,
+                    tag_ids: data.tags?.map((tag: Tag) => tag.id) || []
                 });
 
                 setPreviewUrl(data.image || null);
@@ -122,6 +145,16 @@ export function EditMeetup(): JSX.Element {
         }
     }, []);
 
+    const handleTagsChange = useCallback((selectedTags: Tag[]) => {
+        const tagIds = selectedTags.map(tag => tag.id);
+        setUserValues(prev => ({ ...prev, tag_ids: tagIds }));
+    }, []);
+
+    // Get selected tags from finalValues.tag_ids
+    const selectedTags = finalValues.tag_ids
+        .map(id => allTags.find(tag => tag.id === id))
+        .filter((tag): tag is Tag => tag !== undefined);
+
     const handleEditSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setIsPending(true);
@@ -131,14 +164,20 @@ export function EditMeetup(): JSX.Element {
 
             Object.entries(userValues).forEach(([key, value]) => {
                 console.log(key, value);
-                const tempValue = value === null ? '' : value;
-                formDataToSend.append(key, tempValue as any);
+                if (key === 'tag_ids') {
+                    // Append each tag ID separately
+                    (value as number[]).forEach(id => {
+                        formDataToSend.append('tag_ids', String(id));
+                    });
+                } else {
+                    const tempValue = value === null ? '' : value;
+                    formDataToSend.append(key, tempValue as any);
+                }
             });
             console.log([...formDataToSend]);
 
             await axios.patch(`${MEETINGS_API_URL}${id}/`, formDataToSend);
 
-            alert(t('editMeetup.updateSuccess'));
             navigate(`${MEETUP_DETAILS}/${id}`);
         } catch (error: any) {
             setError(error.message || 'Failed to update meetup.');
@@ -216,6 +255,20 @@ export function EditMeetup(): JSX.Element {
                         onChange={handleChange}
                         required
                     />
+                </div>
+
+                <div className="input-group">
+                    <label>{t('editMeetup.tagsLabel') || 'Tags'}</label>
+                    {tagsLoading ? (
+                        <p>Loading tags...</p>
+                    ) : (
+                        <TagSelector
+                            tags={allTags}
+                            selectedTags={selectedTags}
+                            onTagsChange={handleTagsChange}
+                            maxTags={5}
+                        />
+                    )}
                 </div>
 
                 <div className="image-upload-wrapper">

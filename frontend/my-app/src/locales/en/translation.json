@@ -118,6 +118,15 @@
         "aiSearch": "AI Search",
         "aiRecommend": "AI Recommend"
     },
+    "filterPanel": {
+        "title": "Filters",
+        "dateRange": "Date Range",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "tags": "Tags",
+        "reset": "Reset",
+        "apply": "Apply"
+    },
     "pagination": {
         "previous": "« Previous",
         "next": "Next »"
@@ -155,6 +164,7 @@
         "linkLabel": "Link:",
         "linkPlaceholder": "e.g., https://google.com",
         "descriptionLabel": "Description:",
+        "tagsLabel": "Tags:",
         "improveWithAI": "Improve with AI ✨",
         "processingAI": "Processing AI...",
         "selectImage": "Select image",
@@ -171,13 +181,14 @@
         "linkLabel": "Link:",
         "descriptionLabel": "Description:",
         "updateSuccess": "Meetup updated successfully",
-        "deleteButton": "Delete"
+        "deleteButton": "Delete",
+        "tagsLabel": "Tags"
     },
     "home": {
         "title": "Meet Up!",
         "description": "Discover and join amazing meetups",
         "searchPlaceholder": "Search meetups...",
-        "filter": "Filter",
+        "filter": "Additional filters",
         "noMeetupsFound": "No meetups found",
         "loading": "Loading...",
         "error": "Error loading meetups",
@@ -194,11 +205,17 @@
     },
     "profile": {
         "nameLabel": "Name",
+        "namePlaceholder": "Enter your name",
         "surnameLabel": "Surname",
-        "emailLabel": "Email",
+        "surnamePlaceholder": "Enter your surname",
+        "emailLabel": "Email (not visible to other users)",
+        "emailPlaceholder": "Enter your email address",
         "usernameLabel": "Username",
+        "usernamePlaceholder": "Enter your username",
         "aboutLabel": "About myself",
+        "aboutPlaceholder": "Tell us about yourself...",
         "telegramIDLabel": "Telegram ID",
+        "telegramIDPlaceholder": "Your Telegram ID",
         "saveButton": "Save Changes",
         "telegramInfo": "To get your Telegram ID, message this bot:",
         "telegramBot": "@userinfobot"

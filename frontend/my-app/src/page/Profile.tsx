@@ -38,6 +38,7 @@ export default function Profile() {
                                 type="text"
                                 id="name"
                                 name="name"
+                                placeholder={t('profile.namePlaceholder')}
                                 value={finalValues.name}
                                 onChange={handleChange}
                             />
@@ -51,6 +52,7 @@ export default function Profile() {
                                 type="text"
                                 id="surname"
                                 name="surname"
+                                placeholder={t('profile.surnamePlaceholder')}
                                 value={finalValues.surname}
                                 onChange={handleChange}
                             />
@@ -63,6 +65,7 @@ export default function Profile() {
                             type="email"
                             id="email"
                             name="email"
+                            placeholder={t('profile.emailPlaceholder')}
                             value={finalValues.email}
                             onChange={handleChange}
                         />
@@ -79,6 +82,7 @@ export default function Profile() {
                             type="text"
                             id="username"
                             name="username"
+                            placeholder={t('profile.usernamePlaceholder')}
                             value={finalValues.username}
                             onChange={handleChange}
                         />
@@ -92,6 +96,7 @@ export default function Profile() {
                         <textarea
                             id="about"
                             name="about"
+                            placeholder={t('profile.aboutPlaceholder')}
                             value={finalValues.about}
                             onChange={handleChange}
                         />
@@ -103,39 +108,6 @@ export default function Profile() {
                         onPhotoDelete={handlePhotoDelete}
                         classVisible="photo-upload-unvisible"
                     />
-
-                    <div className="input-group">
-                        <label htmlFor="tg_id" className="info-label">
-                            {t('profile.telegramIDLabel')}
-                            <div
-                                className="info-button"
-                                onClick={() => setShowTgInfo(!showTgInfo)}
-                            >
-                                🛈
-                            </div>
-                        </label>
-
-                        <input
-                            type="text"
-                            id="tg_id"
-                            name="tg_id"
-                            value={finalValues.tg_id}
-                            onChange={handleChange}
-                        />
-
-                        {showTgInfo && (
-                            <div className="info-popup">
-                                {t('profile.telegramInfo')}{' '}
-                                <a
-                                    href="https://t.me/userinfobot"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    {t('profile.telegramBot')}
-                                </a>
-                            </div>
-                        )}
-                    </div>
 
                     <button type="submit" className="save-button">
                         {t('profile.saveButton')}

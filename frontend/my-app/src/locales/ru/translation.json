@@ -118,6 +118,15 @@
         "aiSearch": "Поиск с ИИ",
         "aiRecommend": "Рекомендации ИИ"
     },
+    "filterPanel": {
+        "title": "Фильтры",
+        "dateRange": "Диапазон дат",
+        "startDate": "Дата начала",
+        "endDate": "Дата окончания",
+        "tags": "Теги",
+        "reset": "Очистить",
+        "apply": "Применить"
+    },
     "pagination": {
         "previous": "« Предыдущая",
         "next": "Следующая »"
@@ -155,6 +164,7 @@
         "linkLabel": "Ссылка:",
         "linkPlaceholder": "например https://google.com",
         "descriptionLabel": "Описание:",
+        "tagsLabel": "Теги:",
         "improveWithAI": "Улучшить с помощью ИИ ✨",
         "processingAI": "Обработка ИИ...",
         "selectImage": "Выбрать изображение",
@@ -171,13 +181,15 @@
         "linkLabel": "Ссылка:",
         "descriptionLabel": "Описание:",
         "updateSuccess": "Встреча успешно обновлена",
-        "deleteButton": "Удалить"
+        "deleteButton": "Удалить",
+
+        "tagsLabel": "Tags"
     },
     "home": {
         "title": "Meet Up!",
         "description": "Откройте и присоединитесь к удивительным встречам",
         "searchPlaceholder": "Поиск встреч...",
-        "filter": "Фильтр",
+        "filter": "Дополнительные фильтры",
         "noMeetupsFound": "Встречи не найдены",
         "loading": "Загрузка...",
         "error": "Ошибка при загрузке встреч",
@@ -194,11 +206,17 @@
     },
     "profile": {
         "nameLabel": "Имя",
+        "namePlaceholder": "Введите ваше имя",
         "surnameLabel": "Фамилия",
-        "emailLabel": "Электронная почта",
+        "surnamePlaceholder": "Введите вашу фамилию",
+        "emailLabel": "Электронная почта (не видна другим пользователям)",
+        "emailPlaceholder": "Введите адрес электронной почты",
         "usernameLabel": "Имя пользователя",
+        "usernamePlaceholder": "Введите имя пользователя",
         "aboutLabel": "О себе",
+        "aboutPlaceholder": "Расскажите о себе...",
         "telegramIDLabel": "ID Telegram",
+        "telegramIDPlaceholder": "Ваш ID Telegram",
         "saveButton": "Сохранить изменения",
         "telegramInfo": "Чтобы получить свой ID Telegram, напишите этому боту:",
         "telegramBot": "@userinfobot"

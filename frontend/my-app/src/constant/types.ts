@@ -3,6 +3,15 @@ export interface AuthToken {
     access: string;
 }
 
+export interface AuthState {
+    token: AuthToken | null;
+    name: string | null;
+    userID: number | null;
+    role: 'admin' | 'user';
+    img: string | null | undefined;
+    loading: boolean;
+}
+
 export interface AuthResponseData {
     refresh: string;
     access: string;
@@ -10,17 +19,13 @@ export interface AuthResponseData {
     user_id: number;
     message?: string;
     photo?: string;
+    role: 'admin' | 'user';
 }
 
-export interface AuthContextType {
-    token: AuthToken | null;
-    userID: number | null;
-    name: string | null;
-    img: string | null | undefined;
+export interface AuthContextType extends AuthState {
     saveToken: (newToken: AuthToken | null) => void;
     removeToken: () => void;
     saveDate: (newDate: AuthResponseData) => void;
-    loading: boolean;
 }
 
 export interface Config {
@@ -29,6 +34,12 @@ export interface Config {
     };
 }
 
+export interface Tag {
+    id: number;
+    name: string;
+    slug: string;
+    color: string;
+}
 export interface Meetup {
     id: number;
     title: string;
@@ -40,6 +51,7 @@ export interface Meetup {
     attendees_count?: number;
     author_id: number;
     author?: string;
+    tags?: Tag[];
 }
 
 export interface ProfileFormData {
@@ -60,4 +72,5 @@ export interface ParamsForFetch {
     search?: string;
     startDate?: string;
     endDate?: string;
+    tagIds?: number[];
 }

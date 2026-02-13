@@ -6,6 +6,11 @@ import { MEETUP_DETAILS } from '../../constant/router';
 import MeetupCard from '../MeetupCard';
 import { Meetup, ParamsForFetch } from '../../constant/types';
 import { useTranslation } from 'react-i18next';
+import { TAGS_API_URL } from '../../constant/apiURL';
+import { useAxiosWithAuth } from '../../utils/hooks/useAxiosWithAuth';
+import { Tag } from '../TagSelector';
+import { useState, useEffect } from 'react';
+import { FilterData } from '../FilterPanel';
 
 interface DataGridSectionProps<T extends Meetup> {
     fetchFunction: (
@@ -28,6 +33,10 @@ export function DataGridSection<T extends Meetup>({
     onSearchByAI
 }: DataGridSectionProps<T>) {
     const { t } = useTranslation();
+    const axios = useAxiosWithAuth();
+    const [allTags, setAllTags] = useState<Tag[]>([]);
+    const [tagsLoading, setTagsLoading] = useState(true);
+
     const {
         items,
         currentPage,
@@ -37,11 +46,34 @@ export function DataGridSection<T extends Meetup>({
         searchQuery,
         setCurrentPage,
         handleSearchChange,
-        handleDateFilter,
+        handleFiltersApply,
         setLoading,
         setItems,
         setTotalPages
     } = useDataGrid<Meetup>(fetchFunction);
+
+    // Fetch tags on mount
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const response = await axios.get(TAGS_API_URL);
+                setAllTags(response.data);
+            } catch (error) {
+                console.error('Failed to fetch tags:', error);
+                setAllTags([]);
+            } finally {
+                setTagsLoading(false);
+            }
+        };
+
+        fetchTags();
+    }, []);
+
+    const handleApplyFilters = (filters: FilterData) => {
+        const tagIds = filters.selectedTags.map(tag => tag.id);
+        handleFiltersApply(filters.startDate, filters.endDate, tagIds);
+    };
+
     if (error) console.error('Error in DataGridSection:', error);
 
     const aiControls: AIControls<T> = {
@@ -55,7 +87,9 @@ export function DataGridSection<T extends Meetup>({
         <section className="home">
             <FilterBar
                 onSearchChange={handleSearchChange}
-                onDateFilter={handleDateFilter}
+                onFiltersApply={handleApplyFilters}
+                allTags={allTags}
+                tagsLoading={tagsLoading}
                 onRecommendByAI={
                     onRecommendByAI ? () => onRecommendByAI(aiControls) : undefined
                 }
@@ -79,6 +113,7 @@ export function DataGridSection<T extends Meetup>({
                             image={meetup.image}
                             datetime_beg={meetup?.datetime_beg}
                             dateTime={meetup?.dateTime}
+                            tags={meetup?.tags}
                         />
                     ))
                 ) : (

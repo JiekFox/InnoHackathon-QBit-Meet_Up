@@ -13,6 +13,7 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
     const [totalPages, setTotalPages] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [dateFilter, setDateFilter] = useState({ startDate: '', endDate: '' });
+    const [tagIds, setTagIds] = useState<number[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
@@ -20,7 +21,8 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
         page = currentPage,
         search = searchQuery,
         startDate = dateFilter.startDate,
-        endDate = dateFilter.endDate
+        endDate = dateFilter.endDate,
+        tagIds: newTagIds = tagIds
     }: Partial<ParamsForFetch> = {}) => {
         setLoading(true);
         try {
@@ -29,7 +31,8 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
                 pageSize: ITEMS_PER_PAGE,
                 search,
                 startDate,
-                endDate
+                endDate,
+                tagIds: newTagIds
             };
             const response = await fetchFunction(params);
             setItems(response.results);
@@ -61,6 +64,16 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
         []
     );
 
+    const handleFiltersApply = useCallback(
+        async (startDate: string, endDate: string, newTagIds: number[] = []) => {
+            await loadData({ page: 1, startDate, endDate, tagIds: newTagIds });
+            setDateFilter({ startDate, endDate });
+            setTagIds(newTagIds);
+            setCurrentPage(1);
+        },
+        []
+    );
+
     const handlePageChange = useCallback(async (page: number) => {
         setCurrentPage(page);
         await loadData({ page });
@@ -76,6 +89,7 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
         setCurrentPage: handlePageChange,
         handleSearchChange,
         handleDateFilter,
+        handleFiltersApply,
         setLoading,
         setItems,
         setTotalPages

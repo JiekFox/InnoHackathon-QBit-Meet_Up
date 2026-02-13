@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import { JSX } from 'react';
 import { NavLink, useParams, useNavigate, Link } from 'react-router-dom';
 import { useMeetupDetails } from '../utils/hooks/useMeetupDetails';
 import icon from '../assets/img/icon.png';
@@ -8,7 +8,7 @@ import Loader from '../components/Loader';
 import { useTranslation } from 'react-i18next';
 
 export default function MeetupDetails(): JSX.Element {
-    const { userID } = useAuth();
+    const { userID, role } = useAuth();
     const { id } = useParams<{ id: string }>();
     const {
         meetup,
@@ -22,9 +22,9 @@ export default function MeetupDetails(): JSX.Element {
     } = useMeetupDetails(id);
     const navigate = useNavigate();
     const { t } = useTranslation();
-
+    console.log('Meetup details:', meetup);
     const renderActionButtons = () => {
-        if (userID === meetup?.author_id) {
+        if (userID === meetup?.author_id || role === 'admin') {
             return (
                 <Link className="meetup-details-button" to={`${EDIT_MEETUP}/${id}`}>
                     {t('meetupDetails.edit')}
@@ -43,7 +43,11 @@ export default function MeetupDetails(): JSX.Element {
         }
 
         if (pending) {
-            return <div>{t('meetupDetails.loading')}</div>;
+            return (
+                <div>
+                    <Loader />
+                </div>
+            );
         }
 
         if (isFavorite) {
@@ -93,6 +97,19 @@ export default function MeetupDetails(): JSX.Element {
                             t('common.error')
                         )}
                     </h2>
+                    {meetup.tags && meetup.tags.length > 0 && (
+                        <div className="meetup-details-tags">
+                            {meetup.tags.map(tag => (
+                                <span
+                                    key={tag.id}
+                                    className="tag-badge"
+                                    style={{ backgroundColor: tag.color }}
+                                >
+                                    {tag.name}
+                                </span>
+                            ))}
+                        </div>
+                    )}
                     <p className="meetup-details-date">
                         {t('meetupDetails.link')}:
                         <a href={meetup.link} className="link">

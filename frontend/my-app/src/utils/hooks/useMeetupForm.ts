@@ -1,11 +1,19 @@
-import { useState, useCallback, ChangeEvent, FormEvent } from 'react';
+import { useState, useCallback, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { AxiosError, AxiosResponse } from 'axios';
-import { MEETINGS_API_URL } from '../../constant/apiURL';
+import { MEETINGS_API_URL, GPT_URL, TAGS_API_URL } from '../../constant/apiURL';
 import { MEETUP_DETAILS, SIGN_IN } from '../../constant/router';
 import { useAuth } from '../AuthContext';
 import { Meetup } from '../../constant/types';
 import { useAxiosWithAuth } from './useAxiosWithAuth';
+import { getErrorDescription } from '..';
+
+export interface Tag {
+    id: number;
+    name: string;
+    slug: string;
+    color: string;
+}
 
 export interface MeetupFormData {
     title: string;
@@ -13,6 +21,7 @@ export interface MeetupFormData {
     link: string;
     description: string;
     image: File | null;
+    tag_ids: number[];
 }
 
 export interface ApiError {
@@ -23,15 +32,48 @@ export const useMeetupForm = () => {
     const { token, userID } = useAuth();
     const navigate = useNavigate();
     const axios = useAxiosWithAuth();
+
     const [formData, setFormData] = useState<MeetupFormData>({
         title: '',
         datetime_beg: '',
         link: '',
         description: '',
-        image: null
+        image: null,
+        tag_ids: []
     });
     const [error, setError] = useState<string | ApiError | null>(null);
     const [isPending, setIsPending] = useState(false);
+
+    // Tags state
+    const [allTags, setAllTags] = useState<Tag[]>([]);
+    const [tagsLoading, setTagsLoading] = useState(true);
+
+    // AI response state
+    const [aiResponse, setAiResponse] = useState<string>('');
+    const [isAiResponseVisible, setIsAiResponseVisible] = useState(false);
+    const [isPendingAI, setIsPendingAI] = useState(false);
+
+    // Fetch tags on mount
+    useEffect(() => {
+        const fetchTags = async () => {
+            console.log('Fetching tags from API...');
+            try {
+                const response = await axios.get(TAGS_API_URL);
+                setAllTags(response.data);
+            } catch (error) {
+                const axiosError = error as AxiosError;
+                if (axiosError.message) {
+                    setError(axiosError.message);
+                }
+                console.error('Failed to fetch tags:', error);
+                setAllTags([]);
+            } finally {
+                setTagsLoading(false);
+            }
+        };
+
+        fetchTags();
+    }, []);
 
     const handleChange = useCallback(
         (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -47,6 +89,72 @@ export const useMeetupForm = () => {
             setFormData(prev => ({ ...prev, image: file }));
         }
     }, []);
+
+    const handleTagsChange = useCallback((selectedTags: Tag[]) => {
+        const tagIds = selectedTags.map(tag => tag.id);
+        setFormData(prev => ({ ...prev, tag_ids: tagIds }));
+    }, []);
+
+    const handleImproveWithAI = useCallback(
+        async (description: string, t: (key: string) => string) => {
+            if (!description) {
+                alert(t('createMeetup.pleaseProvideDescription'));
+                return;
+            }
+
+            setIsPendingAI(true);
+
+            const gptPrompt = `
+                Тебе дано краткое описание мероприятия: "${description}". 
+                Твоя задача: расписать это описание больше объемом, сделать его структурированным и по пунктам. 
+                Затем дай мне ответ СТРОГО В СЛЕДУЮЩЕМ ФОРМАТЕ: 
+                "текст расширенного описания митапа, который ты придумаешь"
+                Ничего больше добавлять не нужно. НЕ ПИШИ вводных слов, комментариев, заключений, либо других текстов вне указанного формата. ТОЛЬКО содержимое улучшенного описания. 
+                ВАЖНО: ответ должен быть в пределах 480 символов. Если текст превышает это количество, сократи его.`;
+
+            try {
+                const gptResponse = await axios.post(
+                    `${GPT_URL}/chatgpt`,
+                    { message: gptPrompt },
+                    { headers: { 'Content-Type': 'application/json' } }
+                );
+
+                const gptMessage: string | undefined =
+                    gptResponse.data.choices[0]?.message?.content;
+
+                if (!gptMessage) {
+                    throw new Error('No content received from GPT.');
+                }
+
+                setAiResponse(gptMessage);
+                setIsAiResponseVisible(true);
+            } catch (error) {
+                console.error('Error occurred while communicating with AI:', error);
+                alert('Failed to communicate with AI.');
+            } finally {
+                setIsPendingAI(false);
+            }
+        },
+        []
+    );
+
+    const handleAcceptAiSuggestion = useCallback(() => {
+        if (aiResponse) {
+            setFormData(prev => ({ ...prev, description: aiResponse }));
+            setAiResponse('');
+            setIsAiResponseVisible(false);
+        }
+    }, [aiResponse]);
+
+    const dismissAiResponse = useCallback(() => {
+        setAiResponse('');
+        setIsAiResponseVisible(false);
+    }, []);
+
+    // Get selected tags from formData.tag_ids
+    const selectedTags = formData.tag_ids
+        .map(id => allTags.find(tag => tag.id === id))
+        .filter((tag): tag is Tag => tag !== undefined);
 
     const handleSubmit = useCallback(
         async (e: FormEvent<HTMLFormElement>) => {
@@ -66,6 +174,9 @@ export const useMeetupForm = () => {
             if (formData.image) {
                 meetingData.append('image', formData.image);
             }
+            formData.tag_ids.forEach(id => {
+                meetingData.append('tag_ids', String(id));
+            });
 
             try {
                 setIsPending(true);
@@ -75,28 +186,33 @@ export const useMeetupForm = () => {
                 );
                 navigate(`${MEETUP_DETAILS}/${response.data.id}`);
             } catch (err) {
-                const axiosError = err as AxiosError<ApiError>;
-                console.error(
-                    'Error creating meeting:',
-                    axiosError.response?.data || axiosError.message
-                );
-                setError(
-                    axiosError.response?.data ||
-                        axiosError.message ||
-                        'An error occurred'
-                );
+                const axiosErr = err as AxiosError;
+                console.log(axiosErr.response);
+                const errorData = getErrorDescription(err);
+                console.error('Error creating meeting:', errorData);
+                setError(errorData);
             } finally {
                 setIsPending(false);
             }
         },
-        [formData, token, userID, navigate]
+        [formData, token, userID, navigate, axios]
     );
 
     return {
         formData,
         error,
+        allTags,
+        tagsLoading,
+        selectedTags,
+        aiResponse,
+        isAiResponseVisible,
+        isPendingAI,
         handleChange,
         handleImageUpload,
+        handleTagsChange,
+        handleImproveWithAI,
+        handleAcceptAiSuggestion,
+        dismissAiResponse,
         handleSubmit,
         isPending
     };
