@@ -27,7 +27,7 @@ class MeetingSerializer(serializers.ModelSerializer):
             "author",
             "author_id",
             "datetime_beg",
-            "is_online",
+            "duration",
             "link",
             "location",
             "description",
