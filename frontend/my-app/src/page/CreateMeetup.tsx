@@ -71,7 +71,7 @@ export function CreateMeetup(): JSX.Element {
     };
 
     return (
-        <main className="create-meetup">
+        <div className="create-meetup">
             <h1>{t('createMeetup.title')}</h1>
             {error && <p className="error">{error.toString()}</p>}
             <form onSubmit={handleSubmit} className="create-meetup-form">
@@ -211,6 +211,6 @@ export function CreateMeetup(): JSX.Element {
                         : t('createMeetup.submitButton')}
                 </button>
             </form>
-        </main>
+        </div>
     );
 }

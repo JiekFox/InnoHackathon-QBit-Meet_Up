@@ -45,32 +45,34 @@ const UserMenu: React.FC<UserMenuProps> = React.memo(({ userName }) => {
     }, [removeToken, navigate]);
 
     return (
-        <div className="user-info">
-            <span className="user-name">{userName}</span>
-            <img className="user-avatar" src={logo} alt="User Avatar" />
-            <div className="user-dropdown">
-                <DropdownItem
-                    to={PROFILE}
-                    title={t('userMenu.profile')}
-                    description={t('userMenu.profileDescription')}
-                />
-                <DropdownItem
-                    to={MY_MEETUPS_SUBSCRIBER}
-                    title={t('userMenu.myMeetupsSubscribed')}
-                    description={t('userMenu.subscribedDescription')}
-                />
-                <DropdownItem
-                    to={MY_MEETUPS_OWNER}
-                    title={t('userMenu.myMeetupsOwned')}
-                    description={t('userMenu.ownedDescription')}
-                />
-                <hr />
-                <div
-                    className="dropdown-item log-out"
-                    onClick={handleLogoutClick}
-                    role="button"
-                >
-                    {t('userMenu.logOut')}
+        <>
+            <div className="user-info">
+                <span className="user-name">{userName}</span>
+                <img className="user-avatar" src={logo} alt="User Avatar" />
+                <div className="user-dropdown">
+                    <DropdownItem
+                        to={PROFILE}
+                        title={t('userMenu.profile')}
+                        description={t('userMenu.profileDescription')}
+                    />
+                    <DropdownItem
+                        to={MY_MEETUPS_SUBSCRIBER}
+                        title={t('userMenu.myMeetupsSubscribed')}
+                        description={t('userMenu.subscribedDescription')}
+                    />
+                    <DropdownItem
+                        to={MY_MEETUPS_OWNER}
+                        title={t('userMenu.myMeetupsOwned')}
+                        description={t('userMenu.ownedDescription')}
+                    />
+                    <hr />
+                    <div
+                        className="dropdown-item log-out"
+                        onClick={handleLogoutClick}
+                        role="button"
+                    >
+                        {t('userMenu.logOut')}
+                    </div>
                 </div>
             </div>
             {showLogoutModal && (
@@ -79,7 +81,7 @@ const UserMenu: React.FC<UserMenuProps> = React.memo(({ userName }) => {
                     onConfirm={handleConfirmLogout}
                 />
             )}
-        </div>
+        </>
     );
 });
 

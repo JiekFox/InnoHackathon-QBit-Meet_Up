@@ -259,6 +259,7 @@ input:checked + .slider:before {
     border-radius: 12px;
     position: relative;
     transition: background-color 0.3s ease;
+    z-index: 10;
 }
 
 .user-info:hover {
@@ -337,7 +338,7 @@ input:checked + .slider:before {
 
 .create-meeting-button,
 .sign-button {
-    padding: 12px 0px;
+    padding: 10px 0px;
     background-color: var(--button-bg);
     color: var(--button-text);
     border: 2px solid var(--button-border);
@@ -412,7 +413,7 @@ input:checked + .slider:before {
     padding: 16px;
     border-radius: 8px;
     transition: transform 0.2s ease;
-    width: calc(25% - 48px);
+    width: calc(33% - 42px);
 }
 
 .meetup-card:hover {
@@ -488,7 +489,7 @@ input:checked + .slider:before {
 
 .logout-modal {
     position: fixed;
-    z-index: 1001;
+    z-index: 50;
     left: 0;
     top: 0;
     width: 100%;
@@ -588,6 +589,7 @@ input:checked + .slider:before {
 
 .profile-edit-form .input-row .input-group label {
     font-size: 16px;
+    text-align: start;
 }
 
 .profile-edit-form .delete-photo-button,
@@ -603,7 +605,7 @@ input:checked + .slider:before {
 }
 .delete-button {
     width: 100%;
-    padding: 12px 0px;
+    padding: 10px 0px;
 }
 
 .sign-form p {
@@ -900,6 +902,7 @@ h3 {
 }
 
 .meetup-details .meetup-details-author a {
+    word-break: break-all;
     text-decoration: underline;
     cursor: pointer;
 }
@@ -941,6 +944,8 @@ h3 {
 .home {
     background: var(--header-footer);
     padding: 20px;
+    max-width: 1400px;
+    margin: auto;
 }
 
 .create-meetup {
@@ -958,6 +963,9 @@ h3 {
     font-size: 24px;
 }
 
+.error {
+    color: var(--error-red);
+}
 .create-meetup .error {
     color: var(--error-red);
 
@@ -1509,7 +1517,7 @@ h3 {
 }
 
 .create-meeting-button {
-    margin-top: 8px;
+    /* margin-top: 8px; */
     padding: 10px;
     align-self: flex-start;
 }
@@ -1909,7 +1917,7 @@ h3 {
 
 @media (max-width: 500px) {
     .header .controls {
-        gap: 0;
+        gap: 4px;
     }
     .switchs {
         gap: 4px;

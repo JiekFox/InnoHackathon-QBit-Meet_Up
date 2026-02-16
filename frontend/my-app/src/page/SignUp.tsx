@@ -17,7 +17,7 @@ export default function SignUp() {
     const { t } = useTranslation();
 
     return (
-        <main className="main-content">
+        <div className="main-content">
             <h1 className="sign-title">{t('signUp.title')}</h1>
             <form className="sign-form" onSubmit={handleSubmit}>
                 <div className="input-group">
@@ -79,6 +79,6 @@ export default function SignUp() {
                     </NavLink>
                 </p>
             </form>
-        </main>
+        </div>
     );
 }

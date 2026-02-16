@@ -59,7 +59,9 @@ export function EditMeetup(): JSX.Element {
         ...userValues
     };
 
-    const [isPending, setIsPending] = useState(false);
+    const [isPending, setIsPending] = useState<
+        'deleting' | 'saving' | 'global' | false
+    >(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -87,7 +89,7 @@ export function EditMeetup(): JSX.Element {
 
     useEffect(() => {
         const fetchMeetupDetails = async () => {
-            setIsPending(true);
+            setIsPending('global');
             try {
                 const response = await axios.get(`${MEETINGS_API_URL}${id}/`);
                 const data = response.data;
@@ -112,7 +114,13 @@ export function EditMeetup(): JSX.Element {
 
                 setPreviewUrl(data.image || null);
             } catch (err: any) {
-                setError(err.message || 'Failed to fetch meetup details.');
+                //setError(err.message || 'Failed to fetch meetup details.');
+                const errorDescription = getErrorDescription(
+                    err,
+                    'Failed to fetch meetup'
+                );
+                console.error('Error fetching meetup:', errorDescription);
+                setError(err?.status + ' ' + errorDescription);
             } finally {
                 setIsPending(false);
             }
@@ -158,7 +166,7 @@ export function EditMeetup(): JSX.Element {
 
     const handleEditSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        setIsPending(true);
+        setIsPending('saving');
 
         try {
             const formDataToSend = new FormData();
@@ -190,7 +198,7 @@ export function EditMeetup(): JSX.Element {
     };
 
     const handleDeleteMeetup = async () => {
-        setIsPending(true);
+        setIsPending('deleting');
         try {
             await axios.delete(`${MEETINGS_API_URL}${id}/`);
             navigate(`${BASE}/`);
@@ -203,9 +211,11 @@ export function EditMeetup(): JSX.Element {
     };
 
     if (isPending && !serverValues) return <Loader />;
+    console.log(error, serverValues);
+    // if (serverValues) return <p>{t('meetupDetails.noData')}</p>;
 
     return (
-        <main className="edit-meetup create-meetup">
+        <div className="edit-meetup create-meetup">
             <h1>{t('editMeetup.title')}</h1>
             {error && <p className="error">{error}</p>}
 
@@ -314,7 +324,7 @@ export function EditMeetup(): JSX.Element {
                         className="edit-meetup-button create-meeting-button"
                         style={{ width: '100%' }}
                     >
-                        {isPending ? 'Saving...' : 'Save Changes'}
+                        {isPending === 'saving' ? 'Saving...' : 'Save Changes'}
                     </button>
 
                     <button
@@ -322,7 +332,7 @@ export function EditMeetup(): JSX.Element {
                         onClick={() => setIsDeleteModalOpen(true)}
                         className="delete-button"
                     >
-                        Delete Meetup
+                        {isPending === 'deleting' ? 'Deleting...' : 'Delete Meetup'}
                     </button>
                 </div>
             </form>
@@ -336,6 +346,6 @@ export function EditMeetup(): JSX.Element {
                 confirmText={t('editMeetup.deleteButton')}
                 cancelText={t('buttons.cancel')}
             />
-        </main>
+        </div>
     );
 }

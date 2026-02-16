@@ -43,11 +43,7 @@ export default function MeetupDetails(): JSX.Element {
         }
 
         if (pending) {
-            return (
-                <div>
-                    <Loader />
-                </div>
-            );
+            return <div>{t('meetupDetails.loading')}</div>;
         }
 
         if (isFavorite) {
@@ -71,14 +67,15 @@ export default function MeetupDetails(): JSX.Element {
     if (loading) return <Loader />;
     if (error)
         return (
-            <p>
+            <p className="error">
                 {t('common.error')}: {error}
             </p>
         );
+
     if (!meetup) return <p>{t('meetupDetails.noData')}</p>;
 
     return (
-        <main className="meetup-details">
+        <div className="meetup-details">
             <div className="meetup-details-card">
                 <div className="meetup-details-image">
                     <img src={meetup.image || icon} alt="Meetup" />
@@ -125,6 +122,6 @@ export default function MeetupDetails(): JSX.Element {
                 </div>
                 {renderActionButtons()}
             </div>
-        </main>
+        </div>
     );
 }

@@ -17,7 +17,7 @@ const SignIn: React.FC = () => {
     const { t } = useTranslation();
 
     return (
-        <main className="main-content">
+        <div className="main-content">
             <h1 className="sign-title">{t('signIn.title')}</h1>
             <form className="sign-form" onSubmit={handleSubmit}>
                 <div className="input-group">
@@ -68,7 +68,7 @@ const SignIn: React.FC = () => {
                     </NavLink>
                 </p>
             </form>
-        </main>
+        </div>
     );
 };
 

@@ -25,7 +25,11 @@ export const getErrorDescription = (
 
         // Вариант 1: errors[0].detail
         if (Array.isArray(data.errors) && data.errors.length > 0) {
-            return data.errors[0].attr + ': ' + data.errors[0].detail;
+            let answer;
+            if (data.errors[0].attr) {
+                return data.errors[0].attr + ': ' + data.errors[0].detail;
+            }
+            return data.errors[0].detail;
         }
 
         // Вариант 2: detail
