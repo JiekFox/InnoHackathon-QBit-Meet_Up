@@ -52,6 +52,7 @@ export interface Meetup {
     author_id: number;
     author?: string;
     tags?: Tag[];
+    duration: number;
 }
 
 export interface ProfileFormData {

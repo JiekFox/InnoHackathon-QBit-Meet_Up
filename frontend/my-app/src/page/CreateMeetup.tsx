@@ -86,18 +86,36 @@ export function CreateMeetup(): JSX.Element {
                         required
                     />
                 </div>
-                <div className="input-group">
-                    <label htmlFor="datetime_beg">
-                        {t('createMeetup.startDateTime')}
-                    </label>
-                    <input
-                        type="datetime-local"
-                        id="datetime_beg"
-                        name="datetime_beg"
-                        value={formData.datetime_beg}
-                        onChange={handleChange}
-                        required
-                    />
+                <div className="input-row">
+                    <div className="input-group">
+                        <label htmlFor="datetime_beg">
+                            {t('createMeetup.startDateTime')}
+                        </label>
+                        <input
+                            type="datetime-local"
+                            id="datetime_beg"
+                            name="datetime_beg"
+                            value={formData.datetime_beg}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label htmlFor="duration">
+                            {t('editMeetup.durationLabel')}
+                        </label>
+                        <input
+                            type="number"
+                            id="duration"
+                            name="duration"
+                            value={formData.duration}
+                            onChange={handleChange}
+                            min="0"
+                            max="24"
+                            step="1"
+                            required
+                        />
+                    </div>
                 </div>
                 <div className="input-group">
                     <label htmlFor="link">{t('createMeetup.linkLabel')}</label>
@@ -183,7 +201,15 @@ export function CreateMeetup(): JSX.Element {
                 <div className="image-upload-wrapper">
                     <label
                         htmlFor="customFileInput"
-                        className="custom-file-label create-meetup-button"
+                        className="custom-file-label create-meetup-button w-full"
+                        aria-label="select image"
+                        tabIndex={0}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                fileInputRef.current?.click();
+                            }
+                        }}
                     >
                         {t('createMeetup.selectImage')}
                     </label>
@@ -196,12 +222,13 @@ export function CreateMeetup(): JSX.Element {
                         className="hidden-file-input"
                         ref={fileInputRef}
                     />
-
-                    <div className="preview-box">
-                        <ImagePreview
-                            previewUrl={previewUrl}
-                            onRemove={handleRemoveImage}
-                        />
+                    <div className="w-full">
+                        <div className="preview-box">
+                            <ImagePreview
+                                previewUrl={previewUrl}
+                                onRemove={handleRemoveImage}
+                            />
+                        </div>
                     </div>
                 </div>
 

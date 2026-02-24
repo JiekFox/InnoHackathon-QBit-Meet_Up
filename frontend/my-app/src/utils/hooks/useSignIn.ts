@@ -5,6 +5,7 @@ import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router';
 import { AuthResponseData } from '../../constant/types';
 import { useAxiosWithAuth } from './useAxiosWithAuth';
+import { getErrorDescription } from '..';
 
 interface UseSignInReturn {
     formData: SignInFormData;
@@ -54,7 +55,10 @@ export const useSignIn = (): UseSignInReturn => {
                 saveDate(response.data);
                 navigate(-1);
             } catch (error) {
-                const errorDescription = getErrorDescription(error, 'Invalid username or password. Please try again.');
+                const errorDescription = getErrorDescription(
+                    error,
+                    'Invalid username or password. Please try again.'
+                );
                 console.error('Sign in error:', errorDescription);
                 setErrorMessage(errorDescription);
             } finally {

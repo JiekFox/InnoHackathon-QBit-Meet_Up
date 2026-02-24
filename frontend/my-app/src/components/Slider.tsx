@@ -237,6 +237,12 @@ const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
                                                     dateOnly: false
                                                 })}
                                             </span>
+                                            {prev.duration !== undefined && (
+                                                <span className="hero-duration">
+                                                    ⏱ {prev.duration}{' '}
+                                                    {t('common.hours')}
+                                                </span>
+                                            )}
                                         </div>
                                         <Link
                                             className="create-meeting-button "
@@ -297,6 +303,12 @@ const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
                                                 dateOnly: false
                                             })}
                                         </span>
+                                        {current.duration !== undefined && (
+                                            <span className="hero-duration">
+                                                ⏱ {current.duration}{' '}
+                                                {t('common.hours')}
+                                            </span>
+                                        )}
                                     </div>
                                     <Link
                                         className="create-meeting-button "

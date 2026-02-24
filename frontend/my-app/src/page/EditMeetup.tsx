@@ -22,6 +22,7 @@ import { getErrorDescription } from '../utils';
 interface FormDataState {
     title: string;
     datetime_beg: string;
+    duration: string;
     link: string;
     description: string;
     image: File | null;
@@ -31,6 +32,7 @@ interface FormDataState {
 const baseValues: FormDataState = {
     title: '',
     datetime_beg: '',
+    duration: '1',
     link: '',
     description: '',
     image: null,
@@ -76,9 +78,19 @@ export function EditMeetup(): JSX.Element {
             try {
                 const response = await axios.get(TAGS_API_URL);
                 setAllTags(response.data);
-            } catch (error) {
-                console.error('Failed to fetch tags:', error);
+            } catch (err: any) {
+                console.error('Failed to fetch tags:', err);
                 setAllTags([]);
+                const errorDescription = getErrorDescription(
+                    err,
+                    'Failed to fetch tags'
+                );
+
+                if (err?.status) {
+                    setError(err?.status + ' ' + errorDescription);
+                } else {
+                    setError(errorDescription);
+                }
             } finally {
                 setTagsLoading(false);
             }
@@ -106,6 +118,7 @@ export function EditMeetup(): JSX.Element {
                     datetime_beg: new Date(data.datetime_beg)
                         .toISOString()
                         .slice(0, 16),
+                    duration: String(data.duration ?? ''),
                     description: data.description || '',
                     link: data.link || '',
                     image: null,
@@ -120,7 +133,11 @@ export function EditMeetup(): JSX.Element {
                     'Failed to fetch meetup'
                 );
                 console.error('Error fetching meetup:', errorDescription);
-                setError(err?.status + ' ' + errorDescription);
+                if (err?.status) {
+                    setError(err?.status + ' ' + errorDescription);
+                } else {
+                    setError(errorDescription);
+                }
             } finally {
                 setIsPending(false);
             }
@@ -132,7 +149,12 @@ export function EditMeetup(): JSX.Element {
     const handleChange = useCallback(
         (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             const { name, value } = e.target;
-            setUserValues(prev => ({ ...prev, [name]: value }));
+            if (name === 'duration') {
+                const sanitized = value.replace(/[^0-9]/g, '');
+                setUserValues(prev => ({ ...prev, [name]: sanitized }));
+            } else {
+                setUserValues(prev => ({ ...prev, [name]: value }));
+            }
         },
         []
     );
@@ -232,18 +254,35 @@ export function EditMeetup(): JSX.Element {
                     />
                 </div>
 
-                <div className="input-group">
-                    <label htmlFor="datetime_beg">
-                        {t('editMeetup.startDateTime')}
-                    </label>
-                    <input
-                        type="datetime-local"
-                        id="datetime_beg"
-                        name="datetime_beg"
-                        value={finalValues.datetime_beg}
-                        onChange={handleChange}
-                        required
-                    />
+                <div className="input-row">
+                    <div className="input-group">
+                        <label htmlFor="datetime_beg">
+                            {t('editMeetup.startDateTime')}
+                        </label>
+                        <input
+                            type="datetime-local"
+                            id="datetime_beg"
+                            name="datetime_beg"
+                            value={finalValues.datetime_beg}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label htmlFor="duration">
+                            {t('editMeetup.durationLabel')}
+                        </label>
+                        <input
+                            type="number"
+                            id="duration"
+                            name="duration"
+                            value={finalValues.duration}
+                            onChange={handleChange}
+                            min="0"
+                            step="1"
+                            required
+                        />
+                    </div>
                 </div>
 
                 <div className="input-group">

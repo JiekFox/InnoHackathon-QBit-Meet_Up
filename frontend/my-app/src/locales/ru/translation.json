@@ -50,6 +50,7 @@
         "failedToSubscribe": "Ошибка подписки",
         "failedToUnsubscribe": "Ошибка отписки",
         "noData": "Нет данных о встречах.",
+        "duration": "Длительность",
         "loading": "Загрузка..."
     },
     "errorPage": {
@@ -93,6 +94,7 @@
     "slider": {
         "announcement": "Анонс",
         "details": "Подробнее",
+
         "errorLoading": "Ошибка загрузки слайдера"
     },
     "dataList": {
@@ -178,6 +180,7 @@
         "deleteConfirmation": "Вы уверены, что хотите удалить эту встречу? Это действие не может быть отменено.",
         "titleLabel": "Название:",
         "startDateTime": "Дата и время начала:",
+        "durationLabel": "Длительность (часов):",
         "linkLabel": "Ссылка:",
         "descriptionLabel": "Описание:",
         "updateSuccess": "Встреча успешно обновлена",
@@ -237,6 +240,7 @@
         "loading": "Загрузка...",
         "error": "Ошибка",
         "success": "Успешно",
-        "warning": "Предупреждение"
+        "warning": "Предупреждение",
+        "hours": "часов"
     }
 }

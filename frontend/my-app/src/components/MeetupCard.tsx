@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import icon from '../assets/img/icon.png';
 import { formatDate } from '../utils/formatDate';
 import { Tag } from '../constant/types';
+import { useTranslation } from 'react-i18next';
 
 interface MeetupCardProps {
     title: string;
@@ -12,10 +13,12 @@ interface MeetupCardProps {
     datetime_beg?: string;
     to: string;
     tags?: Tag[];
+    duration?: number;
 }
 
 const MeetupCard: React.FC<MeetupCardProps> = React.memo(
-    ({ title, description, image, dateTime, datetime_beg, to, tags }) => {
+    ({ title, description, image, dateTime, datetime_beg, to, tags, duration }) => {
+        const { t } = useTranslation();
         const dateStr = dateTime || datetime_beg || '';
         const formattedDate = formatDate(dateStr, {
             dateOnly: false,
@@ -40,7 +43,13 @@ const MeetupCard: React.FC<MeetupCardProps> = React.memo(
                         </div>
                     )}
                     <h3 className="title">{title}</h3>
-                    <h4>{formattedDate}</h4>
+                    <div className="date-time">
+                        <span>{formattedDate}</span>
+                        <span>
+                            ⏱ {duration} {t('common.hours')}
+                        </span>
+                    </div>
+
                     <p className="description">{description}</p>
                 </NavLink>
             </div>

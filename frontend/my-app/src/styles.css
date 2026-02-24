@@ -559,6 +559,8 @@ input:checked + .slider:before {
     gap: 32px;
     width: 100%;
     justify-content: space-around;
+    max-width: 1600px;
+    margin: auto;
 }
 
 .profile-edit-form .form-fields {
@@ -606,6 +608,7 @@ input:checked + .slider:before {
 .delete-button {
     width: 100%;
     padding: 10px 0px;
+    margin-top: 0;
 }
 
 .sign-form p {
@@ -751,7 +754,7 @@ textarea {
 }
 
 .sign-form {
-    width: 320px;
+    max-width: 320px;
     margin: 0 auto;
     background-color: var(--header-footer);
     padding: 24px;
@@ -986,6 +989,16 @@ h3 {
     gap: 5px;
 }
 
+.create-meetup-form .input-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.create-meetup-form .input-row .input-group {
+    flex: 1;
+}
+
 .create-meetup-form .input-group label {
     font-weight: bold;
     font-size: 14px;
@@ -1184,7 +1197,7 @@ h3 {
 
 .image-upload-wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
     margin-top: 0.5rem;
 }
@@ -1516,6 +1529,11 @@ h3 {
     margin-top: 12px;
 }
 
+.hero-duration {
+    display: inline-block;
+    margin-left: 12px;
+}
+
 .create-meeting-button {
     /* margin-top: 8px; */
     padding: 10px;
@@ -1537,6 +1555,12 @@ h3 {
     object-fit: cover;
     object-position: center center;
 }
+.date-time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
 
 .slider-nav-btn {
     position: absolute;
@@ -1553,7 +1577,7 @@ h3 {
     align-items: center;
     justify-content: center;
     font-size: 20px;
-    z-index: 10;
+    z-index: 9;
     transition: all 0.2s ease;
 }
 
@@ -1613,6 +1637,9 @@ h3 {
         aspect-ratio: 1 / 1;
         max-height: 500px;
     }
+    .hero-info-wrapper {
+        gap: 8px;
+    }
 
     .hero-image-side {
         height: auto;
@@ -1628,13 +1655,13 @@ h3 {
         height: 100%;
         max-height: none;
         object-fit: contain;
-        object-position: center top;
+        object-position: center bottom;
     }
 
     .hero-title {
         font-size: 1.5rem;
         -webkit-line-clamp: 2;
-        min-height: 3rem;
+        /* min-height: 3rem; */
     }
 
     .hero-description {
@@ -1916,6 +1943,9 @@ h3 {
 }
 
 @media (max-width: 500px) {
+    .user-avatar {
+        display: none;
+    }
     .header .controls {
         gap: 4px;
     }

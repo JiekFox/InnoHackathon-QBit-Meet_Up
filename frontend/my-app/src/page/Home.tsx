@@ -34,6 +34,8 @@ export default function Home() {
                 image: item.image,
                 dateTime: item.datetime_beg,
                 tags: item.tags,
+                duration: item.duration,
+                ...item
             })),
             count: response.data.count
         };

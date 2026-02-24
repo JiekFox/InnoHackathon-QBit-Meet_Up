@@ -18,6 +18,7 @@ export interface Tag {
 export interface MeetupFormData {
     title: string;
     datetime_beg: string;
+    duration: number | string;
     link: string;
     description: string;
     image: File | null;
@@ -36,6 +37,7 @@ export const useMeetupForm = () => {
     const [formData, setFormData] = useState<MeetupFormData>({
         title: '',
         datetime_beg: '',
+        duration: 1,
         link: '',
         description: '',
         image: null,
@@ -61,7 +63,10 @@ export const useMeetupForm = () => {
                 const response = await axios.get(TAGS_API_URL);
                 setAllTags(response.data);
             } catch (error) {
-                const errorDescription = getErrorDescription(error, 'Failed to fetch tags');
+                const errorDescription = getErrorDescription(
+                    error,
+                    'Failed to fetch tags'
+                );
                 console.error('Failed to fetch tags:', errorDescription);
                 setError(errorDescription);
                 setAllTags([]);
@@ -76,7 +81,14 @@ export const useMeetupForm = () => {
     const handleChange = useCallback(
         (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             const { name, value } = e.target;
-            setFormData((prev): MeetupFormData => ({ ...prev, [name]: value }));
+            setFormData((prev): MeetupFormData => {
+                if (name === 'duration') {
+                    // keep only digits
+                    const sanitized = value.replace(/[^0-9]/g, '');
+                    return { ...prev, [name]: sanitized };
+                }
+                return { ...prev, [name]: value };
+            });
         },
         []
     );
@@ -169,6 +181,7 @@ export const useMeetupForm = () => {
             meetingData.append('datetime_beg', formData.datetime_beg);
             meetingData.append('link', formData.link);
             meetingData.append('description', formData.description);
+            meetingData.append('duration', String(formData.duration));
             if (formData.image) {
                 meetingData.append('image', formData.image);
             }
@@ -184,7 +197,10 @@ export const useMeetupForm = () => {
                 );
                 navigate(`${MEETUP_DETAILS}/${response.data.id}`);
             } catch (err) {
-                const errorDescription = getErrorDescription(err, 'Failed to create meetup');
+                const errorDescription = getErrorDescription(
+                    err,
+                    'Failed to create meetup'
+                );
                 console.error('Error creating meeting:', errorDescription);
                 setError(errorDescription);
             } finally {

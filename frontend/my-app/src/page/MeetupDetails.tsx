@@ -114,6 +114,11 @@ export default function MeetupDetails(): JSX.Element {
                         </a>
                     </p>
                     <p className="meetup-details-date">{`${t('meetupDetails.dateBegin')}: ${formattedDate}`}</p>
+                    {meetup.duration !== undefined && (
+                        <p className="meetup-details-date">
+                            {`${t('meetupDetails.duration')}: ${meetup.duration} ${t('common.hours')}`}
+                        </p>
+                    )}
                     <p className="meetup-details-signed">{`${t('meetupDetails.alreadySigned')}: ${meetup.attendees_count || 0}`}</p>
                     <h3>{t('meetupDetails.description')}:</h3>
                     <pre className="meetup-details-description">

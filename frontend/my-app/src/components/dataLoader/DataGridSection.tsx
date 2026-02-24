@@ -114,6 +114,7 @@ export function DataGridSection<T extends Meetup>({
                             datetime_beg={meetup?.datetime_beg}
                             dateTime={meetup?.dateTime}
                             tags={meetup?.tags}
+                            duration={meetup?.duration}
                         />
                     ))
                 ) : (
