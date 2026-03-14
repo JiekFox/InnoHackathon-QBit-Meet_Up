@@ -40,7 +40,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         """
         Возвращает разрешения для текущего действия.
         """
-        if self.action in ["list", "retrieve"]:
+        if self.action in ["list", "retrieve", "attendees"]:
             return [AllowAny()]
         if self.action in ["update", "partial_update", "destroy"]:
             return [AllowAny()]  # TODO: Only for test reasons
@@ -133,6 +133,24 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return Response({"message": True}, status=status.HTTP_200_OK)
         except SignedToMeeting.DoesNotExist:
             return Response({"message": False}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"], url_path="attendees")
+    def attendees(self, request, pk=None):
+        """
+        Возвращает список пользователей, подписанных на данный митап.
+        Доступно всем (как и просмотр деталей митапа).
+        Поддерживает пагинацию.
+        """
+        meeting = self.get_object()
+        users = UserProfile.objects.filter(subscriptions__meeting=meeting).order_by("id")
+
+        page = self.paginate_queryset(users)
+        if page is not None:
+            serializer = UserSerializer(page, many=True, context={"request": request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = UserSerializer(users, many=True, context={"request": request})
+        return Response(serializer.data)
 
 
 class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
