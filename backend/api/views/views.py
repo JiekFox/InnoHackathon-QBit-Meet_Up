@@ -134,7 +134,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         except SignedToMeeting.DoesNotExist:
             return Response({"message": False}, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["get"], url_path="attendees")
+    @action(detail=True)
     def attendees(self, request, pk=None):
         """
         Возвращает список пользователей, подписанных на данный митап.
