@@ -31,7 +31,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
     filterset_class = MeetingFilter
     search_fields = ["title", "description"]
     ordering_fields = ["datetime_beg", "location"]
-    ordering = ["-datetime_beg"]
+    ordering = ["datetime_beg"]
 
     def get_queryset(self):
         return Meeting.objects.all().prefetch_related("tags").select_related("author")
