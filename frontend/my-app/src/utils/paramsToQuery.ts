@@ -6,10 +6,12 @@ export function paramsToQuery(params: ParamsForFetch) {
         page_size: String(params.pageSize),
         ...(params.search && { search: params.search }),
         ...(params.startDate && { datetime_beg__gt: params.startDate }),
-        ...(params.endDate && { datetime_beg__lt: params.endDate })
+        ...(params.endDate && { datetime_beg__lt: params.endDate }),
+        ...(params.status !== undefined && {
+            status: String(params.status)
+        })
     });
 
-    // Add tagIds if present
     if (params.tagIds && params.tagIds.length > 0) {
         params.tagIds.forEach(tagId => {
             searchParams.append('tags', String(tagId));

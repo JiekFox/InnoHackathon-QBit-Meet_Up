@@ -14,6 +14,7 @@ export interface FilterData {
     startDate: string;
     endDate: string;
     selectedTags: Tag[];
+    showOldMeetups: boolean;
 }
 
 const FilterPanel: React.FC<FilterPanelProps> = ({
@@ -27,31 +28,35 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+    const [showOldMeetups, setShowOldMeetups] = useState<boolean>(false);
 
     const handleApply = useCallback(() => {
         onApplyFilters({
             startDate,
             endDate,
-            selectedTags
+            selectedTags,
+            showOldMeetups
         });
         onClose();
-    }, [startDate, endDate, selectedTags, onApplyFilters, onClose]);
+    }, [startDate, endDate, selectedTags, showOldMeetups, onApplyFilters, onClose]);
 
     const handleReset = useCallback(() => {
         setStartDate('');
         setEndDate('');
         setSelectedTags([]);
+        setShowOldMeetups(false);
         onApplyFilters({
             startDate: '',
             endDate: '',
-            selectedTags: []
+            selectedTags: [],
+            showOldMeetups: false
         });
         onClose();
     }, [onApplyFilters, onClose]);
 
     const hasActiveFilters = useMemo(() => {
-        return startDate || endDate || selectedTags.length > 0;
-    }, [startDate, endDate, selectedTags]);
+        return startDate || endDate || selectedTags.length > 0 || showOldMeetups;
+    }, [startDate, endDate, selectedTags, showOldMeetups]);
 
     return (
         <>
@@ -120,6 +125,20 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                                         />
                                     </div>
                                 </div>
+                            </div>
+
+                            <div className="filter-section">
+                                <label className="checkbox-wrapper">
+                                    <input
+                                        type="checkbox"
+                                        checked={showOldMeetups}
+                                        onChange={e =>
+                                            setShowOldMeetups(e.target.checked)
+                                        }
+                                    />
+                                    {t('filterPanel.showOldMeetups') ||
+                                        'Показывать и старые митапы'}
+                                </label>
                             </div>
 
                             <div className="filter-section">

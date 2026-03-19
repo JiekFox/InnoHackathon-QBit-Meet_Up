@@ -74,4 +74,5 @@ export interface ParamsForFetch {
     startDate?: string;
     endDate?: string;
     tagIds?: number[];
+    status?: string;
 }

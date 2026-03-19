@@ -14,6 +14,7 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [dateFilter, setDateFilter] = useState({ startDate: '', endDate: '' });
     const [tagIds, setTagIds] = useState<number[]>([]);
+    const [showOldMeetups, setShowOldMeetups] = useState<boolean>(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
@@ -22,22 +23,29 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
         search = searchQuery,
         startDate = dateFilter.startDate,
         endDate = dateFilter.endDate,
-        tagIds: newTagIds = tagIds
-    }: Partial<ParamsForFetch> = {}) => {
+        tagIds: newTagIds = tagIds,
+        showOldMeetups: newShowOldMeetups
+    }: Partial<ParamsForFetch> & { showOldMeetups?: boolean } = {}) => {
         setLoading(true);
         try {
+            const shouldShowOld = newShowOldMeetups ?? showOldMeetups;
+
             const params: ParamsForFetch = {
                 page,
                 pageSize: ITEMS_PER_PAGE,
                 search,
                 startDate,
                 endDate,
-                tagIds: newTagIds
+                tagIds: newTagIds,
+                ...(shouldShowOld ? { status: 'all' } : {})
             };
+
             const response = await fetchFunction(params);
             setItems(response.results);
             setTotalPages(Math.ceil((response.count || 0) / ITEMS_PER_PAGE));
             setError(null);
+
+            setShowOldMeetups(shouldShowOld);
         } catch (err) {
             console.error(err);
             setError(
@@ -49,14 +57,14 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
     };
 
     const handleSearchChange = useCallback(async (query: string) => {
-        await loadData({ page: 1, search: query });
+        await loadData({ page: 1, search: query, showOldMeetups });
         setSearchQuery(query);
         setCurrentPage(1);
     }, []);
 
     const handleDateFilter = useCallback(
         async (startDate: string, endDate: string) => {
-            await loadData({ page: 1, startDate, endDate });
+            await loadData({ page: 1, startDate, endDate, showOldMeetups });
             const newFilter = { startDate, endDate };
             setDateFilter(newFilter);
             setCurrentPage(1);
@@ -65,8 +73,19 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
     );
 
     const handleFiltersApply = useCallback(
-        async (startDate: string, endDate: string, newTagIds: number[] = []) => {
-            await loadData({ page: 1, startDate, endDate, tagIds: newTagIds });
+        async (
+            startDate: string,
+            endDate: string,
+            newTagIds: number[] = [],
+            newShowOldMeetups = false
+        ) => {
+            await loadData({
+                page: 1,
+                startDate,
+                endDate,
+                tagIds: newTagIds,
+                showOldMeetups: newShowOldMeetups
+            });
             setDateFilter({ startDate, endDate });
             setTagIds(newTagIds);
             setCurrentPage(1);
@@ -76,7 +95,7 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
 
     const handlePageChange = useCallback(async (page: number) => {
         setCurrentPage(page);
-        await loadData({ page });
+        await loadData({ page, showOldMeetups });
     }, []);
 
     return {

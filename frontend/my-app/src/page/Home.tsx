@@ -22,9 +22,10 @@ export default function Home() {
     const navigate = useNavigate();
     const { userID } = useAuth();
     const axios = useAxiosWithAuth();
+
     const fetchMeetups = React.useCallback(async (params: ParamsForFetch) => {
         const query = paramsToQuery(params);
-        console.log('fetch home');
+        console.log('fetch home', params);
         const response = await axios.get(`${MEETINGS_API_URL}?${query}`);
         return {
             results: response.data.results.map((item: any) => ({

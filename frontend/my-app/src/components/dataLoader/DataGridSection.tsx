@@ -71,7 +71,12 @@ export function DataGridSection<T extends Meetup>({
 
     const handleApplyFilters = (filters: FilterData) => {
         const tagIds = filters.selectedTags.map(tag => tag.id);
-        handleFiltersApply(filters.startDate, filters.endDate, tagIds);
+        handleFiltersApply(
+            filters.startDate,
+            filters.endDate,
+            tagIds,
+            filters.showOldMeetups
+        );
     };
 
     if (error) console.error('Error in DataGridSection:', error);

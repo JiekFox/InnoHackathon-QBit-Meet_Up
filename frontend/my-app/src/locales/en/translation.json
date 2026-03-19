@@ -124,6 +124,7 @@
         "dateRange": "Date Range",
         "startDate": "Start Date",
         "endDate": "End Date",
+        "showOldMeetups": "Show old meetups",
         "tags": "Tags",
         "reset": "Reset",
         "apply": "Apply"
