@@ -2,7 +2,7 @@ import logging
 
 from api.models.tag import Tag
 from api.models.user import UserProfile
-from api.utils import convert_to_webp
+from api.utils import check_file_exists, convert_to_webp
 from django.db import models
 
 logger = logging.getLogger(__name__)
@@ -24,6 +24,7 @@ class Meeting(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
+        self.image = check_file_exists(self.image, "image", f"meetup {self.id}")
         if self.image and hasattr(self.image, "file") and not self.image.name.endswith(".webp"):
             try:
                 new_image = convert_to_webp(self.image)

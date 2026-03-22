@@ -64,7 +64,7 @@ class MeetingSerializer(serializers.ModelSerializer):
         return meeting
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserPublicSerializer(serializers.ModelSerializer):
     photo = serializers.ImageField(validators=[validate_image_size], required=False)
 
     class Meta:
@@ -77,6 +77,14 @@ class UserSerializer(serializers.ModelSerializer):
             "photo",
             "user_description",
         ]
+
+
+class UserPrivateSerializer(serializers.ModelSerializer):
+    photo = serializers.ImageField(validators=[validate_image_size], required=False)
+
+    class Meta:
+        model = UserProfile
+        fields = ["id", "username", "first_name", "last_name", "photo", "user_description", "email"]
 
 
 class SignedToMeetingSerializer(serializers.ModelSerializer):

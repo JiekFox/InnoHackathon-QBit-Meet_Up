@@ -1,6 +1,6 @@
 import logging
 
-from api.utils import convert_to_webp
+from api.utils import check_file_exists, convert_to_webp
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -13,6 +13,7 @@ class UserProfile(AbstractUser):
     photo = models.ImageField(upload_to="user_photos/", blank=True, null=True)
 
     def save(self, *args, **kwargs):
+        self.photo = check_file_exists(self.photo, "photo", f"user {self.id}")
         if self.photo and hasattr(self.photo, "file") and not self.photo.name.endswith(".webp"):
             try:
                 new_photo = convert_to_webp(self.photo)

@@ -6,8 +6,9 @@ from api.views.serializers.serializers import (
     MeetingSerializer,
     ObtainTokenSerializer,
     TagSerializer,
+    UserPrivateSerializer,
+    UserPublicSerializer,
     UserRegistrationSerializer,
-    UserSerializer,
 )
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
@@ -127,10 +128,10 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
 
         page = self.paginate_queryset(users)
         if page is not None:
-            serializer = UserSerializer(page, many=True, context={"request": request})
+            serializer = UserPublicSerializer(page, many=True, context={"request": request})
             return self.get_paginated_response(serializer.data)
 
-        serializer = UserSerializer(users, many=True, context={"request": request})
+        serializer = UserPublicSerializer(users, many=True, context={"request": request})
         return Response(serializer.data)
 
 
@@ -140,7 +141,7 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
     """
 
     queryset = UserProfile.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserPublicSerializer
     permission_classes = [IsAuthenticated]
     search_fields = ["title", "description"]
 
@@ -161,6 +162,9 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
             return [IsAuthenticated()]
         return super().get_permissions()
 
+    def _is_self_or_staff(self, request, obj):
+        return request.user.is_authenticated and (request.user.is_staff or request.user == obj)
+
     def get_serializer_class(self):
         """
         Возвращает правильный сериализатор для текущего действия.
@@ -169,6 +173,10 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
             return UserRegistrationSerializer
         elif self.action in ["meetings_signed_active", "meetings_signed", "meetings_owned", "meetings_authored_active"]:
             return MeetingSerializer
+        elif self.action in ["retrieve", "update", "partial_update"]:
+            if self._is_self_or_staff(self.request, self.get_object()):
+                return UserPrivateSerializer
+            return UserPublicSerializer
         return super().get_serializer_class()
 
     # @method_decorator(cache_page(60 * 5))
