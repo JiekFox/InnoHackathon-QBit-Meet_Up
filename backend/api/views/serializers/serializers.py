@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 def validate_image_size(image):
     if image and image.size > 5 * 1024 * 1024:
-        raise ValidationError(detail="Размер файла не должен превышать 5 MB")
+        raise ValidationError(detail="The image size should be no more than 5 MB")
 
 
 class TagSerializer(serializers.ModelSerializer):

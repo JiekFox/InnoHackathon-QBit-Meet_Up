@@ -69,7 +69,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
         meeting = self.get_object()
         meeting.delete()
         # clear_all_cache()
-        return Response({"message": "Встреча успешно удалена"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Meetup deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
