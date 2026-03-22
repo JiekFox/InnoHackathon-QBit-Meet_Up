@@ -172,7 +172,7 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
         """
         Переопределение прав доступа для конкретных действий.
         """
-        if self.action in ["list", "retrieve"]:
+        if self.action in ["register", "list", "retrieve"]:
             return [AllowAny()]  # TODO: Temporary
         if self.action in ["update", "partial_update", "destroy"]:
             return [IsAuthorOrStaff()]
