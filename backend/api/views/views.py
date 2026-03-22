@@ -1,5 +1,5 @@
 from api.models import Meeting, SignedToMeeting, Tag, UserProfile
-from api.security.permissions import IsAuthorOrStaff, IsStaff
+from api.security.permissions import IsAuthorOrStaff, IsSelfOrStaff, IsStaff
 from api.views.filters.filters import MeetingFilter
 from api.views.mixins.mixins import MeetingPagination, SubscriptionMixin, UserMeetingQueryMixin
 from api.views.serializers.serializers import (
@@ -175,7 +175,7 @@ class UserViewSet(ModelViewSet, UserMeetingQueryMixin):
         if self.action in ["register", "list", "retrieve"]:
             return [AllowAny()]  # TODO: Temporary
         if self.action in ["update", "partial_update", "destroy"]:
-            return [IsAuthorOrStaff()]
+            return [IsSelfOrStaff()]
         if self.action in ["meetings_owned", "meetings_signed"]:
             return [IsAuthenticated()]
         return super().get_permissions()

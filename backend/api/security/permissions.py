@@ -22,3 +22,8 @@ class IsStaff(BasePermission):
 class IsAuthorOrStaff(BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.is_authenticated and (request.user.is_staff or request.user.id == obj.author.id)
+
+
+class IsSelfOrStaff(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return request.user.is_authenticated and (request.user.is_staff or request.user.id == obj.id)
