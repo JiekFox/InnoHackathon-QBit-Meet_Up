@@ -19,7 +19,13 @@ class MeetingFilter(FilterSet):
     tags = django_filters.ModelMultipleChoiceFilter(
         field_name="tags__id", to_field_name="id", queryset=Tag.objects.all(), conjoined=False
     )
-    status = ChoiceFilter(choices=STATUS_CHOICES, method="filter_status", label="Статус митапа")
+    status = ChoiceFilter(choices=STATUS_CHOICES, null_value="active", method="filter_status", label="Статус митапа")
+
+    def __init__(self, data=None, *args, **kwargs):
+        if data is not None and ("status" not in data or data["status"] in django_filters.constants.EMPTY_VALUES):
+            data = data.copy()
+            data["status"] = "active"
+        super().__init__(data, *args, **kwargs)
 
     class Meta:
         model = Meeting
