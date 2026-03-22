@@ -1,7 +1,13 @@
 from api.models import Meeting, SignedToMeeting, Tag, UserProfile
 from rest_framework import serializers
+from rest_framework.serializers import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+
+
+def validate_image_size(image):
+    if image and image.size > 5 * 1024 * 1024:
+        raise ValidationError(detail="Размер файла не должен превышать 5 MB")
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -18,6 +24,7 @@ class MeetingSerializer(serializers.ModelSerializer):
     tag_ids = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True, write_only=True, required=False, source="tags"
     )
+    image = serializers.ImageField(validators=[validate_image_size], required=False, allow_null=True)
 
     class Meta:
         model = Meeting
@@ -58,6 +65,8 @@ class MeetingSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    photo = serializers.ImageField(validators=[validate_image_size], required=False)
+
     class Meta:
         model = UserProfile
         fields = [

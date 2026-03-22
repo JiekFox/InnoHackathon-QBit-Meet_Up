@@ -65,30 +65,11 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        image = request.FILES.get("image")
-        if image and image.size > 5 * 1024 * 1024:
-            return Response({"error": "Размер файла не должен превышать 5 MB"}, status=status.HTTP_400_BAD_REQUEST)
-        self.perform_create(serializer)
-        # clear_all_cache()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
     def destroy(self, request, *args, **kwargs):
         meeting = self.get_object()
         meeting.delete()
         # clear_all_cache()
         return Response({"message": "Встреча успешно удалена"}, status=status.HTTP_204_NO_CONTENT)
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop("partial", False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        # clear_all_cache()
-        return Response(serializer.data)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
