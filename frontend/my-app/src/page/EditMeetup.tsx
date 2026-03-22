@@ -72,7 +72,6 @@ export function EditMeetup(): JSX.Element {
         }
     }, [token, navigate]);
 
-    // Fetch tags on mount
     useEffect(() => {
         const fetchTags = async () => {
             try {
@@ -127,7 +126,6 @@ export function EditMeetup(): JSX.Element {
 
                 setPreviewUrl(data.image || null);
             } catch (err: any) {
-                //setError(err.message || 'Failed to fetch meetup details.');
                 const errorDescription = getErrorDescription(
                     err,
                     'Failed to fetch meetup'
@@ -181,7 +179,6 @@ export function EditMeetup(): JSX.Element {
         setUserValues(prev => ({ ...prev, tag_ids: tagIds }));
     }, []);
 
-    // Get selected tags from finalValues.tag_ids
     const selectedTags = finalValues.tag_ids
         .map(id => allTags.find(tag => tag.id === id))
         .filter((tag): tag is Tag => tag !== undefined);
@@ -196,7 +193,6 @@ export function EditMeetup(): JSX.Element {
             Object.entries(userValues).forEach(([key, value]) => {
                 console.log(key, value);
                 if (key === 'tag_ids') {
-                    // Append each tag ID separately
                     (value as number[]).forEach(id => {
                         formDataToSend.append('tag_ids', String(id));
                     });
@@ -248,7 +244,7 @@ export function EditMeetup(): JSX.Element {
     return (
         <div className="edit-meetup create-meetup">
             <h1>{t('editMeetup.title')}</h1>
-            {error && <p className="error">{error}</p>}
+            {error && <pre className="error">{error}</pre>}
 
             <form onSubmit={handleEditSubmit} className="create-meetup-form">
                 <div className="input-group">
@@ -337,7 +333,7 @@ export function EditMeetup(): JSX.Element {
                         htmlFor="customFileInput"
                         className="custom-file-label edit-meetup-button create-meeting-button w-full"
                     >
-                        Select image
+                        {t('createMeetup.selectImage')}
                     </label>
                     <input
                         type="file"
@@ -372,7 +368,9 @@ export function EditMeetup(): JSX.Element {
                         className="edit-meetup-button create-meeting-button"
                         style={{ width: '100%' }}
                     >
-                        {isPending === 'saving' ? 'Saving...' : 'Save Changes'}
+                        {isPending === 'saving'
+                            ? t('buttons.loading')
+                            : t('profile.saveButton')}
                     </button>
 
                     <button
@@ -380,7 +378,9 @@ export function EditMeetup(): JSX.Element {
                         onClick={() => setIsDeleteModalOpen(true)}
                         className="delete-button"
                     >
-                        {isPending === 'deleting' ? 'Deleting...' : 'Delete Meetup'}
+                        {isPending === 'deleting'
+                            ? t('buttons.loading')
+                            : t('editMeetup.deleteMeetupTitle')}
                     </button>
                 </div>
             </form>

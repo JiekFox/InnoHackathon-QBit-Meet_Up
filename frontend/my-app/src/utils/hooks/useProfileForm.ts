@@ -3,6 +3,7 @@ import { USER_API_URL } from '../../constant/apiURL';
 import { useAuth } from '../AuthContext';
 import { useAxiosWithAuth } from './useAxiosWithAuth';
 import { ProfileFormData } from '../../constant/types';
+import { getErrorDescription } from '..';
 
 export interface ProfileFormErrors {
     email?: string[];
@@ -29,6 +30,7 @@ export const useProfileForm = () => {
     const [userValues, setUserValues] = useState<Partial<ProfileFormData>>({});
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const [errors, setErrors] = useState<ProfileFormErrors>({});
+    const [errorMessage, setErrorMessage] = useState<string>('');
     const [loading, setLoading] = useState(false);
 
     const finalValues: ProfileFormData = useMemo(() => {
@@ -125,11 +127,15 @@ export const useProfileForm = () => {
             };
             saveDate(forSaveDate);
             setErrors({});
-            alert('Profile updated successfully!');
+            // alert('Profile updated successfully!');
         } catch (error: any) {
-            console.log(error);
-            if (error.response?.data) setErrors(error.response.data);
-            else console.error(error.message);
+            console.error(error.message);
+            const errorDescription = getErrorDescription(
+                error,
+                'Invalid data.'
+            );
+            console.error('Profile form:', errorDescription);
+            setErrorMessage(errorDescription);
         } finally {
             setLoading(false);
         }
@@ -140,6 +146,7 @@ export const useProfileForm = () => {
         userValues,
         photoPreview,
         errors,
+        errorMessage,
         loading,
         handlePhotoDelete,
         handleChange,

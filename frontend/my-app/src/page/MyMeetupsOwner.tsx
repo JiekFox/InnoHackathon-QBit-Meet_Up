@@ -29,7 +29,9 @@ export default function MyMeetups() {
                 description: item.description,
                 image: item.image,
                 dateTime: item.datetime_beg,
-                tags: item.tags
+                tags: item.tags,
+                duration: item.duration,
+                ...item
             })),
             count: response.data.count
         };

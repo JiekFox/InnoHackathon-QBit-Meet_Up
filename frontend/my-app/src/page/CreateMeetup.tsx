@@ -73,7 +73,7 @@ export function CreateMeetup(): JSX.Element {
     return (
         <div className="create-meetup">
             <h1>{t('createMeetup.title')}</h1>
-            {error && <p className="error">{error.toString()}</p>}
+            {error && <pre className="error">{error.toString()}</pre>}
             <form onSubmit={handleSubmit} className="create-meetup-form">
                 <div className="input-group">
                     <label htmlFor="title">{t('createMeetup.titleLabel')}</label>

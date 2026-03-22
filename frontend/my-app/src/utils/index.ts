@@ -22,14 +22,18 @@ export const getErrorDescription = (
 
     if (axiosError?.response?.data) {
         const data = axiosError.response.data;
-
-        // Вариант 1: errors[0].detail
+        
         if (Array.isArray(data.errors) && data.errors.length > 0) {
-            let answer;
-            if (data.errors[0].attr) {
-                return data.errors[0].attr + ': ' + data.errors[0].detail;
-            }
-            return data.errors[0].detail;
+            let answer = '';
+            data.errors.forEach((err: { detail: string; attr?: string }) => {
+                if (err.attr) {
+                    answer += err.attr + ': ' + err.detail;
+                } else {
+                    answer += err.detail;
+                }
+                answer += '\n';
+            });
+            return answer.trim();
         }
 
         // Вариант 2: detail
