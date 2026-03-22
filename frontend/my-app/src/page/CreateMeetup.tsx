@@ -110,7 +110,7 @@ export function CreateMeetup(): JSX.Element {
                             name="duration"
                             value={formData.duration}
                             onChange={handleChange}
-                            min="0"
+                            min="1"
                             max="24"
                             step="1"
                             required
@@ -157,7 +157,7 @@ export function CreateMeetup(): JSX.Element {
 
                 <button
                     type="button"
-                    className={`ai-button ${isPendingAI && 'ai-loading'}`}
+                    className={`ai-button ${isPendingAI ? 'ai-loading' : ''}`}
                     onClick={handleAIClick}
                     disabled={isPendingAI}
                     style={{ height: 35 }}

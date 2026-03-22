@@ -200,6 +200,15 @@ export function EditMeetup(): JSX.Element {
                     (value as number[]).forEach(id => {
                         formDataToSend.append('tag_ids', String(id));
                     });
+                } else if (key === 'duration') {
+                    const tempValue = value === null ? '' : String(value);
+                    const durationNum = Number.parseFloat(
+                        tempValue.replace(/,/g, '.')
+                    );
+                    const durationForApi = Number.isFinite(durationNum)
+                        ? Math.round(durationNum)
+                        : 0;
+                    formDataToSend.append('duration', String(durationForApi));
                 } else {
                     const tempValue = value === null ? '' : value;
                     formDataToSend.append(key, tempValue as any);

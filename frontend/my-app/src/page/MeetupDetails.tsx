@@ -85,7 +85,7 @@ export default function MeetupDetails(): JSX.Element {
                         {meetup.title || t('meetupDetails.title')}
                     </h1>
                     <h2 className="meetup-details-author">
-                        {t('meetupDetails.author')}:
+                        {t('meetupDetails.author')}:⠀
                         {meetup.author_id && meetup.author ? (
                             <NavLink to={`${USERS_DETAIL}/${meetup.author_id}`}>
                                 {meetup.author}

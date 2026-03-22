@@ -83,7 +83,6 @@ export const useMeetupForm = () => {
             const { name, value } = e.target;
             setFormData((prev): MeetupFormData => {
                 if (name === 'duration') {
-                    // keep only digits
                     const sanitized = value.replace(/[^0-9]/g, '');
                     return { ...prev, [name]: sanitized };
                 }
@@ -181,7 +180,9 @@ export const useMeetupForm = () => {
             meetingData.append('datetime_beg', formData.datetime_beg);
             meetingData.append('link', formData.link);
             meetingData.append('description', formData.description);
-            meetingData.append('duration', String(formData.duration));
+            const durationNum = Number.parseInt(String(formData.duration || ''), 10);
+            const durationForApi = Number.isFinite(durationNum) ? durationNum : 0;
+            meetingData.append('duration', String(durationForApi));
             if (formData.image) {
                 meetingData.append('image', formData.image);
             }

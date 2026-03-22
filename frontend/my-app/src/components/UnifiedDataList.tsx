@@ -12,8 +12,8 @@ interface UnifiedDataListProps<T> {
     listContainerClassName?: string;
     itemContainerClassName?: string;
 
-    onRecommendByAI?: () => void;
-    onQueryTuchUseAI?: () => void;
+    onRecommendByAI?: () => void | Promise<void>;
+    onQueryTuchUseAI?: () => void | Promise<void>;
     enableDateFilter?: boolean;
 }
 
@@ -94,7 +94,12 @@ export function UnifiedDataList<T extends DataItem>({
         <div className="unified-data-container">
             <FilterBar
                 onSearchChange={handleSearchChange}
-                onDateFilter={enableDateFilter ? handleDateFilterApply : undefined}
+                onFiltersApply={
+                    enableDateFilter
+                        ? ({ startDate, endDate }) =>
+                              handleDateFilterApply(startDate, endDate)
+                        : undefined
+                }
                 onRecommendByAI={onRecommendByAI}
                 onQueryTuchUseAI={onQueryTuchUseAI}
             />

@@ -7,8 +7,8 @@ import { Tag } from './TagSelector';
 interface FilterBarProps {
     onSearchChange: (query: string) => void;
     onFiltersApply?: (filters: FilterData) => void;
-        onRecommendByAI?: () => Promise<void>;
-    onQueryTuchUseAI?: () => Promise<void>;
+    onRecommendByAI?: () => void | Promise<void>;
+    onQueryTuchUseAI?: () => void | Promise<void>;
     allTags?: Tag[];
     tagsLoading?: boolean;
 }

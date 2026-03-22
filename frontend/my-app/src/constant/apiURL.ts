@@ -9,4 +9,6 @@ export const MEETUP_DETAILS_API_URL = BASE_API_URL + 'meetup-details/';
 
 export const TOKEN_REFRESH_URL = BASE_API_URL + 'token/refresh/';
 
-export const GPT_URL = import.meta.env.VITE_GPT_URL;
+export const GPT_URL = String(
+    import.meta.env.VITE_GPT_URL || 'https://qbit-gpt-integration.onrender.com'
+).replace(/\/+$/, '');
