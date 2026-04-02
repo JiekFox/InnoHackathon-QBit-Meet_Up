@@ -29,7 +29,9 @@ export default function MyMeetups() {
                 description: item.description,
                 image: item.image,
                 dateTime: item.datetime_beg,
-                tags: item.tags
+                tags: item.tags,
+                duration: item.duration,
+                ...item
             })),
             count: response.data.count
         };
@@ -51,18 +53,39 @@ export default function MyMeetups() {
             );
             const meetups: Meetup[] = meetupsResponse.data?.results || [];
 
-            const formattedMeetups = meetups
-                .map(m => `ID:${m.id} (Title: ${m.title}, Desc: ${m.description})`)
-                .join('; ');
+            const normalize = (s: string) =>
+                String(s || '')
+                    .toLowerCase()
+                    .replace(/ё/g, 'е')
+                    .replace(/[^0-9a-zа-я\s]+/gi, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+
+            const fallbackLocalSearch = (query: string) => {
+                const q = normalize(query);
+                if (!q) return meetups;
+                const tokens = q.split(' ').filter(t => t.length >= 2);
+                return meetups.filter(m => {
+                    const hay = normalize(`${m.title} ${m.description}`);
+                    if (hay.includes(q)) return true;
+                    return tokens.some(t => hay.includes(t));
+                });
+            };
+
+            const formattedMeetups = JSON.stringify(
+                meetups.map(m => ({
+                    id: m.id,
+                    title: m.title,
+                    description: m.description
+                }))
+            );
 
             const gptPrompt = `
-                Тебе дана строка поиска: "${searchQuery}". 
-                И список существующих митапов: ${formattedMeetups}. 
-                Твоя задача: найти митапы, которые по смыслу связаны с поисковым запросом.
-                Дай ответ СТРОГО в одном из двух форматов:
-                1. Если нашел: "Success, id:[1, 2, 3]" (где в скобках ID подходящих митапов).
-                2. Если не нашел: "Fail, nothing interesting was found".
-                Ничего лишнего не пиши.
+                Тебе дана строка поиска: "${searchQuery}".
+                Тебе дан список митапов в JSON: ${formattedMeetups}.
+                Твоя задача: выбрать до 7 наиболее релевантных митапов.
+                Верни ОДНУ строку строго в формате: Success, id:[1,2,3]
+                Если ничего не подходит — верни: Success, id:[]
             `;
             console.log(gptPrompt);
             const gptResponse = await axios.post(
@@ -74,23 +97,39 @@ export default function MyMeetups() {
             const gptMessage =
                 gptResponse.data?.choices?.[0]?.message?.content || '';
 
-            if (gptMessage.startsWith('Success')) {
-                const match = gptMessage.match(/\[.*?\]/);
+            const normalizedMessage = String(gptMessage).trim().replace(/^"+|"+$/g, '');
+            const match = normalizedMessage.match(/\[.*?\]/);
+            const idsFromJson = match?.[0]
+                ? (() => {
+                      try {
+                          const parsed = JSON.parse(match[0]);
+                          return Array.isArray(parsed)
+                              ? parsed
+                                    .map((n: any) => Number(n))
+                                    .filter((n: any) => Number.isFinite(n))
+                              : [];
+                      } catch {
+                          return [];
+                      }
+                  })()
+                : [];
 
-                if (match) {
-                    const ids: number[] = JSON.parse(match[0]);
+            const ids =
+                idsFromJson.length > 0
+                    ? idsFromJson
+                    : (normalizedMessage.match(/\d+/g) || [])
+                          .map(n => Number(n))
+                          .filter(n => Number.isFinite(n));
 
-                    const filtered = meetups.filter(m => ids.includes(m.id));
-
-                    setItems(filtered);
-                    setTotalPages(1);
-                } else {
-                    console.error('Failed to parse IDs from AI response');
-                }
-            } else {
-                console.log('AI did not find relevant meetups.');
-                setItems([]);
+            if (!/^success\b/i.test(normalizedMessage) || ids.length === 0) {
+                setItems(fallbackLocalSearch(searchQuery));
+                setTotalPages(1);
+                return;
             }
+
+            const filtered = meetups.filter(m => ids.includes(m.id));
+            setItems(filtered.length ? filtered : fallbackLocalSearch(searchQuery));
+            setTotalPages(1);
         } catch (error) {
             console.error('Error in AI search:', error);
             alert('Failed to perform AI search. Please try again.');

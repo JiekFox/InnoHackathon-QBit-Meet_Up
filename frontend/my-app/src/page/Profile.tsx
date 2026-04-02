@@ -11,6 +11,7 @@ export default function Profile() {
     const {
         finalValues,
         errors,
+        errorMessage,
         loading,
         photoPreview,
         handleChange,
@@ -31,6 +32,10 @@ export default function Profile() {
         <div className="profile-edit-form">
             <form onSubmit={handleSubmit} className="profile-form">
                 <div className="form-fields">
+                    {errorMessage && (
+                        <pre className="error">{errorMessage.toString()}</pre>
+                    )}
+
                     <div className="input-row">
                         <div className="input-group">
                             <label htmlFor="name">{t('profile.nameLabel')}</label>

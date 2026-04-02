@@ -7,19 +7,33 @@ import icon from '../../assets/img/icon.png';
 import { getErrorDescription } from '../index';
 
 const ITEMS_PER_PAGE = 12;
-export const useUserMeetups = path => {
-    const [meetups, setMeetups] = useState([]);
-    const [filteredMeetups, setFilteredMeetups] = useState([]);
+interface UserMeetupItem {
+    id: number;
+    title: string;
+    description: string;
+    image: string;
+    dateTime: string;
+}
+
+export const useUserMeetups = (path: string) => {
+    const [meetups, setMeetups] = useState<UserMeetupItem[]>([]);
+    const [filteredMeetups, setFilteredMeetups] = useState<UserMeetupItem[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
     const [dateFilter, setDateFilter] = useState({ startDate: '', endDate: '' });
     const { token, userID } = useAuth();
 
     useEffect(() => {
         const fetchMeetups = async () => {
+            if (!userID || !token) {
+                setMeetups([]);
+                setFilteredMeetups([]);
+                setLoading(false);
+                return;
+            }
             setLoading(true);
             setError(null);
             try {
@@ -29,7 +43,7 @@ export const useUserMeetups = path => {
                 );
                 const results = response.data || [];
                 setMeetups(
-                    results.map(item => ({
+                    results.map((item: any): UserMeetupItem => ({
                         id: item.id,
                         title: item.title,
                         description: item.description,
@@ -39,7 +53,10 @@ export const useUserMeetups = path => {
                 );
                 setTotalPages(Math.ceil(results.length / ITEMS_PER_PAGE));
             } catch (err) {
-                const errorDescription = getErrorDescription(err, 'Failed to fetch meetups');
+                const errorDescription = getErrorDescription(
+                    err,
+                    'Failed to fetch meetups'
+                );
                 console.error('Error fetching user meetups:', errorDescription);
                 setError(errorDescription);
             } finally {
@@ -49,11 +66,11 @@ export const useUserMeetups = path => {
         fetchMeetups();
     }, [userID, token, path]);
 
-    const handleSearchChange = useCallback(query => {
+    const handleSearchChange = useCallback((query: string) => {
         setSearchQuery(query);
     }, []);
 
-    const handleDateFilter = useCallback((startDate, endDate) => {
+    const handleDateFilter = useCallback((startDate: string, endDate: string) => {
         setDateFilter({ startDate, endDate });
     }, []);
 

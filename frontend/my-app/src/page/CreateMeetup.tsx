@@ -73,7 +73,7 @@ export function CreateMeetup(): JSX.Element {
     return (
         <div className="create-meetup">
             <h1>{t('createMeetup.title')}</h1>
-            {error && <p className="error">{error.toString()}</p>}
+            {error && <pre className="error">{error.toString()}</pre>}
             <form onSubmit={handleSubmit} className="create-meetup-form">
                 <div className="input-group">
                     <label htmlFor="title">{t('createMeetup.titleLabel')}</label>
@@ -110,7 +110,7 @@ export function CreateMeetup(): JSX.Element {
                             name="duration"
                             value={formData.duration}
                             onChange={handleChange}
-                            min="0"
+                            min="1"
                             max="24"
                             step="1"
                             required
@@ -143,7 +143,7 @@ export function CreateMeetup(): JSX.Element {
 
                 <button
                     type="button"
-                    className={`ai-button ${isPendingAI && 'ai-loading'}`}
+                    className={`ai-button ${isPendingAI ? 'ai-loading' : ''}`}
                     onClick={handleAIClick}
                     disabled={isPendingAI}
                     style={{ height: 35 }}

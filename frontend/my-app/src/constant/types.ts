@@ -19,7 +19,7 @@ export interface AuthResponseData {
     user_id: number;
     message?: string;
     photo?: string;
-    role: 'admin' | 'user';
+    role?: 'admin' | 'user';
 }
 
 export interface AuthContextType extends AuthState {
