@@ -1807,6 +1807,13 @@ h3 {
     cursor: default;
 }
 
+.meetup-card .tag-badge:hover,
+.hero-tags .tag-badge:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: default;
+}
+
 @media (max-width: 768px) {
     .tag-selector-container {
         gap: 12px;
@@ -1940,6 +1947,13 @@ h3 {
         font-size: 14px;
         padding: 8px 15px;
     }
+
+    .input-row {
+        flex-direction: column;
+    }
+    .input-row .input-group {
+        width: 100%;
+    }
 }
 
 @media (max-width: 500px) {
@@ -1951,7 +1965,7 @@ h3 {
     }
     .switchs {
         gap: 4px;
-        flex-direction: column;
+        /* flex-direction: column; */
         align-items: center;
     }
     .meetup-card img {
@@ -2157,6 +2171,10 @@ h3 {
     .filter-panel {
         max-width: 100%;
     }
+    .date-input-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
 
 @media (max-width: 480px) {
@@ -2175,5 +2193,11 @@ h3 {
 
     .filter-panel-button {
         width: 100%;
+    }
+}
+
+@media (max-width: 334px) {
+    .switchs {
+        flex-direction: column;
     }
 }

@@ -312,7 +312,7 @@ export function EditMeetup(): JSX.Element {
                 <div className="input-group">
                     <label>{t('editMeetup.tagsLabel') || 'Tags'}</label>
                     {tagsLoading ? (
-                        <p>Loading tags...</p>
+                        <p>{t('common.loading')}</p>
                     ) : (
                         <TagSelector
                             tags={allTags}

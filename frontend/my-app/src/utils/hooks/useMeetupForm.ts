@@ -140,7 +140,8 @@ export const useMeetupForm = () => {
                 setIsAiResponseVisible(true);
             } catch (error) {
                 console.error('Error occurred while communicating with AI:', error);
-                alert('Failed to communicate with AI.');
+                setError('Error occurred while communicating with AI:' + error);
+                // alert('Failed to communicate with AI.');
             } finally {
                 setIsPendingAI(false);
             }

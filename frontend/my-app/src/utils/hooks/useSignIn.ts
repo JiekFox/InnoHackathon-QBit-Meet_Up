@@ -54,6 +54,7 @@ export const useSignIn = (): UseSignInReturn => {
                 console.log(response.data);
                 saveDate(response.data);
                 navigate(-1);
+                console.log('Sign in successful');
             } catch (error) {
                 const errorDescription = getErrorDescription(
                     error,

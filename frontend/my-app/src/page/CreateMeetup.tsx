@@ -141,20 +141,6 @@ export function CreateMeetup(): JSX.Element {
                     />
                 </div>
 
-                <div className="input-group">
-                    <label>{t('createMeetup.tagsLabel')}</label>
-                    {tagsLoading ? (
-                        <p>Loading tags...</p>
-                    ) : (
-                        <TagSelector
-                            tags={allTags}
-                            selectedTags={selectedTags}
-                            onTagsChange={handleTagsChange}
-                            maxTags={5}
-                        />
-                    )}
-                </div>
-
                 <button
                     type="button"
                     className={`ai-button ${isPendingAI && 'ai-loading'}`}
@@ -197,6 +183,20 @@ export function CreateMeetup(): JSX.Element {
                         </div>
                     </>
                 )}
+
+                <div className="input-group">
+                    <label>{t('createMeetup.tagsLabel')}</label>
+                    {tagsLoading ? (
+                        <p>{t('common.loading')}</p>
+                    ) : (
+                        <TagSelector
+                            tags={allTags}
+                            selectedTags={selectedTags}
+                            onTagsChange={handleTagsChange}
+                            maxTags={5}
+                        />
+                    )}
+                </div>
 
                 <div className="image-upload-wrapper">
                     <label
