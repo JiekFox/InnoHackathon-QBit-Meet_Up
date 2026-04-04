@@ -79,6 +79,9 @@ export function DataGridSection<T extends Meetup>({
         );
     };
 
+    const handleClearFilters = () => {
+        handleFiltersApply('', '', [], false);
+    };
     if (error) console.error('Error in DataGridSection:', error);
 
     const aiControls: AIControls<T> = {
@@ -93,6 +96,7 @@ export function DataGridSection<T extends Meetup>({
             <FilterBar
                 onSearchChange={handleSearchChange}
                 onFiltersApply={handleApplyFilters}
+                onClearFilters={handleClearFilters}
                 allTags={allTags}
                 tagsLoading={tagsLoading}
                 onRecommendByAI={

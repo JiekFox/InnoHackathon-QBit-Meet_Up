@@ -51,7 +51,9 @@
         "failedToUnsubscribe": "Ошибка отписки",
         "noData": "Нет данных о встречах.",
         "duration": "Длительность",
-        "loading": "Загрузка..."
+        "loading": "Загрузка...",
+        "attendees": "Участники",
+        "noAttendees": "Нет участников"
     },
     "errorPage": {
         "notFound": "Страница не найдена",
@@ -117,6 +119,7 @@
     "filterBar": {
         "searchPlaceholder": "Поиск...",
         "filterButton": "Фильтр",
+        "clearFilters": "Очистить фильтры",
         "aiSearch": "Поиск с ИИ",
         "aiRecommend": "Рекомендации ИИ"
     },

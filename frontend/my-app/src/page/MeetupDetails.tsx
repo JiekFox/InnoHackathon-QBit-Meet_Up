@@ -1,15 +1,18 @@
-import { JSX } from 'react';
+import { JSX, useState } from 'react';
 import { NavLink, useParams, useNavigate, Link } from 'react-router-dom';
 import { useMeetupDetails } from '../utils/hooks/useMeetupDetails';
 import icon from '../assets/img/icon.png';
 import { useAuth } from '../utils/AuthContext';
 import { USERS_DETAIL, EDIT_MEETUP, SIGN_IN } from '../constant/router';
 import Loader from '../components/Loader';
+import AttendeesModal from '../components/AttendeesModal';
 import { useTranslation } from 'react-i18next';
 
 export default function MeetupDetails(): JSX.Element {
     const { userID, role } = useAuth();
     const { id } = useParams<{ id: string }>();
+    const [isAttendeesModalOpen, setIsAttendeesModalOpen] = useState(false);
+
     const {
         meetup,
         loading,
@@ -20,11 +23,15 @@ export default function MeetupDetails(): JSX.Element {
         isFavorite,
         formattedDate
     } = useMeetupDetails(id);
+
     const navigate = useNavigate();
     const { t } = useTranslation();
     console.log('Meetup details:', meetup);
+
+    const canEdit = userID === meetup?.author_id || role === 'admin';
+
     const renderActionButtons = () => {
-        if (userID === meetup?.author_id || role === 'admin') {
+        if (canEdit) {
             return (
                 <Link className="meetup-details-button" to={`${EDIT_MEETUP}/${id}`}>
                     {t('meetupDetails.edit')}
@@ -119,7 +126,19 @@ export default function MeetupDetails(): JSX.Element {
                             {`${t('meetupDetails.duration')}: ${meetup.duration} ${t('common.hours')}`}
                         </p>
                     )}
-                    <p className="meetup-details-signed">{`${t('meetupDetails.alreadySigned')}: ${meetup.attendees_count || 0}`}</p>
+                    <p className="meetup-details-signed">
+                        {`${t('meetupDetails.alreadySigned')}: `}
+                        {canEdit ? (
+                            <button
+                                className="attendees-count-button"
+                                onClick={() => setIsAttendeesModalOpen(true)}
+                            >
+                                {meetup.attendees_count || 0}
+                            </button>
+                        ) : (
+                            <span>{meetup.attendees_count || 0}</span>
+                        )}
+                    </p>
                     <h3>{t('meetupDetails.description')}:</h3>
                     <pre className="meetup-details-description">
                         {meetup.description || t('meetupDetails.noData')}
@@ -127,6 +146,11 @@ export default function MeetupDetails(): JSX.Element {
                 </div>
                 {renderActionButtons()}
             </div>
+            <AttendeesModal
+                isOpen={isAttendeesModalOpen}
+                meetupId={id}
+                onClose={() => setIsAttendeesModalOpen(false)}
+            />
         </div>
     );
 }

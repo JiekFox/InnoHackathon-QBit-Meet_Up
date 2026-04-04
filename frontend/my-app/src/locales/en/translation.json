@@ -51,7 +51,9 @@
         "failedToUnsubscribe": "Failed to unsubscribe",
         "noData": "No meetup data.",
         "duration": "Duration",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "attendees": "Attendees",
+        "noAttendees": "No attendees"
     },
     "errorPage": {
         "notFound": "Page not found",
@@ -116,6 +118,7 @@
     "filterBar": {
         "searchPlaceholder": "Search...",
         "filterButton": "Filter",
+        "clearFilters": "Clear filters",
         "aiSearch": "AI Search",
         "aiRecommend": "AI Recommend"
     },

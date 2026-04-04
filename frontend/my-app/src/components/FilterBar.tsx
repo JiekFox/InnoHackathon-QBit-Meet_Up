@@ -7,6 +7,7 @@ import { Tag } from './TagSelector';
 interface FilterBarProps {
     onSearchChange: (query: string) => void;
     onFiltersApply?: (filters: FilterData) => void;
+    onClearFilters?: () => void;
     onRecommendByAI?: () => void | Promise<void>;
     onQueryTuchUseAI?: () => void | Promise<void>;
     allTags?: Tag[];
@@ -17,6 +18,7 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
     ({
         onSearchChange,
         onFiltersApply,
+        onClearFilters,
         onRecommendByAI,
         onQueryTuchUseAI,
         allTags = [],
@@ -26,6 +28,7 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
         const [isFilterPanelOpen, setIsFilterPanelOpen] = useState<boolean>(false);
         const [isAiSearchLoading, setIsAiSearchLoading] = useState(false);
         const [isAiRecommendLoading, setIsAiRecommendLoading] = useState(false);
+        const [resetTrigger, setResetTrigger] = useState(0);
 
         const handleSearchChange = useCallback(
             (query: string) => {
@@ -42,6 +45,13 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
             },
             [onFiltersApply]
         );
+
+        const handleClearFilters = useCallback(() => {
+            setResetTrigger(prev => prev + 1);
+            if (onClearFilters) {
+                onClearFilters();
+            }
+        }, [onClearFilters]);
 
         const handleAiSearchClick = async () => {
             if (!onQueryTuchUseAI) return;
@@ -71,6 +81,7 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
                     <button
                         className="filter-button"
                         onClick={() => setIsFilterPanelOpen(true)}
+                        type="button"
                     >
                         {t('filterBar.filterButton')}
                     </button>
@@ -84,7 +95,15 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
                         onChange={handleSearchChange}
                         delay={500}
                     />
-
+                    {onClearFilters && (
+                        <button
+                            className="filter-button filter-clear-button "
+                            onClick={handleClearFilters}
+                            type="button"
+                        >
+                            {t('filterBar.clearFilters')} ❌
+                        </button>
+                    )}
                     {onQueryTuchUseAI && (
                         <button
                             className={`ai-button ai-button-meetups-section ${isAiSearchLoading ? 'ai-loading' : ''}`}
@@ -116,6 +135,7 @@ const FilterBar: React.FC<FilterBarProps> = React.memo(
                     onApplyFilters={handleFiltersApply}
                     allTags={allTags}
                     tagsLoading={tagsLoading}
+                    resetTrigger={resetTrigger}
                 />
             </>
         );

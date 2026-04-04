@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import TagSelector, { Tag } from './TagSelector';
 
@@ -8,6 +8,7 @@ interface FilterPanelProps {
     onApplyFilters: (filters: FilterData) => void;
     allTags: Tag[];
     tagsLoading: boolean;
+    resetTrigger?: number;
 }
 
 export interface FilterData {
@@ -22,13 +23,23 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     onClose,
     onApplyFilters,
     allTags,
-    tagsLoading
+    tagsLoading,
+    resetTrigger
 }) => {
     const { t } = useTranslation();
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     const [showOldMeetups, setShowOldMeetups] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (resetTrigger === undefined) return;
+
+        setStartDate('');
+        setEndDate('');
+        setSelectedTags([]);
+        setShowOldMeetups(false);
+    }, [resetTrigger]);
 
     const handleApply = useCallback(() => {
         onApplyFilters({
