@@ -1,3 +1,4 @@
+import django_filters
 from api.models import Meeting, SignedToMeeting, Tag, UserProfile
 from api.security.permissions import IsAuthorOrStaff, IsSelfOrStaff, IsStaff
 from api.views.filters.filters import MeetingFilter
@@ -35,7 +36,7 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
     ordering = ["datetime_beg"]
 
     def get_queryset(self):
-        return Meeting.objects.all().prefetch_related("tags").select_related("author")
+        return Meeting.objects.all().prefetch_related("tags").select_related("author").order_by("id")
 
     def get_permissions(self):
         """
@@ -48,19 +49,38 @@ class MeetingViewSet(ModelViewSet, SubscriptionMixin):
             return [IsAuthorOrStaff()]
         return super().get_permissions()
 
+    def filter_queryset(self, queryset):
+        if self.action in ("retrieve", "update", "partial_update", "destroy", "attendees"):
+            return queryset
+        return super().filter_queryset(queryset)
+
     # @method_decorator(cache_page(60 * 15))
     def list(self, request, *args, **kwargs):
         """
         Получение списка мероприятий с кэшированием.
         """
-        queryset = self.filter_queryset(self.get_queryset())
+        query_params = request.query_params.copy()
+        if "status" not in query_params or query_params["status"] in django_filters.constants.EMPTY_VALUES:
+            query_params["status"] = "active"
+
+        queryset = self.get_queryset()
+
+        filterset = self.filterset_class(query_params, queryset=queryset)
+        if not filterset.is_valid():
+            return Response(filterset.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        queryset = filterset.qs
+
+        for backend in self.filter_backends[1:]:
+            queryset = backend().filter_queryset(self.request, queryset, self)
+
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        else:
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     # @method_decorator(cache_page(60 * 5))
     def retrieve(self, request, *args, **kwargs):

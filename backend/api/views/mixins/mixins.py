@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+import django_filters
 from api.models.meeting import Meeting, SignedToMeeting
 from api.models.user import UserProfile
 from api.views.filters.filters import MeetingFilter
@@ -45,9 +46,13 @@ class SubscriptionMixin:
 
 class MeetingQueryMixin:
     def get_filtered_paginated_meetings(self, meetings, request):
-        meeting_filter = MeetingFilter(request.query_params, queryset=meetings)
+        query_params = request.query_params.copy()
+        if "status" not in query_params or query_params["status"] in django_filters.constants.EMPTY_VALUES:
+            query_params["status"] = "active"
+
+        meeting_filter = MeetingFilter(query_params, queryset=meetings)
         if not meeting_filter.is_valid():
-            return None, Response(meeting_filter.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(meeting_filter.errors, status=status.HTTP_400_BAD_REQUEST)
 
         paginator = MeetingPagination()
         paginated = paginator.paginate_queryset(meeting_filter.qs, request)

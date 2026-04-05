@@ -21,11 +21,11 @@ class MeetingFilter(FilterSet):
     )
     status = ChoiceFilter(choices=STATUS_CHOICES, null_value="active", method="filter_status", label="Статус митапа")
 
-    def __init__(self, data=None, *args, **kwargs):
-        if data is not None and ("status" not in data or data["status"] in django_filters.constants.EMPTY_VALUES):
-            data = data.copy()
-            data["status"] = "active"
-        super().__init__(data, *args, **kwargs)
+    # def __init__(self, data=None, *args, **kwargs):
+    #     if data is not None and ("status" not in data or data["status"] in django_filters.constants.EMPTY_VALUES):
+    #         data = data.copy()
+    #         data["status"] = "active"
+    #     super().__init__(data, *args, **kwargs)
 
     class Meta:
         model = Meeting
