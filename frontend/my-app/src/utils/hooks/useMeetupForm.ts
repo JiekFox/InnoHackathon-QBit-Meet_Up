@@ -7,6 +7,16 @@ import { useAuth } from '../AuthContext';
 import { Meetup } from '../../constant/types';
 import { useAxiosWithAuth } from './useAxiosWithAuth';
 import { getErrorDescription } from '../index';
+import {
+    validateMeetingTitle,
+    validateMeetingDescription,
+    validateMeetingLink,
+    validateMeetingLocation,
+    validateMeetingDuration,
+    validateMeetingDateTime,
+    ValidationError,
+    getFieldError
+} from '../validators';
 
 export interface Tag {
     id: number;
@@ -45,6 +55,7 @@ export const useMeetupForm = () => {
     });
     const [error, setError] = useState<string | ApiError | null>(null);
     const [isPending, setIsPending] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState<ValidationError[]>([]);
 
     // Tags state
     const [allTags, setAllTags] = useState<Tag[]>([]);
@@ -54,6 +65,82 @@ export const useMeetupForm = () => {
     const [aiResponse, setAiResponse] = useState<string>('');
     const [isAiResponseVisible, setIsAiResponseVisible] = useState(false);
     const [isPendingAI, setIsPendingAI] = useState(false);
+
+    // Validation helper: Update field error
+    const updateFieldError = useCallback(
+        (fieldName: string, errorMessage: string | null) => {
+            setFieldErrors(prev => {
+                const filtered = prev.filter(e => e.field !== fieldName);
+                if (errorMessage) {
+                    return [
+                        ...filtered,
+                        { field: fieldName, message: errorMessage }
+                    ];
+                }
+                return filtered;
+            });
+        },
+        []
+    );
+
+    // Validation helper: Validate single field on blur
+    const validateField = useCallback(
+        (fieldName: string, value: string | number) => {
+            let error: string | null = null;
+
+            switch (fieldName) {
+                case 'title':
+                    error = validateMeetingTitle(String(value));
+                    break;
+                case 'description':
+                    error = validateMeetingDescription(String(value));
+                    break;
+                case 'link':
+                    error = validateMeetingLink(String(value));
+                    break;
+                case 'location':
+                    error = validateMeetingLocation(String(value));
+                    break;
+                case 'duration':
+                    error = validateMeetingDuration(value);
+                    break;
+                case 'datetime_beg':
+                    error = validateMeetingDateTime(String(value));
+                    break;
+            }
+
+            updateFieldError(fieldName, error);
+            return error;
+        },
+        [updateFieldError]
+    );
+
+    // Validation helper: Validate all fields
+    const validateAllFields = useCallback((): boolean => {
+        const errors: ValidationError[] = [];
+
+        const titleErr = validateMeetingTitle(formData.title);
+        if (titleErr) errors.push({ field: 'title', message: titleErr });
+
+        const descErr = validateMeetingDescription(formData.description);
+        if (descErr) errors.push({ field: 'description', message: descErr });
+
+        const linkErr = validateMeetingLink(formData.link);
+        if (linkErr) errors.push({ field: 'link', message: linkErr });
+
+        const locErr = validateMeetingLocation(formData.location);
+        if (locErr) errors.push({ field: 'location', message: locErr });
+
+        const durationErr = validateMeetingDuration(formData.duration);
+        if (durationErr) errors.push({ field: 'duration', message: durationErr });
+
+        const dateTimeErr = validateMeetingDateTime(formData.datetime_beg);
+        if (dateTimeErr)
+            errors.push({ field: 'datetime_beg', message: dateTimeErr });
+
+        setFieldErrors(errors);
+        return errors.length === 0;
+    }, [formData]);
 
     // Fetch tags on mount
     useEffect(() => {
@@ -88,8 +175,18 @@ export const useMeetupForm = () => {
                 }
                 return { ...prev, [name]: value };
             });
+            // Clear error when user starts typing
+            updateFieldError(name, null);
         },
-        []
+        [updateFieldError]
+    );
+
+    const handleBlur = useCallback(
+        (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            const { name, value } = e.target;
+            validateField(name, value);
+        },
+        [validateField]
     );
 
     const handleImageUpload = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -139,7 +236,7 @@ export const useMeetupForm = () => {
                 setIsAiResponseVisible(true);
             } catch (error) {
                 console.error('Error occurred while communicating with AI:', error);
-                setError('Error occurred while communicating with AI:' + error);
+                setError('AI: error' + error);
                 // alert('Failed to communicate with AI.');
             } finally {
                 setIsPendingAI(false);
@@ -172,6 +269,11 @@ export const useMeetupForm = () => {
 
             if (!token) {
                 navigate(SIGN_IN);
+                return;
+            }
+
+            // Validate all fields before submission
+            if (!validateAllFields()) {
                 return;
             }
 
@@ -209,12 +311,14 @@ export const useMeetupForm = () => {
                 setIsPending(false);
             }
         },
-        [formData, token, userID, navigate, axios]
+        [formData, token, userID, navigate, axios, validateAllFields]
     );
 
     return {
         formData,
         error,
+        fieldErrors,
+        getFieldError: (fieldName: string) => getFieldError(fieldErrors, fieldName),
         allTags,
         tagsLoading,
         selectedTags,
@@ -222,12 +326,14 @@ export const useMeetupForm = () => {
         isAiResponseVisible,
         isPendingAI,
         handleChange,
+        handleBlur,
         handleImageUpload,
         handleTagsChange,
         handleImproveWithAI,
         handleAcceptAiSuggestion,
         dismissAiResponse,
         handleSubmit,
-        isPending
+        isPending,
+        validateField
     };
 };

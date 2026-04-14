@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { SIGN_IN } from '../constant/router';
 import { useSignUp } from '../utils/hooks/useSignUp';
+import { FieldError } from '../components/FieldError';
 import { useTranslation } from 'react-i18next';
 
 export default function SignUp() {
@@ -9,8 +10,10 @@ export default function SignUp() {
         formData,
         errorMessage,
         showPassword,
+        getFieldError,
         togglePasswordVisibility,
         handleInputChange,
+        handleBlur,
         handleSubmit,
         isPending
     } = useSignUp();
@@ -28,8 +31,10 @@ export default function SignUp() {
                         name="username"
                         value={formData.username}
                         onChange={handleInputChange}
+                        onBlur={handleBlur}
                         required
                     />
+                    <FieldError error={getFieldError('username')} />
                 </div>
                 <div className="input-group">
                     <label htmlFor="email">{t('signUp.email')}</label>
@@ -39,8 +44,10 @@ export default function SignUp() {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
+                        onBlur={handleBlur}
                         required
                     />
+                    <FieldError error={getFieldError('email')} />
                 </div>
                 <div className="input-group">
                     <label htmlFor="password">{t('signUp.password')}</label>
@@ -51,6 +58,7 @@ export default function SignUp() {
                             name="password"
                             value={formData.password}
                             onChange={handleInputChange}
+                            onBlur={handleBlur}
                             required
                             className="password-input"
                         />
@@ -67,6 +75,7 @@ export default function SignUp() {
                             {showPassword ? '🔓' : '🔒'}
                         </span>
                     </div>
+                    <FieldError error={getFieldError('password')} />
                 </div>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
                 <button type="submit" className="sign-button">

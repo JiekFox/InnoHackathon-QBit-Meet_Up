@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { SIGN_UP } from '../constant/router';
 import { useSignIn } from '../utils/hooks/useSignIn';
+import { FieldError } from '../components/FieldError';
 import { useTranslation } from 'react-i18next';
 
 const SignIn: React.FC = () => {
@@ -10,8 +11,10 @@ const SignIn: React.FC = () => {
         errorMessage,
         isPending,
         showPassword,
+        getFieldError,
         togglePasswordVisibility,
         handleInputChange,
+        handleBlur,
         handleSubmit
     } = useSignIn();
     const { t } = useTranslation();
@@ -28,8 +31,10 @@ const SignIn: React.FC = () => {
                         name="username"
                         value={formData.username}
                         onChange={handleInputChange}
+                        onBlur={handleBlur}
                         required
                     />
+                    <FieldError error={getFieldError('username')} />
                 </div>
                 <div className="input-group">
                     <label htmlFor="password">{t('signIn.password')}</label>
@@ -40,6 +45,7 @@ const SignIn: React.FC = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleInputChange}
+                            onBlur={handleBlur}
                             required
                             className="password-input"
                         />
@@ -56,6 +62,7 @@ const SignIn: React.FC = () => {
                             {showPassword ? '🔓' : '🔒'}
                         </span>
                     </div>
+                    <FieldError error={getFieldError('password')} />
                 </div>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
                 <button type="submit" className="sign-button" disabled={isPending}>

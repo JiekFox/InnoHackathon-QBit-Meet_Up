@@ -2363,6 +2363,19 @@ h3 {
     transform: scale(1.05);
 }
 
+.field-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.field-error.inline {
+    display: inline-block;
+    margin-left: 0.5rem;
+}
+
 /* Responsive Attendees Modal */
 @media (max-width: 768px) {
     .attendees-modal {

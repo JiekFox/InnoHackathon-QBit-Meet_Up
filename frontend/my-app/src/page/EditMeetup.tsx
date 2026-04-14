@@ -15,6 +15,8 @@ import { MEETINGS_API_URL, TAGS_API_URL } from '../constant/apiURL';
 import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 import { ImagePreview } from '../components/ImagePreview';
 import { ConfirmationModal } from '../components/ConfirmationModal';
+import { FieldError } from '../components/FieldError';
+import { useEditMeetupForm } from '../utils/hooks/useEditMeetupForm';
 import { useTranslation } from 'react-i18next';
 import TagSelector, { Tag } from '../components/TagSelector';
 import { getErrorDescription } from '../utils';
@@ -65,6 +67,13 @@ export function EditMeetup(): JSX.Element {
         'deleting' | 'saving' | 'global' | false
     >(false);
     const [error, setError] = useState<string | null>(null);
+    const {
+        fieldErrors,
+        getFieldError,
+        validateAllFields,
+        updateFieldError,
+        validateField
+    } = useEditMeetupForm();
 
     useEffect(() => {
         if (!token) {
@@ -153,8 +162,18 @@ export function EditMeetup(): JSX.Element {
             } else {
                 setUserValues(prev => ({ ...prev, [name]: value }));
             }
+            // Clear error when user starts typing
+            updateFieldError(name, null);
         },
-        []
+        [updateFieldError]
+    );
+
+    const handleBlur = useCallback(
+        (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            const { name, value } = e.target;
+            validateField(name, value);
+        },
+        [validateField]
     );
 
     const handleImageUpload = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -185,6 +204,12 @@ export function EditMeetup(): JSX.Element {
 
     const handleEditSubmit = async (e: FormEvent) => {
         e.preventDefault();
+
+        // Validate all fields before submission
+        if (!validateAllFields(finalValues)) {
+            return;
+        }
+
         setIsPending('saving');
 
         try {
@@ -255,8 +280,10 @@ export function EditMeetup(): JSX.Element {
                         name="title"
                         value={finalValues.title}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         required
                     />
+                    <FieldError error={getFieldError('title')} />
                 </div>
 
                 <div className="input-row">
@@ -270,8 +297,10 @@ export function EditMeetup(): JSX.Element {
                             name="datetime_beg"
                             value={finalValues.datetime_beg}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             required
                         />
+                        <FieldError error={getFieldError('datetime_beg')} />
                     </div>
                     <div className="input-group">
                         <label htmlFor="duration">
@@ -283,10 +312,12 @@ export function EditMeetup(): JSX.Element {
                             name="duration"
                             value={finalValues.duration}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             min="0"
                             step="1"
                             required
                         />
+                        <FieldError error={getFieldError('duration')} />
                     </div>
                 </div>
 
@@ -298,7 +329,9 @@ export function EditMeetup(): JSX.Element {
                         name="link"
                         value={finalValues.link}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                     />
+                    <FieldError error={getFieldError('link')} />
                 </div>
 
                 <div className="input-group">
@@ -310,8 +343,10 @@ export function EditMeetup(): JSX.Element {
                         name="description"
                         value={finalValues.description}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         required
                     />
+                    <FieldError error={getFieldError('description')} />
                 </div>
 
                 <div className="input-group">
@@ -367,6 +402,7 @@ export function EditMeetup(): JSX.Element {
                         type="submit"
                         className="edit-meetup-button create-meeting-button"
                         style={{ width: '100%' }}
+                        disabled={isPending !== false || fieldErrors.length > 0}
                     >
                         {isPending === 'saving'
                             ? t('buttons.loading')

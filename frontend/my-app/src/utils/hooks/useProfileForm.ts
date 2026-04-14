@@ -4,6 +4,15 @@ import { useAuth } from '../AuthContext';
 import { useAxiosWithAuth } from './useAxiosWithAuth';
 import { ProfileFormData } from '../../constant/types';
 import { getErrorDescription } from '..';
+import {
+    validateUsername,
+    validateUserEmail,
+    validateFirstName,
+    validateLastName,
+    validateUserDescription,
+    ValidationError,
+    getFieldError as getValidationFieldError
+} from '../validators';
 
 export interface ProfileFormErrors {
     email?: string[];
@@ -32,6 +41,90 @@ export const useProfileForm = () => {
     const [errors, setErrors] = useState<ProfileFormErrors>({});
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [loading, setLoading] = useState(false);
+    const [fieldErrors, setFieldErrors] = useState<ValidationError[]>([]);
+
+    // Validation helper: Update field error
+    const updateFieldError = useCallback(
+        (fieldName: string, errorMessage: string | null) => {
+            setFieldErrors(prev => {
+                const filtered = prev.filter(e => e.field !== fieldName);
+                if (errorMessage) {
+                    return [
+                        ...filtered,
+                        { field: fieldName, message: errorMessage }
+                    ];
+                }
+                return filtered;
+            });
+        },
+        []
+    );
+
+    // Validation helper: Validate single field on blur
+    const validateField = useCallback(
+        (fieldName: string, value: string) => {
+            let error: string | null = null;
+
+            switch (fieldName) {
+                case 'username':
+                    error = validateUsername(value);
+                    break;
+                case 'email':
+                    error = validateUserEmail(value);
+                    break;
+                case 'name':
+                    error = validateFirstName(value);
+                    break;
+                case 'surname':
+                    error = validateLastName(value);
+                    break;
+                case 'about':
+                    error = validateUserDescription(value);
+                    break;
+            }
+
+            updateFieldError(fieldName, error);
+            return error;
+        },
+        [updateFieldError]
+    );
+
+    // Validation helper: Validate all fields
+    const validateAllFields = useCallback((): boolean => {
+        const validationErrors: ValidationError[] = [];
+
+        if (finalValues.username) {
+            const usernameErr = validateUsername(finalValues.username);
+            if (usernameErr)
+                validationErrors.push({ field: 'username', message: usernameErr });
+        }
+
+        if (finalValues.email) {
+            const emailErr = validateUserEmail(finalValues.email);
+            if (emailErr)
+                validationErrors.push({ field: 'email', message: emailErr });
+        }
+
+        if (finalValues.name) {
+            const nameErr = validateFirstName(finalValues.name);
+            if (nameErr) validationErrors.push({ field: 'name', message: nameErr });
+        }
+
+        if (finalValues.surname) {
+            const surnameErr = validateLastName(finalValues.surname);
+            if (surnameErr)
+                validationErrors.push({ field: 'surname', message: surnameErr });
+        }
+
+        if (finalValues.about) {
+            const aboutErr = validateUserDescription(finalValues.about);
+            if (aboutErr)
+                validationErrors.push({ field: 'about', message: aboutErr });
+        }
+
+        setFieldErrors(validationErrors);
+        return validationErrors.length === 0;
+    }, [finalValues]);
 
     const finalValues: ProfileFormData = useMemo(() => {
         return {
@@ -83,6 +176,15 @@ export const useProfileForm = () => {
     ) => {
         const { name, value } = e.target;
         setUserValues(prev => ({ ...prev, [name]: value }));
+        // Clear error when user starts typing
+        updateFieldError(name, null);
+    };
+
+    const handleBlur = (
+        e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = e.target;
+        validateField(name, value);
     };
 
     const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,6 +197,11 @@ export const useProfileForm = () => {
 
     const handleSave = useCallback(async () => {
         if (!token?.access) return;
+
+        // Validate all fields before submission
+        if (!validateAllFields()) {
+            return;
+        }
 
         const formDataToSend = new FormData();
         setLoading(true);
@@ -130,16 +237,13 @@ export const useProfileForm = () => {
             // alert('Profile updated successfully!');
         } catch (error: any) {
             console.error(error.message);
-            const errorDescription = getErrorDescription(
-                error,
-                'Invalid data.'
-            );
+            const errorDescription = getErrorDescription(error, 'Invalid data.');
             console.error('Profile form:', errorDescription);
             setErrorMessage(errorDescription);
         } finally {
             setLoading(false);
         }
-    }, [userValues, token, userID]);
+    }, [userValues, token, userID, validateAllFields]);
 
     return {
         finalValues,
@@ -148,9 +252,14 @@ export const useProfileForm = () => {
         errors,
         errorMessage,
         loading,
+        fieldErrors,
+        getFieldError: (fieldName: string) =>
+            getValidationFieldError(fieldErrors, fieldName),
         handlePhotoDelete,
         handleChange,
+        handleBlur,
         handlePhotoUpload,
-        handleSave
+        handleSave,
+        validateField
     };
 };

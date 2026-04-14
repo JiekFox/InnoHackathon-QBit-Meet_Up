@@ -5,6 +5,7 @@ import { SIGN_IN } from '../constant/router';
 import { useEffect, useState, ChangeEvent, JSX, useRef } from 'react';
 import { ImagePreview } from '../components/ImagePreview';
 import TagSelector from '../components/TagSelector';
+import { FieldError } from '../components/FieldError';
 import { useTranslation } from 'react-i18next';
 
 export function CreateMeetup(): JSX.Element {
@@ -24,6 +25,8 @@ export function CreateMeetup(): JSX.Element {
     const {
         formData,
         error,
+        fieldErrors,
+        getFieldError,
         allTags,
         tagsLoading,
         selectedTags,
@@ -31,6 +34,7 @@ export function CreateMeetup(): JSX.Element {
         isAiResponseVisible,
         isPendingAI,
         handleChange,
+        handleBlur,
         handleImageUpload,
         handleTagsChange,
         handleImproveWithAI,
@@ -83,8 +87,10 @@ export function CreateMeetup(): JSX.Element {
                         name="title"
                         value={formData.title}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         required
                     />
+                    <FieldError error={getFieldError('title')} />
                 </div>
                 <div className="input-row">
                     <div className="input-group">
@@ -97,8 +103,10 @@ export function CreateMeetup(): JSX.Element {
                             name="datetime_beg"
                             value={formData.datetime_beg}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             required
                         />
+                        <FieldError error={getFieldError('datetime_beg')} />
                     </div>
                     <div className="input-group">
                         <label htmlFor="duration">
@@ -110,11 +118,13 @@ export function CreateMeetup(): JSX.Element {
                             name="duration"
                             value={formData.duration}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             min="1"
                             max="24"
                             step="1"
                             required
                         />
+                        <FieldError error={getFieldError('duration')} />
                     </div>
                 </div>
                 <div className="input-group">
@@ -125,8 +135,10 @@ export function CreateMeetup(): JSX.Element {
                         name="link"
                         value={formData.link}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         placeholder={t('createMeetup.linkPlaceholder')}
                     />
+                    <FieldError error={getFieldError('link')} />
                 </div>
                 <div className="input-group">
                     <label htmlFor="description">
@@ -137,8 +149,10 @@ export function CreateMeetup(): JSX.Element {
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         required
                     />
+                    <FieldError error={getFieldError('description')} />
                 </div>
 
                 <button
@@ -232,7 +246,11 @@ export function CreateMeetup(): JSX.Element {
                     </div>
                 </div>
 
-                <button type="submit" className="create-meetup-button">
+                <button
+                    type="submit"
+                    className="create-meetup-button"
+                    disabled={isPending || fieldErrors.length > 0}
+                >
                     {isPending
                         ? t('createMeetup.pending')
                         : t('createMeetup.submitButton')}
