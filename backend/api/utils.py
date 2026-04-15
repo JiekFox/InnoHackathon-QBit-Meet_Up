@@ -1,4 +1,5 @@
 import logging
+import uuid
 from io import BytesIO
 
 from django.core.files.base import ContentFile
@@ -29,8 +30,7 @@ def convert_to_webp(image_field):
     img.save(output, format="WEBP", quality=85)
     output.seek(0)
     # Генерируем имя с расширением .webp
-    original_name = image_field.name
-    new_name = original_name.rsplit(".", 1)[0] + ".webp"
+    new_name = f"{uuid.uuid4().hex}.webp"
     return ContentFile(output.read(), name=new_name)
 
 
