@@ -115,10 +115,13 @@ export default function MeetupDetails(): JSX.Element {
                         </div>
                     )}
                     <p className="meetup-details-date">
-                        {t('meetupDetails.link')}:
+                        {t('meetupDetails.link')}:{' '}
                         <a href={meetup.link} className="link">
                             {meetup.link}
                         </a>
+                    </p>
+                    <p className="meetup-details-date">
+                        {`${t('meetupDetails.location')}: ${meetup.location || t('online')}`}
                     </p>
                     <p className="meetup-details-date">{`${t('meetupDetails.dateBegin')}: ${formattedDate}`}</p>
                     {meetup.duration !== undefined && (

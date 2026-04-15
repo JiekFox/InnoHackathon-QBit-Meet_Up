@@ -122,6 +122,7 @@ export function DataGridSection<T extends Meetup>({
                             image={meetup.image}
                             datetime_beg={meetup?.datetime_beg}
                             dateTime={meetup?.dateTime}
+                            location={meetup?.location}
                             tags={meetup?.tags}
                             duration={meetup?.duration}
                         />

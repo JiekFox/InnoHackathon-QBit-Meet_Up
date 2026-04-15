@@ -67,7 +67,7 @@ export const validateRequired = (
     fieldName: string
 ): string | null => {
     if (!value || (typeof value === 'string' && value.trim() === '')) {
-        return `${fieldName} is required`;
+        return `${fieldName}Required`;
     }
     return null;
 };
@@ -75,10 +75,10 @@ export const validateRequired = (
 export const validateMaxLength = (
     value: string,
     maxLength: number,
-    fieldName: string
+    fieldKey: string
 ): string | null => {
     if (value.length > maxLength) {
-        return `${fieldName} cannot exceed ${maxLength} characters (${value.length}/${maxLength})`;
+        return `${fieldKey}MaxLength`;
     }
     return null;
 };
@@ -90,7 +90,7 @@ export const validatePattern = (
     message?: string
 ): string | null => {
     if (value && !pattern.test(value)) {
-        return message || `${fieldName} format is invalid`;
+        return message || `${fieldName.toLowerCase()}Pattern`;
     }
     return null;
 };
@@ -98,32 +98,32 @@ export const validatePattern = (
 export const validateEmail = (email: string): string | null => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (email && !pattern.test(email)) {
-        return 'Invalid email format';
+        return 'invalidEmailFormat';
     }
     return null;
 };
 
 export const validatePositiveInteger = (
     value: string | number,
-    fieldName: string
+    fieldKey: string
 ): string | null => {
     const num = typeof value === 'string' ? parseInt(value, 10) : value;
     if (isNaN(num) || num < 0) {
-        return `${fieldName} must be a positive number`;
+        return `${fieldKey}Positive`;
     }
     return null;
 };
 
 export const validateDateTime = (dateTimeString: string): string | null => {
     if (!dateTimeString) {
-        return 'Date and time is required';
+        return 'datetimeRequired';
     }
     const date = new Date(dateTimeString);
     if (isNaN(date.getTime())) {
-        return 'Invalid date and time format';
+        return 'invalidDatetimeFormat';
     }
     if (date < new Date()) {
-        return 'Date and time must be in the future';
+        return 'datetimeFuture';
     }
     return null;
 };
@@ -131,19 +131,19 @@ export const validateDateTime = (dateTimeString: string): string | null => {
 // Meeting validators
 export const validateMeetingTitle = (title: string): string | null => {
     if (!title.trim()) {
-        return 'Title is required';
+        return 'titleRequired';
     }
-    return validateMaxLength(title, MEETING_CONSTRAINTS.title.maxLength, 'Title');
+    return validateMaxLength(title, MEETING_CONSTRAINTS.title.maxLength, 'title');
 };
 
 export const validateMeetingDescription = (description: string): string | null => {
     if (!description.trim()) {
-        return 'Description is required';
+        return 'descriptionRequired';
     }
     return validateMaxLength(
         description,
         MEETING_CONSTRAINTS.description.maxLength,
-        'Description'
+        'description'
     );
 };
 
@@ -152,7 +152,7 @@ export const validateMeetingLink = (link: string): string | null => {
     const maxLengthErr = validateMaxLength(
         link,
         MEETING_CONSTRAINTS.link.maxLength,
-        'Link'
+        'link'
     );
     if (maxLengthErr) return maxLengthErr;
 
@@ -161,25 +161,25 @@ export const validateMeetingLink = (link: string): string | null => {
         try {
             new URL(link);
         } catch {
-            return 'Invalid URL format';
+            return 'invalidUrlFormat';
         }
     }
     return null;
 };
 
 export const validateMeetingLocation = (location: string): string | null => {
-    if (!location) return null; // Optional field
+    if (!location) return "locationRequired"; // Optional field
     return validateMaxLength(
         location,
         MEETING_CONSTRAINTS.location.maxLength,
-        'Location'
+        'location'
     );
 };
 
 export const validateMeetingDuration = (
     duration: string | number
 ): string | null => {
-    return validatePositiveInteger(duration, 'Duration');
+    return validatePositiveInteger(duration, 'duration');
 };
 
 export const validateMeetingDateTime = (dateTime: string): string | null => {
@@ -205,7 +205,7 @@ export const validateMeetingForm = (formData: {
     const linkErr = validateMeetingLink(formData.link);
     if (linkErr) errors.push({ field: 'link', message: linkErr });
 
-    const locErr = validateMeetingLocation(formData.location);
+    const locErr = validateRequired(formData.location, 'location');
     if (locErr) errors.push({ field: 'location', message: locErr });
 
     const durationErr = validateMeetingDuration(formData.duration);
@@ -220,20 +220,20 @@ export const validateMeetingForm = (formData: {
 // User validators
 export const validateUsername = (username: string): string | null => {
     if (!username.trim()) {
-        return 'Username is required';
+        return 'usernameRequired';
     }
     const maxLengthErr = validateMaxLength(
         username,
         USER_CONSTRAINTS.username.maxLength,
-        'Username'
+        'username'
     );
     if (maxLengthErr) return maxLengthErr;
 
     const patternErr = validatePattern(
         username,
         USER_CONSTRAINTS.username.pattern,
-        'Username',
-        USER_CONSTRAINTS.username.patternMessage
+        'username',
+        'usernamePattern'
     );
     if (patternErr) return patternErr;
 
@@ -242,7 +242,7 @@ export const validateUsername = (username: string): string | null => {
 
 export const validateUserEmail = (email: string): string | null => {
     if (!email.trim()) {
-        return 'Email is required';
+        return 'emailRequired';
     }
     return validateEmail(email);
 };
@@ -252,7 +252,7 @@ export const validateFirstName = (firstName: string): string | null => {
     return validateMaxLength(
         firstName,
         USER_CONSTRAINTS.first_name.maxLength,
-        'First name'
+        'firstName'
     );
 };
 
@@ -261,7 +261,7 @@ export const validateLastName = (lastName: string): string | null => {
     return validateMaxLength(
         lastName,
         USER_CONSTRAINTS.last_name.maxLength,
-        'Last name'
+        'lastName'
     );
 };
 
@@ -270,7 +270,7 @@ export const validateUserDescription = (description: string): string | null => {
     return validateMaxLength(
         description,
         USER_CONSTRAINTS.user_description.maxLength,
-        'User description'
+        'userDescription'
     );
 };
 
@@ -311,10 +311,10 @@ export const validateUserForm = (formData: {
 // Password Validators
 export const validatePassword = (password: string): string | null => {
     if (!password) {
-        return 'Password is required';
+        return 'passwordRequired';
     }
     if (password.length < 8) {
-        return 'Password must be at least 8 characters long';
+        return 'passwordMinLength';
     }
     return null;
 };
@@ -327,11 +327,11 @@ export const validateSignInForm = (formData: {
     const errors: ValidationError[] = [];
 
     if (!formData.username.trim()) {
-        errors.push({ field: 'username', message: 'Username is required' });
+        errors.push({ field: 'username', message: 'usernameRequired' });
     }
 
     if (!formData.password) {
-        errors.push({ field: 'password', message: 'Password is required' });
+        errors.push({ field: 'password', message: 'passwordRequired' });
     }
     console.log('Sign-in form validation errors:', errors);
     return errors;

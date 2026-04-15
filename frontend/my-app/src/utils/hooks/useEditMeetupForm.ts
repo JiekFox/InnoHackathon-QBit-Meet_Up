@@ -5,6 +5,7 @@ import {
     validateMeetingLink,
     validateMeetingDateTime,
     validateMeetingDuration,
+    validateMeetingLocation,
     ValidationError,
     getFieldError
 } from '../validators';
@@ -14,6 +15,7 @@ export interface FormDataState {
     datetime_beg: string;
     duration: string;
     link: string;
+    location: string;
     description: string;
     image: File | null;
     tag_ids: number[];
@@ -54,6 +56,9 @@ export const useEditMeetupForm = () => {
                 case 'link':
                     error = validateMeetingLink(String(value));
                     break;
+                case 'location':
+                    error = validateMeetingLocation(String(value));
+                    break;
                 case 'duration':
                     error = validateMeetingDuration(value);
                     break;
@@ -80,6 +85,9 @@ export const useEditMeetupForm = () => {
 
         const linkErr = validateMeetingLink(formData.link);
         if (linkErr) errors.push({ field: 'link', message: linkErr });
+
+        const locErr = validateMeetingLocation(formData.location);
+        if (locErr) errors.push({ field: 'location', message: locErr });
 
         const durationErr = validateMeetingDuration(formData.duration);
         if (durationErr) errors.push({ field: 'duration', message: durationErr });

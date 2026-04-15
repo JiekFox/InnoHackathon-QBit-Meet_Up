@@ -11,13 +11,24 @@ interface MeetupCardProps {
     image?: string | null;
     dateTime?: string;
     datetime_beg?: string;
+    location?: string;
     to: string;
     tags?: Tag[];
     duration?: number;
 }
 
 const MeetupCard: React.FC<MeetupCardProps> = React.memo(
-    ({ title, description, image, dateTime, datetime_beg, to, tags, duration }) => {
+    ({
+        title,
+        description,
+        image,
+        dateTime,
+        datetime_beg,
+        location,
+        to,
+        tags,
+        duration
+    }) => {
         const { t } = useTranslation();
         const dateStr = dateTime || datetime_beg || '';
         const formattedDate = formatDate(dateStr, {
@@ -45,11 +56,12 @@ const MeetupCard: React.FC<MeetupCardProps> = React.memo(
                     <h3 className="title">{title}</h3>
                     <div className="date-time">
                         <span>{formattedDate}</span>
+
                         <span>
                             ⏱ {duration} {t('common.hours')}
                         </span>
                     </div>
-
+                    <span>📍 {location || t('online')}</span>
                     <p className="description">{description}</p>
                 </NavLink>
             </div>

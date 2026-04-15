@@ -16,26 +16,17 @@ import { useAxiosWithAuth } from '../utils/hooks/useAxiosWithAuth';
 import { ImagePreview } from '../components/ImagePreview';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { FieldError } from '../components/FieldError';
-import { useEditMeetupForm } from '../utils/hooks/useEditMeetupForm';
+import { FormDataState, useEditMeetupForm } from '../utils/hooks/useEditMeetupForm';
 import { useTranslation } from 'react-i18next';
 import TagSelector, { Tag } from '../components/TagSelector';
 import { getErrorDescription } from '../utils';
-
-interface FormDataState {
-    title: string;
-    datetime_beg: string;
-    duration: string;
-    link: string;
-    description: string;
-    image: File | null;
-    tag_ids: number[];
-}
 
 const baseValues: FormDataState = {
     title: '',
     datetime_beg: '',
     duration: '1',
     link: '',
+    location: '',
     description: '',
     image: null,
     tag_ids: []
@@ -129,6 +120,7 @@ export function EditMeetup(): JSX.Element {
                     duration: String(data.duration ?? ''),
                     description: data.description || '',
                     link: data.link || '',
+                    location: data.location || '',
                     image: null,
                     tag_ids: data.tags?.map((tag: Tag) => tag.id) || []
                 });
@@ -235,7 +227,7 @@ export function EditMeetup(): JSX.Element {
                     formDataToSend.append(key, tempValue as any);
                 }
             });
-            console.log([...formDataToSend]);
+            console.log('sent date', [...formDataToSend]);
 
             await axios.patch(`${MEETINGS_API_URL}${id}/`, formDataToSend);
 
@@ -263,13 +255,13 @@ export function EditMeetup(): JSX.Element {
     };
 
     if (isPending && !serverValues) return <Loader />;
-    console.log(error, serverValues);
+    // console.log(error, serverValues);
     // if (serverValues) return <p>{t('meetupDetails.noData')}</p>;
 
     return (
         <div className="edit-meetup create-meetup">
             <h1>{t('editMeetup.title')}</h1>
-            {error && <pre className="error">{error}</pre>}
+            {error && <div className="error">{error}</div>}
 
             <form onSubmit={handleEditSubmit} className="create-meetup-form">
                 <div className="input-group">
@@ -332,6 +324,21 @@ export function EditMeetup(): JSX.Element {
                         onBlur={handleBlur}
                     />
                     <FieldError error={getFieldError('link')} />
+                </div>
+
+                <div className="input-group">
+                    <label htmlFor="location">{t('editMeetup.locationLabel')}</label>
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        value={finalValues.location}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        placeholder={t('editMeetup.locationPlaceholder')}
+                        required
+                    />
+                    <FieldError error={getFieldError('location')} />
                 </div>
 
                 <div className="input-group">

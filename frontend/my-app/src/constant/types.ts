@@ -49,6 +49,7 @@ export interface Meetup {
     datetime_beg: string;
     dateTime?: string;
     attendees_count?: number;
+    location?: string;
     author_id: number;
     author?: string;
     tags?: Tag[];

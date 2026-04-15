@@ -90,6 +90,15 @@ export const useProfileForm = () => {
     );
 
     // Validation helper: Validate all fields
+
+    const finalValues: ProfileFormData = useMemo(() => {
+        return {
+            ...baseValues,
+            ...serverValues,
+            ...userValues
+        };
+    }, [serverValues, userValues]);
+
     const validateAllFields = useCallback((): boolean => {
         const validationErrors: ValidationError[] = [];
 
@@ -125,14 +134,6 @@ export const useProfileForm = () => {
         setFieldErrors(validationErrors);
         return validationErrors.length === 0;
     }, [finalValues]);
-
-    const finalValues: ProfileFormData = useMemo(() => {
-        return {
-            ...baseValues,
-            ...serverValues,
-            ...userValues
-        };
-    }, [serverValues, userValues]);
 
     const handlePhotoDelete = () => {
         setPhotoPreview(null);

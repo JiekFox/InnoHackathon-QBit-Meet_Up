@@ -85,9 +85,9 @@ export const useSignIn = (): UseSignInReturn => {
             const { name, value } = e.target;
             console.log(`Field blurred: ${name} with value: ${value}`);
             if (name === 'username' && !value.trim()) {
-                updateFieldError('username', 'Username is required');
+                updateFieldError('username', 'usernameRequired');
             } else if (name === 'password' && !value) {
-                updateFieldError('password', 'Password is required');
+                updateFieldError('password', 'passwordRequired');
             }
         },
         [updateFieldError]

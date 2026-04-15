@@ -231,6 +231,9 @@ const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
                                         <p className="hero-description">
                                             {prev.description}
                                         </p>
+                                        <div className="hero-location">
+                                            📍 {prev.location || t('online')}
+                                        </div>
                                         <div className="hero-meta">
                                             <span>
                                                 {formatDate(prev.dateTime ?? '', {
@@ -297,6 +300,9 @@ const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
                                     <p className="hero-description">
                                         {current.description}
                                     </p>
+                                    <div className="hero-location">
+                                        📍 {current.location || t('online')}
+                                    </div>
                                     <div className="hero-meta">
                                         <span>
                                             {formatDate(current.dateTime ?? '', {

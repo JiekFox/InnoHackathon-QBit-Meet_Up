@@ -80,11 +80,11 @@ export const useSignUp = () => {
         (e: React.FocusEvent<HTMLInputElement>) => {
             const { name, value } = e.target;
             if (name === 'username' && !value.trim()) {
-                updateFieldError('username', 'Username is required');
+                updateFieldError('username', 'usernameRequired');
             } else if (name === 'email' && !value.trim()) {
-                updateFieldError('email', 'Email is required');
+                updateFieldError('email', 'emailRequired');
             } else if (name === 'password' && !value) {
-                updateFieldError('password', 'Password is required');
+                updateFieldError('password', 'passwordRequired');
             }
         },
         [updateFieldError]

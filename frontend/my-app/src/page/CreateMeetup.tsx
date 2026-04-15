@@ -77,7 +77,7 @@ export function CreateMeetup(): JSX.Element {
     return (
         <div className="create-meetup">
             <h1>{t('createMeetup.title')}</h1>
-            {error && <pre className="error">{error.toString()}</pre>}
+            {error && <div className="error">{error.toString()}</div>}
             <form onSubmit={handleSubmit} className="create-meetup-form">
                 <div className="input-group">
                     <label htmlFor="title">{t('createMeetup.titleLabel')}</label>
@@ -139,6 +139,20 @@ export function CreateMeetup(): JSX.Element {
                         placeholder={t('createMeetup.linkPlaceholder')}
                     />
                     <FieldError error={getFieldError('link')} />
+                </div>
+                <div className="input-group">
+                    <label htmlFor="location">{t('createMeetup.locationLabel')}</label>
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        value={formData.location}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        placeholder={t('createMeetup.locationPlaceholder')}
+                        required
+                    />
+                    <FieldError error={getFieldError('location')} />
                 </div>
                 <div className="input-group">
                     <label htmlFor="description">

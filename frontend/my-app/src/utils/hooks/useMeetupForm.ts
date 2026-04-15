@@ -30,6 +30,7 @@ export interface MeetupFormData {
     datetime_beg: string;
     duration: number | string;
     link: string;
+    location: string;
     description: string;
     image: File | null;
     tag_ids: number[];
@@ -49,6 +50,7 @@ export const useMeetupForm = () => {
         datetime_beg: '',
         duration: 1,
         link: '',
+        location: '',
         description: '',
         image: null,
         tag_ids: []
@@ -282,6 +284,7 @@ export const useMeetupForm = () => {
             meetingData.append('author_id', String(userID));
             meetingData.append('datetime_beg', formData.datetime_beg);
             meetingData.append('link', formData.link);
+            meetingData.append('location', formData.location);
             meetingData.append('description', formData.description);
             const durationNum = Number.parseInt(String(formData.duration || ''), 10);
             const durationForApi = Number.isFinite(durationNum) ? durationNum : 0;
