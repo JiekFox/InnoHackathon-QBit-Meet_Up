@@ -36,6 +36,8 @@ def convert_to_webp(image_field):
 
 def check_file_exists(file_field, field_name="file", obj_repr="object"):
     if file_field and file_field.name:
+        if hasattr(file_field, "_committed") and not file_field._committed:
+            return file_field
         try:
             if not default_storage.exists(file_field.name):
                 _logger.warning(
