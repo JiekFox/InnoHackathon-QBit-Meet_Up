@@ -58,17 +58,13 @@ export const useMeetupForm = () => {
     const [error, setError] = useState<string | ApiError | null>(null);
     const [isPending, setIsPending] = useState(false);
     const [fieldErrors, setFieldErrors] = useState<ValidationError[]>([]);
-
-    // Tags state
     const [allTags, setAllTags] = useState<Tag[]>([]);
     const [tagsLoading, setTagsLoading] = useState(true);
 
-    // AI response state
     const [aiResponse, setAiResponse] = useState<string>('');
     const [isAiResponseVisible, setIsAiResponseVisible] = useState(false);
     const [isPendingAI, setIsPendingAI] = useState(false);
 
-    // Validation helper: Update field error
     const updateFieldError = useCallback(
         (fieldName: string, errorMessage: string | null) => {
             setFieldErrors(prev => {
@@ -85,7 +81,6 @@ export const useMeetupForm = () => {
         []
     );
 
-    // Validation helper: Validate single field on blur
     const validateField = useCallback(
         (fieldName: string, value: string | number) => {
             let error: string | null = null;
@@ -117,7 +112,6 @@ export const useMeetupForm = () => {
         [updateFieldError]
     );
 
-    // Validation helper: Validate all fields
     const validateAllFields = useCallback((): boolean => {
         const errors: ValidationError[] = [];
 
@@ -144,7 +138,6 @@ export const useMeetupForm = () => {
         return errors.length === 0;
     }, [formData]);
 
-    // Fetch tags on mount
     useEffect(() => {
         const fetchTags = async () => {
             console.log('Fetching tags from API...');
@@ -177,7 +170,7 @@ export const useMeetupForm = () => {
                 }
                 return { ...prev, [name]: value };
             });
-            // Clear error when user starts typing
+           
             updateFieldError(name, null);
         },
         [updateFieldError]
@@ -209,7 +202,7 @@ export const useMeetupForm = () => {
                 alert(t('createMeetup.pleaseProvideDescription'));
                 return;
             }
-
+            setError(null);
             setIsPendingAI(true);
 
             const gptPrompt = `
@@ -218,7 +211,7 @@ export const useMeetupForm = () => {
                 Затем дай мне ответ СТРОГО В СЛЕДУЮЩЕМ ФОРМАТЕ: 
                 "текст расширенного описания митапа, который ты придумаешь"
                 Ничего больше добавлять не нужно. НЕ ПИШИ вводных слов, комментариев, заключений, либо других текстов вне указанного формата. ТОЛЬКО содержимое улучшенного описания. 
-                ВАЖНО: ответ должен быть в пределах 480 символов. Если текст превышает это количество, сократи его.`;
+                ВАЖНО: ответ должен быть в пределах 800 символов. Если текст превышает это количество, сократи его.`;
 
             try {
                 const gptResponse = await axios.post(
@@ -239,7 +232,7 @@ export const useMeetupForm = () => {
             } catch (error) {
                 console.error('Error occurred while communicating with AI:', error);
                 setError('AI: error' + error);
-                // alert('Failed to communicate with AI.');
+            
             } finally {
                 setIsPendingAI(false);
             }
@@ -260,7 +253,6 @@ export const useMeetupForm = () => {
         setIsAiResponseVisible(false);
     }, []);
 
-    // Get selected tags from formData.tag_ids
     const selectedTags = formData.tag_ids
         .map(id => allTags.find(tag => tag.id === id))
         .filter((tag): tag is Tag => tag !== undefined);
@@ -274,7 +266,6 @@ export const useMeetupForm = () => {
                 return;
             }
 
-            // Validate all fields before submission
             if (!validateAllFields()) {
                 return;
             }

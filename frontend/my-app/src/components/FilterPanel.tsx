@@ -106,35 +106,26 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                             <div className="filter-section">
                                 <h3>{t('filterPanel.dateRange') || 'Date Range'}</h3>
                                 <div className="date-inputs">
-                                    <div className="date-input-wrapper">
-                                        <label htmlFor="start-date">
-                                            {t('filterPanel.startDate') ||
-                                                'Start Date'}
-                                        </label>
-                                        <input
-                                            type="datetime-local"
-                                            id="start-date"
-                                            value={startDate}
-                                            onChange={e =>
-                                                setStartDate(e.target.value)
-                                            }
-                                            className="date-input"
-                                        />
-                                    </div>
-                                    <div className="date-input-wrapper">
-                                        <label htmlFor="end-date">
-                                            {t('filterPanel.endDate') || 'End Date'}
-                                        </label>
-                                        <input
-                                            type="datetime-local"
-                                            id="end-date"
-                                            value={endDate}
-                                            onChange={e =>
-                                                setEndDate(e.target.value)
-                                            }
-                                            className="date-input"
-                                        />
-                                    </div>
+                                    <label htmlFor="start-date">
+                                        {t('filterPanel.startDate') || 'Start Date'}
+                                    </label>
+                                    <input
+                                        type="datetime-local"
+                                        id="start-date"
+                                        value={startDate}
+                                        onChange={e => setStartDate(e.target.value)}
+                                        className="date-input"
+                                    />
+                                    <label htmlFor="end-date">
+                                        {t('filterPanel.endDate') || 'End Date'}
+                                    </label>
+                                    <input
+                                        type="datetime-local"
+                                        id="end-date"
+                                        value={endDate}
+                                        onChange={e => setEndDate(e.target.value)}
+                                        className="date-input"
+                                    />
                                 </div>
                             </div>
 

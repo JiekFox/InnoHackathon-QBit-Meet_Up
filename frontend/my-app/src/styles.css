@@ -21,7 +21,7 @@
     --primary-link-light: #4a4aff;
     --primary-link-dark: #00ea00;
     --card-border: black;
-    --button-bg-active: green;
+    --button-bg-active: #00ff00;
     --button-text-active: white;
     --error-red: #d1242f;
     --control-bgColor-rest: #f6f8fa;
@@ -605,6 +605,7 @@ input:checked + .slider:before {
     border: 1px solid var(--button-border-dark);
     padding: 8px 16px;
     border-radius: 8px;
+    font-size: 1rem;
 }
 .delete-button {
     width: 100%;
@@ -874,7 +875,7 @@ textarea {
 .meetup-details .meetup-details-image img {
     height: 400px;
     width: 400px;
-    object-fit: cover;
+    /* object-fit: cover; */
 }
 
 .meetup-details-content {
@@ -2078,9 +2079,19 @@ h3 {
 }
 
 .date-inputs {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    gap: 10px;
+}
+
+.date-inputs label {
+    justify-self: end;
+    padding-top: 11px;
+}
+
+.date-inputs input {
+    justify-self: start;
 }
 
 .date-input {
@@ -2187,9 +2198,9 @@ h3 {
     .filter-panel {
         max-width: 100%;
     }
-    .date-input-wrapper {
+    .date-inputs {
+        display: flex;
         flex-direction: column;
-        align-items: stretch;
     }
 }
 

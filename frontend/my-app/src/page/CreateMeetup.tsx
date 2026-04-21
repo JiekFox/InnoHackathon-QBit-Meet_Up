@@ -120,7 +120,6 @@ export function CreateMeetup(): JSX.Element {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             min="1"
-                            max="24"
                             step="1"
                             required
                         />
@@ -141,7 +140,9 @@ export function CreateMeetup(): JSX.Element {
                     <FieldError error={getFieldError('link')} />
                 </div>
                 <div className="input-group">
-                    <label htmlFor="location">{t('createMeetup.locationLabel')}</label>
+                    <label htmlFor="location">
+                        {t('createMeetup.locationLabel')}
+                    </label>
                     <input
                         type="text"
                         id="location"
@@ -184,7 +185,7 @@ export function CreateMeetup(): JSX.Element {
                 {isAiResponseVisible && (
                     <>
                         <div className="input-group">
-                            <label>AI Suggestion:</label>
+                            <label>ИИ предложение:</label>
                             <textarea
                                 id="ai-response"
                                 value={aiResponse}
@@ -198,7 +199,8 @@ export function CreateMeetup(): JSX.Element {
                                 className="ai-button"
                                 onClick={handleAcceptAiSuggestion}
                             >
-                                Accept AI Suggestion
+                                {/* Accept AI Suggestion */}
+                                Согласиться с текстом ИИ
                             </button>
                             <button
                                 type="button"
@@ -206,7 +208,7 @@ export function CreateMeetup(): JSX.Element {
                                 onClick={dismissAiResponse}
                                 style={{ backgroundColor: '#6c757d' }}
                             >
-                                Dismiss
+                                Отказаться от текста ИИ
                             </button>
                         </div>
                     </>

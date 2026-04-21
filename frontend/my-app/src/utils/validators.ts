@@ -18,7 +18,7 @@ export const MEETING_CONSTRAINTS = {
         required: true
     },
     link: {
-        maxLength: 200,
+        maxLength: 1000,
         required: false
     },
     location: {

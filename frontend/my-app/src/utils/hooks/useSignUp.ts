@@ -108,7 +108,7 @@ export const useSignUp = () => {
                 );
                 console.log('registration response:', response.data);
                 saveDate(response.data);
-                navigate(-1);
+                navigate(-2);
             } catch (error) {
                 const errorDescription = getErrorDescription(
                     error,
