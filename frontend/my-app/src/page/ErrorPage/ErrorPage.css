@@ -2,3 +2,100 @@
     display: flex;
     justify-content: center;
 }
+
+/* Unique namespace: ep-x1a2b3_ - do not reuse */
+.ep-x1a2b3_error {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    height: 100vh;
+}
+
+.ep-x1a2b3_page {
+    /* force dark backdrop so page is dark regardless of global theme */
+    background: linear-gradient(180deg, #071018 0%, #0d1117 100%);
+    color: #e6eef6;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.ep-x1a2b3_inner {
+    max-width: 880px;
+    width: 100%;
+    background: #071324; /* dark card */
+    color: #e6eef6; /* light text */
+    padding: 36px;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.ep-x1a2b3_heading {
+    font-size: 88px;
+    margin: 0;
+    line-height: 1;
+}
+
+.ep-x1a2b3_sub {
+    font-size: 24px;
+    margin: 12px 0 8px 0;
+    color: var(--description);
+}
+
+.ep-x1a2b3_msg {
+    margin: 0 0 20px 0;
+    color: rgba(230, 238, 246, 0.75);
+}
+
+.ep-x1a2b3_actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.ep-x1a2b3_button {
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: #1c8139; /* visible green */
+    color: #ffffff; /* ensure contrast */
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.ep-x1a2b3_generic {
+    max-width: 720px;
+    text-align: center;
+}
+
+.ep-x1a2b3_status {
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.ep-x1a2b3_message {
+    color: rgba(230, 238, 246, 0.8);
+    margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+    .ep-x1a2b3_heading {
+        font-size: 56px;
+    }
+    .ep-x1a2b3_inner {
+        padding: 20px;
+        border-radius: 12px;
+    }
+}

@@ -1,0 +1,65 @@
+import UserMenu from './UserMenu';
+import LocaleSwitcher from '../LocaleSwitcher';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { BASE, SIGN_IN } from '../../constant/router';
+import { useAuth } from '../../utils/AuthContext';
+import { useTheme } from '../../utils/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import logo from '../../assets/img/handle_color_green.png';
+
+export default function Navbar() {
+    const { theme, toggleTheme } = useTheme();
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { name } = useAuth();
+
+    const handleLogoClick = () => {
+        if (location.pathname === BASE || location.pathname === BASE + '/') {
+            window.location.reload();
+        } else {
+            navigate(BASE);
+        }
+    };
+    return (
+        <header className="header">
+            <div className="container">
+                <div className="logo-title" onClick={handleLogoClick}>
+                    <img src={logo} alt="logo" />
+                    <h1 className="title">Meet Up!</h1>
+                </div>
+                <div className="controls">
+                    <div className="switchs">
+                        <div className="locale-switch">
+                            <LocaleSwitcher />
+                        </div>
+                        <div className="theme-switch">
+                            <label className="switch">
+                                <input
+                                    type="checkbox"
+                                    checked={theme === 'dark'}
+                                    onChange={toggleTheme}
+                                />
+                                <span className="slider round">
+                                    <span className={'moon'}>🌜</span>
+                                    <span className={'sun'}>🌞</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    {name ? (
+                        <UserMenu userName={name} />
+                    ) : (
+                        <button
+                            onClick={() => navigate(SIGN_IN)}
+                            className="control-button"
+                        >
+                            {t('navbar.signIn')}
+                        </button>
+                    )}
+                </div>
+            </div>
+        </header>
+    );
+}

@@ -1,0 +1,80 @@
+import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+
+interface PaginationProps {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+}
+
+const Pagination = React.memo(
+    ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
+        const { t } = useTranslation();
+        const handlePageClick = useCallback(
+            (page: number) => {
+                if (page >= 1 && page <= totalPages) {
+                    onPageChange(page);
+                }
+            },
+            [totalPages, onPageChange]
+        );
+
+        const renderPages = useCallback(() => {
+            const pages: (string | number)[] = [];
+            if (totalPages <= 7) {
+                for (let i = 1; i <= totalPages; i++) {
+                    pages.push(i);
+                }
+            } else {
+                pages.push(1);
+                if (currentPage > 3) pages.push('...');
+                if (currentPage > 2) pages.push(currentPage - 1);
+                if (currentPage != 1 && currentPage != totalPages) {
+                    pages.push(currentPage);
+                }
+                if (currentPage < totalPages - 1) pages.push(currentPage + 1);
+                if (currentPage < totalPages - 2) pages.push('...');
+                pages.push(totalPages);
+            }
+            return pages;
+        }, [currentPage, totalPages]);
+        return (
+            <nav className="pagination">
+                <button
+                    className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
+                    onClick={() => handlePageClick(currentPage - 1)}
+                    disabled={currentPage === 1}
+                >
+                    {t('pagination.previous')}
+                </button>
+                {renderPages().map((page, index) =>
+                    typeof page === 'string' /*=== '...'*/ ? (
+                        <span
+                            key={index}
+                            className="pagination-ellipsis pagination-digit"
+                        >
+                            {page}
+                        </span>
+                    ) : (
+                        <button
+                            key={index}
+                            className={`pagination-btn pagination-digit ${page === currentPage ? 'active' : ''}`}
+                            onClick={() => handlePageClick(page)}
+                        >
+                            {page}
+                        </button>
+                    )
+                )}
+                <button
+                    className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
+                    onClick={() => handlePageClick(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                >
+                    {t('pagination.next')}
+                </button>
+            </nav>
+        );
+    }
+);
+
+export default Pagination;

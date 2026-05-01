@@ -1,0 +1,275 @@
+{
+    "online": "Online",
+    "navbar": {
+        "signIn": "Sign in",
+        "home": "Home",
+        "profile": "Profile",
+        "myMeetupsSubscribed": "My Meetups (subscribed)",
+        "myMeetupsOwned": "My Meetups (owned)",
+        "logOut": "Log Out"
+    },
+    "signIn": {
+        "title": "Log In",
+        "username": "Username",
+        "password": "Password",
+        "submit": "Sign In",
+        "pending": "Pending...",
+        "noAccount": "You're not with us yet?",
+        "signUp": "Sign up!",
+        "invalidCredentials": "Invalid username or password. Please try again.",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password"
+    },
+    "signUp": {
+        "title": "Sign Up",
+        "username": "Username",
+        "email": "Email",
+        "password": "Password",
+        "submit": "Sign Up",
+        "pending": "Pending...",
+        "alreadyAccount": "Already have an account?",
+        "signIn": "Sign in!",
+        "registrationFailed": "Registration failed. Please try again.",
+        "usernameError": "Username error",
+        "emailError": "Email error",
+        "passwordError": "Password error",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password"
+    },
+
+    "meetupDetails": {
+        "title": "Meetup Details",
+        "dateBegin": "Date begin",
+        "alreadySigned": "Already signed",
+        "author": "Author",
+        "description": "Description",
+        "link": "Link",
+        "location": "Location",
+        "subscribe": "Subscribe",
+        "unsubscribe": "Unsubscribe",
+        "edit": "Edit Meetup",
+        "signToSubscribe": "Sign in to subscribe",
+        "failedToSubscribe": "Failed to subscribe",
+        "failedToUnsubscribe": "Failed to unsubscribe",
+        "noData": "No meetup data.",
+        "duration": "Duration",
+        "loading": "Loading...",
+        "attendees": "Attendees",
+        "noAttendees": "No attendees"
+    },
+    "errorPage": {
+        "notFound": "Page not found",
+        "message": "The resource may have been deleted or the link is incorrect.",
+        "goHome": "Go to Home",
+        "unknownError": "Unknown error",
+        "unexpectedError": "Unexpected error"
+    },
+    "notFound": {
+        "title": "404",
+        "heading": "Page not found",
+        "message": "The resource may have been deleted or the link is incorrect.",
+        "goHome": "Home",
+        "goBack": "Back"
+    },
+    "buttons": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "confirm": "Confirm",
+        "decline": "Decline",
+        "loading": "Loading..."
+    },
+    "errors": {
+        "serverNotResponding": "The server is not responding. Try refreshing the page or coming back later.",
+        "sessionExpired": "Session expired. Please log in again.",
+        "unauthorized": "You are not authorized to perform this action.",
+        "notFound": "Resource not found.",
+        "badRequest": "Invalid request.",
+        "internal": "An internal server error occurred. Please try again later.",
+        "usernameRequired": "Username is required",
+        "passwordRequired": "Password is required",
+        "emailRequired": "Email is required",
+        "titleRequired": "Title is required",
+        "descriptionRequired": "Description is required",
+        "invalidEmailFormat": "Invalid email format",
+        "usernamePattern": "Letters, digits and @/./+/-/_ only",
+        "usernameMaxLength": "Username cannot exceed 150 characters",
+        "passwordMinLength": "Password must be at least 8 characters long",
+        "titleMaxLength": "Title cannot exceed 50 characters",
+        "descriptionMaxLength": "Description cannot exceed 1000 characters",
+        "linkMaxLength": "Link cannot exceed 200 characters",
+        "locationRequired": "Location is required",
+        "invalidUrlFormat": "Invalid URL format",
+        "durationPositive": "Duration must be a positive number",
+        "datetimeRequired": "Date and time is required",
+        "invalidDatetimeFormat": "Invalid date and time format",
+        "datetimeFuture": "Date and time must be in the future",
+        "firstNameMaxLength": "First name cannot exceed 150 characters",
+        "lastNameMaxLength": "Last name cannot exceed 150 characters",
+        "userDescriptionMaxLength": "User description cannot exceed 255 characters"
+    },
+    "myMeetups": {
+        "title": "Your Meetings",
+        "description": "Would you like to view Meetups you have subscribed to or you own?",
+        "subscriber": "Subscriber",
+        "owner": "Owner"
+    },
+    "slider": {
+        "announcement": "Announcement",
+        "details": "Details",
+        "errorLoading": "Error loading slider"
+    },
+    "dataList": {
+        "noResults": "No results found.",
+        "error": "Error"
+    },
+    "footer": {
+        "title": "MeetUp!",
+        "credits": "Made by \"Q-bit\" team, Gomel, 2026"
+    },
+    "introSection": {
+        "createButton": "Create"
+    },
+    "logoutModal": {
+        "title": "Do you want to log out?",
+        "message": "You will need to log in again to access your account.",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+    },
+    "filterBar": {
+        "searchPlaceholder": "Search...",
+        "filterButton": "Filter",
+        "clearFilters": "Clear filters",
+        "aiSearch": "AI Search",
+        "aiRecommend": "AI Recommend"
+    },
+    "filterPanel": {
+        "title": "Filters",
+        "dateRange": "Date Range",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "showOldMeetups": "Show old meetups",
+        "tags": "Tags",
+        "reset": "Reset",
+        "apply": "Apply"
+    },
+    "pagination": {
+        "previous": "« Previous",
+        "next": "Next »"
+    },
+    "confirmationModal": {
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "defaultDescription": "After saving, this action is irreversible."
+    },
+    "imagePreview": {
+        "deleteTitle": "Delete Image?",
+        "deleteConfirm": "Delete",
+        "noImage": "no-image"
+    },
+    "photoUpload": {
+        "uploadLabel": "Upload photo",
+        "changeLabel": "Change photo",
+        "deleteButton": "Delete photo",
+        "deleteTitle": "Delete photo?",
+        "deleteConfirm": "Delete"
+    },
+    "userMenu": {
+        "profile": "Profile",
+        "myMeetupsSubscribed": "My Meetups (subscribed)",
+        "myMeetupsOwned": "My Meetups (owned)",
+        "profileDescription": "Explore your profile!",
+        "subscribedDescription": "View all the meetings you have subscribed to",
+        "ownedDescription": "View all the meetings you own",
+        "logOut": "Log Out"
+    },
+    "createMeetup": {
+        "title": "Create New Meetup",
+        "titleLabel": "Title:",
+        "startDateTime": "Start Date and Time:",
+        "linkLabel": "Link:",
+        "linkPlaceholder": "e.g., https://google.com",
+        "locationLabel": "Location:",
+        "locationPlaceholder": "e.g., Online or Savieckaja St 102, Homiel, Francisk Skorina Gomel State University",
+        "descriptionLabel": "Description:",
+        "tagsLabel": "Tags:",
+        "improveWithAI": "Improve with AI ✨",
+        "processingAI": "Processing AI...",
+        "selectImage": "Select image",
+        "submitButton": "Create Meetup",
+        "pending": "is pending...",
+        "pleaseProvideDescription": "Please provide a description first."
+    },
+    "editMeetup": {
+        "title": "Edit Meetup",
+        "deleteMeetupTitle": "Delete Meetup",
+        "deleteConfirmation": "Are you sure you want to delete this meetup? This action cannot be undone.",
+        "titleLabel": "Title:",
+        "startDateTime": "Start Date and Time:",
+        "durationLabel": "Duration (hours):",
+        "linkLabel": "Link:",
+        "locationLabel": "Location:",
+        "locationPlaceholder": "e.g., Zoom or Office address",
+        "descriptionLabel": "Description:",
+        "updateSuccess": "Meetup updated successfully",
+        "deleteButton": "Delete",
+        "tagsLabel": "Tags"
+    },
+    "home": {
+        "title": "Meet Up!",
+        "description": "Discover and join amazing meetups",
+        "searchPlaceholder": "Search meetups...",
+        "filter": "Additional filters",
+        "noMeetupsFound": "No meetups found",
+        "loading": "Loading...",
+        "error": "Error loading meetups",
+        "publicMeetupsTitle": "Public MeetUps!",
+        "publicMeetupsDescription": "Here you can find new Meetups and subscribe to them!"
+    },
+    "myMeetupsOwner": {
+        "title": "Your Created Meetups",
+        "description": "These are the meetups you've created. Manage, edit or delete your events as needed."
+    },
+    "myMeetupsSubscriber": {
+        "title": "Meetups You're Subscribed",
+        "description": "These are the events you have subscribed to. Stay updated and get ready to join the discussions!"
+    },
+    "profile": {
+        "nameLabel": "Name",
+        "namePlaceholder": "Enter your name",
+        "surnameLabel": "Surname",
+        "surnamePlaceholder": "Enter your surname",
+        "emailLabel": "Email (not visible to other users)",
+        "emailPlaceholder": "Enter your email address",
+        "usernameLabel": "Username",
+        "usernamePlaceholder": "Enter your username",
+        "aboutLabel": "About myself",
+        "aboutPlaceholder": "Tell us about yourself...",
+        "telegramIDLabel": "Telegram ID",
+        "telegramIDPlaceholder": "Your Telegram ID",
+        "saveButton": "Save Changes",
+        "telegramInfo": "To get your Telegram ID, message this bot:",
+        "telegramBot": "@userinfobot"
+    },
+    "profileViewer": {
+        "nameLabel": "Name",
+        "surnameLabel": "Surname",
+        "emailLabel": "Email",
+        "usernameLabel": "Username",
+        "aboutLabel": "About myself",
+        "telegramIDLabel": "Telegram ID",
+        "userNotFound": "User not found."
+    },
+    "dataGrid": {
+        "noResults": "No results found."
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success",
+        "warning": "Warning",
+        "hours": "hours"
+    }
+}

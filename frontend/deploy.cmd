@@ -1,2 +1,2 @@
-cd E:\Alexander\Innowise Hackaton 2024\frontend
+C:\qbit\InnoHackathon-QBit-Meet_Up\frontend
 firebase deploy
