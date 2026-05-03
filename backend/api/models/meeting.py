@@ -9,14 +9,14 @@ logger = logging.getLogger(__name__)
 
 
 class Meeting(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="meetings")
     datetime_beg = models.DateTimeField()
     duration = models.PositiveIntegerField(default=0)
-    link = models.CharField(max_length=200, null=True, blank=True)
-    location = models.CharField(max_length=200, null=True, blank=True)
+    link = models.CharField(max_length=500, null=True, blank=True)
+    location = models.CharField(max_length=500, null=True, blank=True)
     is_online = models.BooleanField(default=True)
-    description = models.CharField(max_length=1000)
+    description = models.CharField(max_length=3000)
     image = models.ImageField(upload_to="meeting_images/", null=True, blank=True)
     tags = models.ManyToManyField(Tag, blank=True, related_name="meetings")
 
