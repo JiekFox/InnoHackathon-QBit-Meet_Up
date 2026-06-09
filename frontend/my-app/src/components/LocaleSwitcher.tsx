@@ -22,7 +22,7 @@ export default function LocaleSwitcher() {
                 onClick={() => handleLanguageChange('ru')}
                 title="Русский"
             >
-                РУ
+                RU
             </button>
         </div>
     );
