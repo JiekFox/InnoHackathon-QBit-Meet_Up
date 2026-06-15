@@ -14,7 +14,7 @@ export const MEETING_CONSTRAINTS = {
         required: true
     },
     description: {
-        maxLength: 1000,
+        maxLength: 3000,
         required: true
     },
     link: {
@@ -168,7 +168,7 @@ export const validateMeetingLink = (link: string): string | null => {
 };
 
 export const validateMeetingLocation = (location: string): string | null => {
-    if (!location) return "locationRequired"; // Optional field
+    if (!location) return 'locationRequired'; // Optional field
     return validateMaxLength(
         location,
         MEETING_CONSTRAINTS.location.maxLength,
