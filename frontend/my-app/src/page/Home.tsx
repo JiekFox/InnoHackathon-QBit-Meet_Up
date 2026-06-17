@@ -25,7 +25,6 @@ export default function Home() {
 
     const fetchMeetups = React.useCallback(async (params: ParamsForFetch) => {
         const query = paramsToQuery(params);
-        console.log('fetch home', params);
         const response = await axios.get(`${MEETINGS_API_URL}?${query}`);
         return {
             results: response.data.results.map((item: any) => ({
@@ -102,18 +101,24 @@ export default function Home() {
             const gptMessage =
                 gptResponse.data?.choices?.[0]?.message?.content || '';
 
-            const normalizedMessage = String(gptMessage).trim().replace(/^"+|"+$/g, '');
+            const normalizedMessage = String(gptMessage)
+                .trim()
+                .replace(/^"+|"+$/g, '');
             const match = normalizedMessage.match(/\[.*?\]/);
-            const idsFromJson = match?.[0] ? (() => {
-                try {
-                    const parsed = JSON.parse(match[0]);
-                    return Array.isArray(parsed)
-                        ? parsed.map((n: any) => Number(n)).filter((n: any) => Number.isFinite(n))
-                        : [];
-                } catch {
-                    return [];
-                }
-            })() : [];
+            const idsFromJson = match?.[0]
+                ? (() => {
+                      try {
+                          const parsed = JSON.parse(match[0]);
+                          return Array.isArray(parsed)
+                              ? parsed
+                                    .map((n: any) => Number(n))
+                                    .filter((n: any) => Number.isFinite(n))
+                              : [];
+                      } catch {
+                          return [];
+                      }
+                  })()
+                : [];
 
             const ids =
                 idsFromJson.length > 0
@@ -198,9 +203,10 @@ export default function Home() {
 
             const gptMessage =
                 gptResponse.data?.choices?.[0]?.message?.content || '';
-            console.log('AI Recommendation Response:', gptMessage);
 
-            const normalizedMessage = String(gptMessage).trim().replace(/^"+|"+$/g, '');
+            const normalizedMessage = String(gptMessage)
+                .trim()
+                .replace(/^"+|"+$/g, '');
             const match = normalizedMessage.match(/\[.*?\]/);
             const ids: number[] = match?.[0]
                 ? (() => {

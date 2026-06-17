@@ -18,7 +18,6 @@ export default function MyMeetups() {
 
     const fetchMeetups = useCallback(async (params: ParamsForFetch) => {
         const query = paramsToQuery(params);
-        console.log(`${USER_API_URL}${userID}/meetings_owned/?${query}`);
         const response = await axios.get(
             `${USER_API_URL}${userID}/meetings_owned/?${query}`
         );
@@ -87,7 +86,6 @@ export default function MyMeetups() {
                 Верни ОДНУ строку строго в формате: Success, id:[1,2,3]
                 Если ничего не подходит — верни: Success, id:[]
             `;
-            console.log(gptPrompt);
             const gptResponse = await axios.post(
                 `${GPT_URL}/chatgpt`,
                 { message: gptPrompt },
@@ -97,7 +95,9 @@ export default function MyMeetups() {
             const gptMessage =
                 gptResponse.data?.choices?.[0]?.message?.content || '';
 
-            const normalizedMessage = String(gptMessage).trim().replace(/^"+|"+$/g, '');
+            const normalizedMessage = String(gptMessage)
+                .trim()
+                .replace(/^"+|"+$/g, '');
             const match = normalizedMessage.match(/\[.*?\]/);
             const idsFromJson = match?.[0]
                 ? (() => {

@@ -140,7 +140,6 @@ export const useMeetupForm = () => {
 
     useEffect(() => {
         const fetchTags = async () => {
-            console.log('Fetching tags from API...');
             try {
                 const response = await axios.get(TAGS_API_URL);
                 setAllTags(response.data);
@@ -170,7 +169,7 @@ export const useMeetupForm = () => {
                 }
                 return { ...prev, [name]: value };
             });
-           
+
             updateFieldError(name, null);
         },
         [updateFieldError]
@@ -211,7 +210,7 @@ export const useMeetupForm = () => {
                 Затем дай мне ответ СТРОГО В СЛЕДУЮЩЕМ ФОРМАТЕ: 
                 "текст расширенного описания митапа, который ты придумаешь"
                 Ничего больше добавлять не нужно. НЕ ПИШИ вводных слов, комментариев, заключений, либо других текстов вне указанного формата. ТОЛЬКО содержимое улучшенного описания. 
-                ВАЖНО: ответ должен быть в пределах 800 символов. Если текст превышает это количество, сократи его.`;
+                ВАЖНО: ответ должен быть в пределах 2500 символов. Если текст превышает это количество, сократи его.`;
 
             try {
                 const gptResponse = await axios.post(
@@ -232,7 +231,6 @@ export const useMeetupForm = () => {
             } catch (error) {
                 console.error('Error occurred while communicating with AI:', error);
                 setError('AI: error' + error);
-            
             } finally {
                 setIsPendingAI(false);
             }

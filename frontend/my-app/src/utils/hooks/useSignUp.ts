@@ -106,7 +106,7 @@ export const useSignUp = () => {
                     REGISTER_API_URL,
                     formData
                 );
-                console.log('registration response:', response.data);
+
                 saveDate(response.data);
                 navigate(-2);
             } catch (error) {

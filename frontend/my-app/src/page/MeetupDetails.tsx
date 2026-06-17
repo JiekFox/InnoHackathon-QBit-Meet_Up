@@ -26,7 +26,6 @@ export default function MeetupDetails(): JSX.Element {
 
     const navigate = useNavigate();
     const { t } = useTranslation();
-    console.log('Meetup details:', meetup);
 
     const canEdit = userID === meetup?.author_id || role === 'admin';
 

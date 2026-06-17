@@ -76,7 +76,7 @@ export const useAxiosWithAuth = (): AxiosInstance => {
                         TIMEOUT_MS
                     );
 
-                    console.log('successful authorization', response.data);
+                    console.log('successful authorization');
                     saveToken({
                         refresh: currentToken.refresh,
                         access: response.data.access

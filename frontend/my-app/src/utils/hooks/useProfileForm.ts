@@ -218,14 +218,13 @@ export const useProfileForm = () => {
                 value as any
             );
         });
-        console.log([...formDataToSend]);
+
         try {
-            console.log([...formDataToSend]);
             const response = await axios.patch(
                 `${USER_API_URL}${userID}/`,
                 formDataToSend
             );
-            console.log(response);
+
             const forSaveDate = {
                 username: response.data.username,
                 user_id: response.data.id,

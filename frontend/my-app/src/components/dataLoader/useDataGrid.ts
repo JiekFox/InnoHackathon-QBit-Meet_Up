@@ -18,7 +18,6 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
-    console.log('global', showOldMeetups);
     const loadData = async ({
         page = currentPage,
         search = searchQuery,
@@ -30,7 +29,6 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
         setLoading(true);
         try {
             const shouldShowOld = newShowOldMeetups ?? showOldMeetups;
-            console.log(shouldShowOld);
             const params: ParamsForFetch = {
                 page,
                 pageSize: ITEMS_PER_PAGE,
@@ -59,7 +57,6 @@ export const useDataGrid = <T extends Meetup>(fetchFunction: Fetcher<T>) => {
 
     const handleSearchChange = useCallback(
         async (query: string) => {
-            console.log(showOldMeetups);
             await loadData({ page: 1, search: query });
             setSearchQuery(query);
             setCurrentPage(1);

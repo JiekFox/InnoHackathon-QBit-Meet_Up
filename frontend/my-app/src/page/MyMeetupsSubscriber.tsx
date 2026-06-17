@@ -19,7 +19,6 @@ export default function MyMeetupsSubscriber() {
     const fetchMeetups = useCallback(
         async (params: ParamsForFetch) => {
             const query = paramsToQuery(params);
-            console.log(fetch);
             const response = await axios.get(
                 `${USER_API_URL}${userID}/meetings_signed/?${query}`
             );

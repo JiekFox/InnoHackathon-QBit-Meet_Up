@@ -83,7 +83,7 @@ export const useSignIn = (): UseSignInReturn => {
     const handleBlur = useCallback(
         (e: React.FocusEvent<HTMLInputElement>) => {
             const { name, value } = e.target;
-            console.log(`Field blurred: ${name} with value: ${value}`);
+
             if (name === 'username' && !value.trim()) {
                 updateFieldError('username', 'usernameRequired');
             } else if (name === 'password' && !value) {
@@ -108,10 +108,10 @@ export const useSignIn = (): UseSignInReturn => {
                     TOKEN_API_URL,
                     formData
                 );
-                console.log(response.data);
+               
                 saveDate(response.data);
                 navigate(-1);
-                console.log('Sign in successful');
+                
             } catch (error) {
                 const errorDescription = getErrorDescription(
                     error,

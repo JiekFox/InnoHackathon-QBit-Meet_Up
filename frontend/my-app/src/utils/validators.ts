@@ -333,7 +333,6 @@ export const validateSignInForm = (formData: {
     if (!formData.password) {
         errors.push({ field: 'password', message: 'passwordRequired' });
     }
-    console.log('Sign-in form validation errors:', errors);
     return errors;
 };
 

@@ -104,7 +104,6 @@ export function EditMeetup(): JSX.Element {
             try {
                 const response = await axios.get(`${MEETINGS_API_URL}${id}/`);
                 const data = response.data;
-                console.log('Fetched meetup data:', data);
 
                 if (data.author_id !== userID && role !== 'admin') {
                     console.log('Redirecting to sign In because of ID mismatch');
@@ -208,7 +207,6 @@ export function EditMeetup(): JSX.Element {
             const formDataToSend = new FormData();
 
             Object.entries(userValues).forEach(([key, value]) => {
-                console.log(key, value);
                 if (key === 'tag_ids') {
                     (value as number[]).forEach(id => {
                         formDataToSend.append('tag_ids', String(id));
@@ -227,7 +225,6 @@ export function EditMeetup(): JSX.Element {
                     formDataToSend.append(key, tempValue as any);
                 }
             });
-            console.log('sent date', [...formDataToSend]);
 
             await axios.patch(`${MEETINGS_API_URL}${id}/`, formDataToSend);
 
@@ -255,7 +252,6 @@ export function EditMeetup(): JSX.Element {
     };
 
     if (isPending && !serverValues) return <Loader />;
-    // console.log(error, serverValues);
     // if (serverValues) return <p>{t('meetupDetails.noData')}</p>;
 
     return (

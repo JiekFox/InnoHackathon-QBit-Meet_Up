@@ -39,7 +39,6 @@ const HeroMeetupSlider: React.FC<HeroProps> = ({ fetchMeetups }) => {
             });
             if (page === 1) {
                 setMeetups(data.results);
-                console.log('Fetched meetups:', data.results);
                 setLoadedPages(1);
             } else {
                 setMeetups(prev => {
